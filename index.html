@@ -1427,6 +1427,61 @@
   </div>
 </div>
 
+<!-- Event Registration Sheet -->
+<div class="modal-overlay" id="modal-app-reg" onclick="if(event.target===this)closeModal('modal-app-reg')">
+  <div class="modal-sheet" style="max-height:90vh;overflow-y:auto;">
+    <div class="modal-handle"></div>
+    <div id="app-reg-form-wrap">
+      <div class="modal-title" id="app-reg-title">Register</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:16px;" id="app-reg-meta"></div>
+      <div class="modal-field">
+        <label class="modal-label">First Name *</label>
+        <input class="cond-input" id="app-reg-fname" type="text" placeholder="Jane" required/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Last Name *</label>
+        <input class="cond-input" id="app-reg-lname" type="text" placeholder="Smith" required/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Email *</label>
+        <input class="cond-input" id="app-reg-email" type="email" placeholder="jane@email.com" required/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Phone</label>
+        <input class="cond-input" id="app-reg-phone" type="tel" placeholder="(573) 555-0000"/>
+      </div>
+      <div id="app-reg-team-fields" style="display:none;">
+        <div class="modal-field">
+          <label class="modal-label">Partner / Team Name</label>
+          <input class="cond-input" id="app-reg-partner" type="text" placeholder="e.g. John Doe"/>
+        </div>
+        <div class="modal-field">
+          <label class="modal-label">Players in Group</label>
+          <select class="cond-input" id="app-reg-players">
+            <option value="1">1 Player</option>
+            <option value="2" selected>2 Players</option>
+            <option value="3">3 Players</option>
+            <option value="4">4 Players</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Notes</label>
+        <input class="cond-input" id="app-reg-notes" type="text" placeholder="Any special requests"/>
+      </div>
+      <div style="font-size:.7rem;color:var(--danger);margin-bottom:8px;display:none;" id="app-reg-error"></div>
+      <button class="ev-reg-btn" id="app-reg-submit" onclick="submitAppReg()">Complete Registration</button>
+      <div style="font-size:.68rem;color:var(--muted);text-align:center;margin-top:8px;">Confirmed by Pro Shop within 24 hrs · (573) 785-8211</div>
+    </div>
+    <div id="app-reg-success" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:2.5rem;margin-bottom:12px;">✓</div>
+      <div style="font-weight:700;font-size:1rem;margin-bottom:8px;">You're registered!</div>
+      <div style="font-size:.8rem;color:var(--muted);line-height:1.5;" id="app-reg-success-msg"></div>
+      <button class="ev-reg-btn" style="margin-top:16px;" onclick="closeModal('modal-app-reg')">Done</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -2025,6 +2080,65 @@ function renderRoundLog() {
   }).join('');
 }
 
+// ═══════════════════════════════════════
+// APP EVENT REGISTRATION
+// ═══════════════════════════════════════
+var appCurrentRegEvent = null;
+
+function openAppReg(eventTitle, eventMeta, isTeam) {
+  appCurrentRegEvent = { title: eventTitle, meta: eventMeta, isTeam: !!isTeam };
+  document.getElementById('app-reg-title').textContent = eventTitle;
+  document.getElementById('app-reg-meta').textContent = eventMeta || '';
+  document.getElementById('app-reg-team-fields').style.display = isTeam ? 'block' : 'none';
+  document.getElementById('app-reg-form-wrap').style.display = 'block';
+  document.getElementById('app-reg-success').style.display = 'none';
+  document.getElementById('app-reg-error').style.display = 'none';
+  // Pre-fill from logged-in user
+  if (currentUser) {
+    var parts = (currentUser.name||'').split(' ');
+    document.getElementById('app-reg-fname').value = parts[0]||'';
+    document.getElementById('app-reg-lname').value = parts.slice(1).join(' ')||'';
+    document.getElementById('app-reg-email').value = currentUser.email||'';
+  }
+  openModal('modal-app-reg');
+}
+
+function submitAppReg() {
+  var fname = document.getElementById('app-reg-fname').value.trim();
+  var lname = document.getElementById('app-reg-lname').value.trim();
+  var email = document.getElementById('app-reg-email').value.trim();
+  var errEl = document.getElementById('app-reg-error');
+  if (!fname || !lname || !email) {
+    errEl.textContent = 'Please fill in name and email.';
+    errEl.style.display = 'block';
+    return;
+  }
+  var reg = {
+    id: Date.now().toString(),
+    event: appCurrentRegEvent ? appCurrentRegEvent.title : '',
+    eventMeta: appCurrentRegEvent ? appCurrentRegEvent.meta : '',
+    firstName: fname, lastName: lname, email: email,
+    phone: document.getElementById('app-reg-phone').value.trim(),
+    partner: document.getElementById('app-reg-partner').value.trim(),
+    players: document.getElementById('app-reg-players').value,
+    notes: document.getElementById('app-reg-notes').value.trim(),
+    timestamp: new Date().toISOString(),
+    source: 'mobile-app'
+  };
+  // Save to localStorage
+  try {
+    var all = JSON.parse(localStorage.getItem('wh_registrations') || '[]');
+    all.push(reg);
+    localStorage.setItem('wh_registrations', JSON.stringify(all));
+  } catch(e) {}
+  // Show success
+  document.getElementById('app-reg-form-wrap').style.display = 'none';
+  document.getElementById('app-reg-success').style.display = 'block';
+  document.getElementById('app-reg-success-msg').textContent =
+    'You\'re signed up for ' + reg.event + '. We\'ll confirm within 24 hours.';
+  showToast('Registered for ' + reg.event + '!');
+}
+
 // ════════════════════════════════════
 // EVENTS
 // ════════════════════════════════════
@@ -2035,7 +2149,10 @@ function eventCardHTML(ev, idx, isStaff) {
         '<button class="ts-btn" onclick="openEditEvent(' + idx + ')" style="font-size:.72rem;">✏️ Edit</button>' +
       '</div>' +
       '<button class="ev-del-btn" onclick="deleteEvent(' + idx + ')">Remove Event</button>'
-    : '<button class="ev-reg-btn' + (ev.registered ? ' registered' : '') + '" onclick="toggleReg(' + idx + ')">' + (ev.registered ? '✓ Registered' : 'Register') + '</button>';
+    : (function() {
+        var isTeam = /scramble|invitational|2-man|2 man|best ball|powder puff|sweet treat|ucan|three rivers|mules/i.test(ev.title + ' ' + (ev.desc||''));
+        return '<button class="ev-reg-btn' + (ev.registered ? ' registered' : '') + '" onclick="openAppReg(\'' + ev.title.replace(/'/g,"\\'") + '\',\'' + (ev.time||'').replace(/'/g,"\\'") + '\',' + isTeam + ')">' + (ev.registered ? '✓ Registered' : 'Register') + '</button>';
+      })();
   var metaRows = '';
   var feeHTML = ev.fee ? '<div class="ev-fee-row"><span class="ev-fee-lbl">Entry Fee</span><span class="ev-fee-val">' + ev.fee + '</span></div>' : '';
   var typeHTML = ev.type ? '<div class="ev-fee-row" style="margin-top:-6px;"><span class="ev-fee-lbl">Type</span><span class="ev-fee-val">' + ev.type + '</span></div>' : '';

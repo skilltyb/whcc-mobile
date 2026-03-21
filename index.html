@@ -1,0 +1,3344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#1a2b1f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WHCC">
+  <title>Westwood Hills CC</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --forest: #1a2b1f;
+      --forest-light: #2a3f2e;
+      --gold: #b8963e;
+      --gold-light: #d4ab50;
+      --cream: #f5f0e8;
+      --sand: #e8e0d0;
+      --dark: #1a1a1a;
+      --muted: #6b7280;
+      --border: rgba(26,43,31,.12);
+      --white: #ffffff;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --shadow: 0 2px 16px rgba(26,43,31,.08);
+      --shadow-lg: 0 8px 32px rgba(26,43,31,.18);
+      --tab-h: 68px;
+      --hdr-h: 58px;
+      --safe-b: env(safe-area-inset-bottom, 0px);
+    }
+    html, body { height: 100%; width: 100%; font-family: 'Inter', sans-serif; background: var(--forest); color: var(--dark); overflow: hidden; }
+
+    /* ── SCREENS ── */
+    .screen { position: fixed; inset: 0; display: flex; flex-direction: column; transition: opacity .22s, transform .22s; }
+    .screen.hidden { opacity: 0; pointer-events: none; transform: translateY(10px); }
+
+    /* ── LOGIN ── */
+    #screen-login { background: linear-gradient(to bottom, rgba(8,20,12,.72) 0%, rgba(8,20,12,.88) 100%), url('../images/golf-carts-sunset.jpg') center/cover no-repeat; align-items: center; justify-content: center; padding: 40px 28px; gap: 0; }
+
+    /* ── MY UPCOMING ── */
+    .upcoming-ev { display:flex; align-items:center; gap:12px; padding:9px 0; border-bottom:1px solid var(--border); }
+    .upcoming-ev:last-child { border-bottom:none; }
+    .upcoming-when { font-size:.72rem; color:var(--gold); font-weight:700; white-space:nowrap; }
+
+    /* ── FIND A PARTNER ── */
+    .partner-post { border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:8px; border-left:3px solid var(--gold); background:var(--white); box-shadow:var(--shadow); }
+    .pp-name { font-size:.84rem; font-weight:700; color:var(--dark); }
+    .pp-detail { font-size:.74rem; color:var(--muted); margin-top:3px; }
+    .pp-note { font-size:.76rem; color:var(--dark); margin-top:6px; font-style:italic; opacity:.8; }
+    .pp-contact { font-size:.75rem; color:var(--gold); font-weight:600; margin-top:8px; text-decoration:none; display:inline-block; }
+
+    /* ── MEMBER LOOKUP ── */
+    .mem-result { border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:8px; background:var(--cream); border-left:3px solid var(--forest); }
+    .mem-result:last-child { margin-bottom:0; }
+    .mem-name { font-size:.9rem; font-weight:700; color:var(--dark); }
+    .mem-number { font-size:.7rem; color:var(--muted); margin-left:6px; font-weight:400; }
+    .mem-pills { display:flex; flex-wrap:wrap; gap:5px; margin:7px 0 5px; }
+    .mem-pill { font-size:.68rem; font-weight:600; padding:2px 8px; border-radius:20px; }
+    .mem-pill.type { background:rgba(26,43,31,.1); color:var(--forest); }
+    .mem-pill.hcp { background:rgba(184,150,62,.15); color:#7a5c10; }
+    .mem-pill.since { background:rgba(107,114,128,.1); color:var(--muted); }
+    .mem-contact-row { display:flex; gap:10px; margin-top:8px; }
+    .mem-contact-btn { font-size:.72rem; font-weight:600; color:var(--gold); text-decoration:none; }
+    .mem-empty { font-size:.8rem; color:var(--muted); text-align:center; padding:14px 0; }
+
+    /* ── STAFF MESSAGE BOARD ── */
+    .staff-msg { padding:10px 12px; border-radius:var(--radius-sm); background:var(--cream); margin-bottom:8px; position:relative; }
+    .staff-msg:last-child { margin-bottom:0; }
+    .staff-msg-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+    .staff-msg-author { font-size:.72rem; font-weight:700; color:var(--forest); }
+    .staff-msg-time { font-size:.68rem; color:var(--muted); }
+    .staff-msg-text { font-size:.82rem; color:var(--dark); line-height:1.45; }
+    .staff-msg-del { background:none; border:none; font-size:.75rem; color:var(--muted); cursor:pointer; padding:2px 4px; margin-left:6px; }
+
+    /* ── INCIDENT LOG ── */
+    .inc-row { border-radius:var(--radius-sm); padding:11px 13px; margin-bottom:8px; background:var(--white); box-shadow:var(--shadow); border-left:3px solid var(--muted); }
+    .inc-row.urgent { border-left-color:#dc2626; }
+    .inc-row.medium { border-left-color:#e67e22; }
+    .inc-row.low    { border-left-color:#16a34a; }
+    .inc-row.resolved { opacity:.55; }
+    .inc-top { display:flex; align-items:center; gap:7px; margin-bottom:5px; flex-wrap:wrap; }
+    .inc-badge { font-size:.64rem; font-weight:700; padding:2px 7px; border-radius:20px; text-transform:uppercase; letter-spacing:.04em; }
+    .inc-badge.urgent { background:#fee2e2; color:#991b1b; }
+    .inc-badge.medium { background:#fff3e0; color:#7a3a00; }
+    .inc-badge.low    { background:#dcfce7; color:#166534; }
+    .inc-badge.resolved { background:var(--cream); color:var(--muted); }
+    .inc-type { font-size:.75rem; font-weight:700; color:var(--dark); }
+    .inc-loc  { font-size:.72rem; color:var(--muted); }
+    .inc-desc { font-size:.8rem; color:var(--dark); margin:5px 0 7px; line-height:1.4; }
+    .inc-meta { font-size:.68rem; color:var(--muted); }
+    .inc-actions { display:flex; gap:8px; margin-top:8px; }
+    .inc-btn { font-size:.7rem; font-weight:600; padding:4px 10px; border-radius:20px; border:none; cursor:pointer; }
+    .inc-btn.resolve { background:rgba(22,163,74,.12); color:#166534; }
+    .inc-btn.del     { background:rgba(220,38,38,.1); color:#991b1b; }
+
+    /* ── LOST & FOUND ── */
+    .lf-row { border-radius:var(--radius-sm); padding:11px 13px; margin-bottom:8px; background:var(--white); box-shadow:var(--shadow); border-left:3px solid var(--gold); }
+    .lf-row.claimed { border-left-color:var(--success); opacity:.55; }
+    .lf-row:last-child { margin-bottom:0; }
+    .lf-item { font-size:.86rem; font-weight:700; color:var(--dark); margin-bottom:3px; }
+    .lf-detail { font-size:.74rem; color:var(--muted); margin-bottom:6px; }
+    .lf-contact { font-size:.74rem; color:var(--forest); font-weight:600; margin-bottom:6px; }
+    .lf-status { display:inline-block; font-size:.65rem; font-weight:700; padding:2px 8px; border-radius:20px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:7px; }
+    .lf-status.unclaimed { background:rgba(184,150,62,.15); color:#7a5c10; }
+    .lf-status.claimed   { background:rgba(22,163,74,.12);  color:#166534; }
+
+    /* ── HOLE STATUS BOARD ── */
+    .hole-tile { border-radius:var(--radius-sm); padding:8px 4px; text-align:center; cursor:pointer; transition:background .15s; border:1.5px solid transparent; }
+    .hole-tile.open   { background:#dcfce7; border-color:#86efac; }
+    .hole-tile.temp   { background:#fff3cd; border-color:#fcd34d; }
+    .hole-tile.closed { background:#fee2e2; border-color:#fca5a5; }
+    .hole-tile-num  { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:700; line-height:1; }
+    .hole-tile.open   .hole-tile-num { color:#166534; }
+    .hole-tile.temp   .hole-tile-num { color:#7a4500; }
+    .hole-tile.closed .hole-tile-num { color:#991b1b; }
+    .hole-tile-lbl  { font-size:.55rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-top:2px; }
+    .hole-tile.open   .hole-tile-lbl { color:#16a34a; }
+    .hole-tile.temp   .hole-tile-lbl { color:#d97706; }
+    .hole-tile.closed .hole-tile-lbl { color:#dc2626; }
+
+    /* ── WORK ORDERS ── */
+    .wo-row { border-radius:var(--radius-sm); padding:11px 13px; margin-bottom:8px; background:var(--white); box-shadow:var(--shadow); border-left:3px solid var(--muted); }
+    .wo-row.done { opacity:.5; border-left-color:var(--success); }
+    .wo-row.urgent { border-left-color:#dc2626; }
+    .wo-row.medium { border-left-color:#e67e22; }
+    .wo-row.low    { border-left-color:#16a34a; }
+    .wo-task  { font-size:.86rem; font-weight:700; color:var(--dark); margin-bottom:3px; }
+    .wo-meta  { font-size:.72rem; color:var(--muted); }
+    .wo-actions { display:flex; gap:8px; margin-top:8px; }
+
+    /* ── POOL CHEM LOG ── */
+    .chem-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); }
+    .chem-row:last-child { border-bottom:none; }
+    .chem-time { font-size:.7rem; color:var(--muted); white-space:nowrap; min-width:56px; }
+    .chem-vals { flex:1; font-size:.8rem; color:var(--dark); }
+    .chem-badge { font-size:.66rem; font-weight:700; padding:2px 7px; border-radius:20px; }
+    .chem-badge.good { background:#dcfce7; color:#166534; }
+    .chem-badge.warn { background:#fff3cd; color:#7a4500; }
+    .chem-badge.bad  { background:#fee2e2; color:#991b1b; }
+
+    /* ── SPRAY LOG ── */
+    .spray-row { padding:10px 0; border-bottom:1px solid var(--border); }
+    .spray-row:last-child { border-bottom:none; }
+    .spray-product { font-size:.84rem; font-weight:700; color:var(--dark); }
+    .spray-meta { font-size:.72rem; color:var(--muted); margin-top:2px; }
+    .spray-rei  { font-size:.7rem; font-weight:600; color:#7a3a00; margin-top:3px; }
+    .login-logo { width: 76px; height: 76px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; color: var(--forest); margin-bottom: 20px; }
+    .login-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: var(--white); text-align: center; margin-bottom: 4px; }
+    .login-sub { font-size: .83rem; color: rgba(255,255,255,.55); text-align: center; margin-bottom: 40px; letter-spacing: .04em; }
+    .login-card { background: var(--white); border-radius: var(--radius); padding: 28px 24px; width: 100%; max-width: 360px; box-shadow: var(--shadow-lg); }
+    .login-label { font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; display: block; }
+    .login-input { width: 100%; padding: 13px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 1rem; font-family: 'Inter', sans-serif; background: var(--cream); outline: none; margin-bottom: 18px; transition: border-color .2s; }
+    .login-input:focus { border-color: var(--forest); }
+    .login-btn { width: 100%; padding: 14px; background: var(--forest); color: var(--white); border: none; border-radius: var(--radius-sm); font-size: .95rem; font-weight: 600; cursor: pointer; margin-bottom: 14px; transition: background .2s; }
+    .login-btn:hover { background: var(--forest-light); }
+    .login-divider { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; color: var(--muted); font-size: .78rem; }
+    .login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .login-error { color: var(--danger); font-size: .78rem; text-align: center; margin-top: -10px; margin-bottom: 14px; min-height: 18px; }
+    .demo-btns { display: flex; gap: 8px; }
+    .demo-btn { flex: 1; padding: 10px 8px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: none; font-size: .78rem; font-weight: 600; cursor: pointer; color: var(--forest); transition: background .2s, border-color .2s; }
+    .demo-btn:hover { background: var(--cream); border-color: var(--forest); }
+
+    /* ── APP HEADER ── */
+    .app-header { height: var(--hdr-h); background: var(--forest); display: flex; align-items: center; padding: 0 18px; flex-shrink: 0; }
+    .hdr-logo { width: 30px; height: 30px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: .85rem; font-weight: 700; color: var(--forest); margin-right: 10px; flex-shrink: 0; }
+    .hdr-title { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 600; color: var(--white); flex: 1; }
+    .hdr-user { font-size: .73rem; color: rgba(255,255,255,.55); }
+
+    /* ── TAB BAR ── */
+    .tab-bar { height: calc(var(--tab-h) + var(--safe-b)); padding-bottom: var(--safe-b); background: var(--white); display: flex; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .tab-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: var(--muted); transition: color .18s; padding-top: 4px; position: relative; }
+    .tab-btn.active { color: var(--forest); }
+    .tab-btn.active::before { content: ''; position: absolute; top: 0; left: 28%; right: 28%; height: 2.5px; background: var(--gold); border-radius: 0 0 3px 3px; }
+    .tab-btn svg { width: 21px; height: 21px; }
+    .tab-btn span { font-size: .62rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .tab-dot { display: none; }
+
+    /* ── SCROLL CONTENT ── */
+    .tab-content { display: none; flex: 1; overflow-y: auto; background: var(--cream); -webkit-overflow-scrolling: touch; }
+    .tab-content.active { display: block; }
+
+    /* ── COMMON ── */
+    .page { padding: 18px 15px 20px; }
+    .page-title { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+    .page-title::after { content: ''; display: block; width: 30px; height: 2px; background: var(--gold); border-radius: 1px; margin-top: 5px; }
+    .page-sub { font-size: .82rem; color: var(--muted); margin-bottom: 18px; margin-top: 4px; }
+    .card { background: var(--white); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom: 12px; }
+    .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; color: var(--dark); margin-bottom: 3px; }
+    .card-body { font-size: .84rem; color: var(--muted); line-height: 1.5; }
+    .sec-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .sec-hdr h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 600; color: var(--dark); }
+    .sec-hdr a { font-size: .78rem; color: var(--gold); font-weight: 600; cursor: pointer; }
+    .divider { height: 1px; background: var(--border); margin: 14px 0; }
+    .info-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border); }
+    .info-row:last-child { border-bottom: none; }
+    .ir-label { font-size: .78rem; color: var(--muted); font-weight: 500; }
+    .ir-val { font-size: .84rem; font-weight: 600; color: var(--dark); }
+
+    /* ── GREETING BANNER ── */
+    .greeting-banner { background: linear-gradient(140deg, var(--forest) 0%, #2e4d35 60%, var(--forest-light) 100%); border-radius: var(--radius); padding: 22px 18px; margin-bottom: 14px; color: var(--white); position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(26,43,31,.25); }
+    .greeting-banner::before { content: ''; position: absolute; top: -30px; right: -20px; width: 120px; height: 120px; background: rgba(184,150,62,.08); border-radius: 50%; }
+    .greeting-banner::after { content: '⛳'; position: absolute; right: 16px; bottom: -8px; font-size: 4rem; opacity: .15; }
+    .greeting-name { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 3px; }
+    .greeting-detail { font-size: .78rem; opacity: .6; }
+    .greeting-badge { display: inline-block; background: var(--gold); color: var(--forest); font-size: .68rem; font-weight: 700; padding: 4px 11px; border-radius: 20px; margin-top: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.2); }
+
+    /* ── QUICK ACTIONS ── */
+    .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    .quick-action { background: var(--white); border-radius: var(--radius); padding: 18px 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 9px; border: none; cursor: pointer; box-shadow: var(--shadow); transition: transform .12s; text-align: left; }
+    .quick-action:active { transform: scale(.96); }
+    .qa-icon { width: 44px; height: 44px; background: linear-gradient(135deg, rgba(184,150,62,.14) 0%, rgba(26,43,31,.08) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; border: 1px solid rgba(184,150,62,.18); }
+    .qa-label { font-size: .82rem; font-weight: 600; color: var(--dark); line-height: 1.3; }
+
+    /* ── SCORECARD ── */
+    .sc-sec-hdr { background: var(--forest); color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: var(--radius-sm) var(--radius-sm) 0 0; margin-top: 14px; }
+    .sc-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: 0 0 var(--radius-sm) var(--radius-sm); box-shadow: var(--shadow); }
+    .sc-th { background: var(--forest-light); color: rgba(255,255,255,.7); padding: 6px 3px; text-align: center; font-size: .58rem; font-weight: 700; letter-spacing: .05em; }
+    .sc-blk { color: #bbb !important; } .sc-blu { color: #7bb8f0 !important; } .sc-wht { color: #ccc !important; } .sc-red { color: #f08080 !important; }
+    .sc-td { padding: 7px 3px; text-align: center; font-size: .72rem; color: var(--dark); border-bottom: 1px solid var(--border); }
+    .sc-hole { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: .82rem; }
+    .sc-alt td { background: rgba(26,43,31,.03); }
+    .sc-total td { background: var(--sand); font-weight: 700; border-bottom: none; }
+    .sc-grand td { background: var(--forest); color: var(--white); font-weight: 700; border-bottom: none; }
+    .sc-grand .sc-hole { color: var(--white); }
+    .sc-grand .sc-td:nth-child(n+4) { color: var(--gold); }
+
+    /* ── SCORE ENTRY ── */
+    .se-nine-hdr { background:var(--forest); color:var(--gold); font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:6px 10px; border-radius:var(--radius-sm) var(--radius-sm) 0 0; margin-top:12px; }
+    .se-tbl { width:100%; border-collapse:collapse; background:var(--white); box-shadow:var(--shadow); }
+    .se-tbl th { background:rgba(26,43,31,.08); color:var(--forest); font-size:.62rem; font-weight:700; letter-spacing:.05em; padding:7px 4px; text-align:center; border-bottom:1px solid var(--border); }
+    .se-tbl td { padding:6px 4px; text-align:center; border-bottom:1px solid var(--border); font-size:.8rem; }
+    .se-tbl tr:last-child td { border-bottom:none; }
+    .se-tbl .sc-alt td { background:rgba(26,43,31,.03); }
+    .se-tbl .se-total-row td { background:var(--sand); font-weight:700; }
+    .se-hole-num { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:.92rem; color:var(--forest); }
+    .se-stepper { display:flex; align-items:center; justify-content:center; gap:6px; }
+    .se-btn { background:none; border:1px solid var(--border); border-radius:4px; width:24px; height:24px; font-size:1rem; cursor:pointer; color:var(--dark); display:flex; align-items:center; justify-content:center; line-height:1; padding:0; }
+    .se-val { min-width:24px; text-align:center; font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:700; }
+    .se-eagle { color:#b8860b; } .se-birdie { color:#2a8a3e; } .se-par-score { color:var(--dark); } .se-bogey { color:#c36a00; } .se-dbl { color:#c33232; } .se-trip { color:#8b0000; }
+    .se-totals-bar { display:flex; justify-content:space-around; background:var(--forest); color:var(--white); border-radius:var(--radius-sm); padding:10px 6px; margin-top:8px; text-align:center; }
+    .se-tot-lbl { font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; color:rgba(255,255,255,.5); margin-bottom:3px; }
+    .se-tot-val { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:700; color:var(--gold); }
+    .se-tot-val.se-under { color:#6de89e; } .se-tot-val.se-over { color:#f5a623; } .se-tot-val.se-even { color:var(--white); }
+    .rl-item { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--border); }
+    .rl-item:last-child { border-bottom:none; }
+    .rl-date { font-size:.75rem; color:var(--dark); font-weight:600; }
+    .rl-holes { font-size:.68rem; color:var(--muted); margin-top:1px; }
+    .rl-score { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:700; color:var(--forest); }
+    .rl-par { font-size:.7rem; margin-top:2px; text-align:right; }
+    .rl-par.rl-under { color:#2a8a3e; font-weight:700; } .rl-par.rl-over { color:#c36a00; } .rl-par.rl-even { color:var(--muted); }
+    .setup-lbl { font-size:.72rem; font-weight:700; color:var(--forest); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
+    .setup-choice { padding:9px 16px; border:1.5px solid var(--border); border-radius:20px; background:var(--white); color:var(--dark); font-size:.82rem; font-weight:600; cursor:pointer; }
+    .setup-choice.active { background:var(--forest); color:var(--white); border-color:var(--forest); }
+    .setup-choice.tee-btn { border-radius:var(--radius-sm); text-align:left; }
+
+    /* ── WEATHER WIDGET ── */
+    .wx-card { background:linear-gradient(175deg,#1a9de0 0%,#34b4f5 30%,#6dcef7 65%,#b8e8ff 100%); color:var(--white); border-radius:var(--radius); padding:16px; margin-bottom:14px; box-shadow:var(--shadow); }
+    .wx-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .wx-main { display:flex; align-items:center; gap:12px; }
+    .wx-icon { font-size:2.2rem; line-height:1; }
+    .wx-temp { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:700; line-height:1; color:#0a2540; }
+    .wx-desc { font-size:.72rem; color:#0e3a60; margin-top:3px; font-weight:500; }
+    .wx-badge { padding:5px 11px; border-radius:14px; font-size:.68rem; font-weight:700; white-space:nowrap; }
+    .wx-badge.great   { background:rgba(255,255,255,.45); color:#0a5c2e; border:1px solid rgba(255,255,255,.6); }
+    .wx-badge.good    { background:rgba(255,255,255,.4);  color:#0a4020; border:1px solid rgba(255,255,255,.55); }
+    .wx-badge.watch   { background:rgba(240,160,60,.5);   color:#5c3000; border:1px solid rgba(240,160,60,.7); }
+    .wx-badge.poor    { background:rgba(220,70,70,.5);    color:#fff;    border:1px solid rgba(220,70,70,.7); }
+    .wx-badge.cold    { background:rgba(180,210,255,.6);  color:#0a2060; border:1px solid rgba(180,210,255,.8); }
+    .wx-badge.hot     { background:rgba(255,140,0,.5);    color:#5c2000; border:1px solid rgba(255,140,0,.7); }
+    .wx-stats { display:flex; gap:8px; margin-bottom:12px; }
+    .wx-stat { flex:1; background:rgba(255,255,255,.4); border-radius:8px; padding:8px 10px; backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.5); }
+    .wx-stat-lbl { font-size:.58rem; text-transform:uppercase; letter-spacing:.06em; color:#0e3a60; margin-bottom:3px; font-weight:600; }
+    .wx-stat-val { font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:700; color:#0a2540; }
+    .wx-divider { border:none; border-top:1px solid rgba(255,255,255,.4); margin:10px 0; }
+    .wx-cond-box { background:rgba(255,255,255,.4); border-radius:10px; padding:10px 12px; margin-top:2px; backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.5); }
+    .wx-cond-hdr { font-size:.6rem; text-transform:uppercase; letter-spacing:.08em; color:#0e3a60; margin-bottom:7px; font-weight:700; }
+    .wx-cond-row { display:flex; justify-content:space-between; align-items:center; padding:3px 0; font-size:.75rem; }
+    .wx-cond-lbl { color:#0e3a60; font-weight:500; }
+    .wx-cond-val { color:#0a2540; font-weight:700; }
+    .wx-notice { font-size:.72rem; color:#3a1a00; background:rgba(255,220,100,.5); border-radius:6px; padding:4px 8px; margin-top:8px; line-height:1.4; }
+    .wx-loading { opacity:.5; font-size:.8rem; }
+    /* ── STAFF CONDITIONS EDITOR ── */
+    .cond-field { margin-bottom:12px; }
+    .cond-label { font-size:.72rem; font-weight:700; color:var(--forest); text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; display:block; }
+    .cond-input { width:100%; padding:9px 10px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:.9rem; color:var(--dark); background:var(--white); box-sizing:border-box; }
+    .cond-select { width:100%; padding:9px 10px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:.9rem; color:var(--dark); background:var(--white); box-sizing:border-box; }
+    .cond-textarea { width:100%; padding:9px 10px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:.9rem; color:var(--dark); background:var(--white); box-sizing:border-box; min-height:60px; resize:none; }
+
+    /* ── MENU ── */
+    .menu-sec-title { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 700; color: var(--forest); border-bottom: 1px solid var(--border); padding-bottom: 7px; margin-bottom: 10px; margin-top: 18px; }
+    .menu-sec-title:first-child { margin-top: 0; }
+    .mi-row { display: flex; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--border); gap: 8px; }
+    .mi-row:last-child { border-bottom: none; }
+    .mi-info { flex: 1; }
+    .mi-name { font-size: .875rem; font-weight: 600; color: var(--dark); }
+    .mi-desc { font-size: .76rem; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+    .mi-price { font-family: 'Cormorant Garamond', serif; font-size: .98rem; font-weight: 600; color: var(--forest); flex-shrink: 0; }
+
+    /* ── EXPRESS BANNER ── */
+    .express-app { background: var(--forest); border-radius: var(--radius); padding: 16px 16px 18px; margin-bottom: 12px; }
+    .ex-badge { display: inline-block; background: var(--gold); color: var(--forest); font-size: .68rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; margin-bottom: 7px; }
+    .ex-title { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; color: var(--white); margin-bottom: 3px; }
+    .ex-detail { font-size: .75rem; color: rgba(255,255,255,.65); margin-bottom: 12px; }
+    .ex-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .ex-item { background: rgba(255,255,255,.1); border-radius: 8px; padding: 9px 11px; }
+    .ex-item-name { font-size: .76rem; font-weight: 600; color: var(--white); }
+    .ex-item-price { font-size: .82rem; color: rgba(255,255,255,.75); margin-top: 1px; }
+
+    /* ── EVENTS ── */
+    .event-card { background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 12px; }
+    .event-hdr { background: linear-gradient(135deg, var(--forest) 0%, var(--forest-light) 100%); padding: 13px 14px; display: flex; align-items: center; gap: 12px; }
+    .ev-date-box { background: var(--gold); border-radius: 8px; padding: 5px 10px; text-align: center; color: var(--forest); flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,.2); }
+    .edb-mo { font-size: .62rem; font-weight: 700; text-transform: uppercase; }
+    .edb-day { font-size: 1.45rem; font-weight: 700; line-height: 1; font-family: 'Cormorant Garamond', serif; }
+    .ev-ttl { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; color: var(--white); }
+    .ev-time { font-size: .73rem; color: rgba(255,255,255,.65); margin-top: 3px; }
+    .event-body { padding: 13px 14px; }
+    .ev-desc { font-size: .8rem; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+    .ev-fee-row { display: flex; justify-content: space-between; align-items: center; background: var(--cream); border-radius: var(--radius-sm); padding: 7px 10px; margin-bottom: 11px; }
+    .ev-fee-lbl { font-size: .72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .ev-fee-val { font-family: 'Cormorant Garamond', serif; font-size: .98rem; font-weight: 700; color: var(--forest); }
+    .ev-reg-btn { width: 100%; padding: 12px; background: var(--forest); color: var(--white); border: none; border-radius: var(--radius-sm); font-weight: 600; font-size: .84rem; cursor: pointer; letter-spacing: .02em; }
+    .ev-reg-btn.registered { background: var(--success); cursor: default; }
+    .ev-del-btn { width: 100%; padding: 12px; background: none; border: 1.5px solid var(--danger); color: var(--danger); border-radius: var(--radius-sm); font-weight: 600; font-size: .84rem; cursor: pointer; }
+
+    /* ── ACCOUNT / PROFILE ── */
+    .profile-card { background: linear-gradient(150deg, var(--forest) 0%, #2e4d35 55%, var(--forest-light) 100%); border-radius: var(--radius); padding: 28px 18px; text-align: center; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(26,43,31,.25); position: relative; overflow: hidden; }
+    .profile-card::before { content: ''; position: absolute; bottom: -30px; left: -20px; width: 130px; height: 130px; background: rgba(184,150,62,.07); border-radius: 50%; }
+    .prof-avatar { width: 72px; height: 72px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--forest); margin: 0 auto 12px; box-shadow: 0 3px 12px rgba(0,0,0,.25); border: 2px solid rgba(255,255,255,.2); }
+    .prof-name { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--white); margin-bottom: 3px; }
+    .prof-sub { font-size: .78rem; color: rgba(255,255,255,.5); margin-bottom: 11px; }
+    .hcp-badge { display: inline-block; background: var(--gold); color: var(--forest); font-weight: 700; font-size: .95rem; padding: 5px 20px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+    .logout-btn { width: 100%; padding: 14px; background: none; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: .84rem; font-weight: 600; color: var(--danger); cursor: pointer; margin-top: 6px; }
+
+    /* ── TEE SHEET ── */
+    .ts-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); }
+    .ts-row:last-child { border-bottom:none; }
+    .ts-time { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:700; color:var(--forest); width:62px; flex-shrink:0; }
+    .ts-info { flex:1; min-width:0; }
+    .ts-name { font-size:.84rem; font-weight:600; color:var(--dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ts-detail { font-size:.72rem; color:var(--muted); margin-top:1px; }
+    .ts-badge { font-size:.65rem; font-weight:700; padding:2px 7px; border-radius:10px; white-space:nowrap; flex-shrink:0; }
+    .ts-badge.in { background:rgba(22,163,74,.12); color:var(--success); border:1px solid rgba(22,163,74,.25); }
+    .ts-badge.out { background:rgba(26,43,31,.08); color:var(--forest); border:1px solid rgba(26,43,31,.15); }
+    .ts-actions { display:flex; gap:6px; flex-shrink:0; }
+    .ts-btn { background:none; border:1px solid var(--border); border-radius:5px; padding:3px 8px; font-size:.68rem; font-weight:600; cursor:pointer; color:var(--forest); }
+    .ts-btn.checkin { background:var(--forest); color:var(--white); border-color:var(--forest); }
+    .ts-empty { text-align:center; padding:18px 0; font-size:.82rem; color:var(--muted); }
+
+    /* ── DINING LOG ── */
+    .dr-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); }
+    .dr-row:last-child { border-bottom:none; }
+    .dr-time { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:700; color:#a0522d; width:62px; flex-shrink:0; }
+    .dr-info { flex:1; min-width:0; }
+    .dr-name { font-size:.84rem; font-weight:600; color:var(--dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .dr-detail { font-size:.72rem; color:var(--muted); margin-top:1px; }
+    .dr-badge.seated { background:rgba(22,163,74,.12); color:var(--success); border:1px solid rgba(22,163,74,.25); font-size:.65rem; font-weight:700; padding:2px 7px; border-radius:10px; white-space:nowrap; flex-shrink:0; }
+    .dr-badge.waiting { background:rgba(160,82,45,.1); color:#a0522d; border:1px solid rgba(160,82,45,.2); font-size:.65rem; font-weight:700; padding:2px 7px; border-radius:10px; white-space:nowrap; flex-shrink:0; }
+
+    /* ── STAFF STATS ── */
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .quick-actions { display:flex; gap:8px; overflow-x:auto; padding:2px 0 6px; margin-bottom:14px; scrollbar-width:none; }
+    .quick-actions::-webkit-scrollbar { display:none; }
+    .qa-btn { display:flex; flex-direction:column; align-items:center; gap:4px; flex-shrink:0; background:var(--white); border:1.5px solid var(--border); border-radius:12px; padding:10px 14px; cursor:pointer; font-size:.68rem; font-weight:700; color:var(--dark); min-width:62px; text-transform:uppercase; letter-spacing:.03em; }
+    .qa-btn .qa-icon { font-size:1.3rem; }
+    .stat-card { background: var(--white); border-radius: var(--radius); padding: 16px 14px; box-shadow: var(--shadow); }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.1rem; font-weight: 700; color: var(--forest); line-height: 1; }
+    .stat-label { font-size: .72rem; color: var(--muted); margin-top: 3px; font-weight: 500; }
+
+
+    /* ── STAFF MENU EDITOR ── */
+    .smi { display: flex; align-items: center; gap: 9px; background: var(--white); border-radius: var(--radius-sm); padding: 11px 13px; margin-bottom: 7px; }
+    .smi-info { flex: 1; }
+    .smi-name { font-size: .84rem; font-weight: 600; color: var(--dark); }
+    .smi-price { font-size: .76rem; color: var(--muted); }
+    .smi-edit { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 5px 11px; font-size: .72rem; font-weight: 600; cursor: pointer; color: var(--forest); }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; bottom: calc(var(--tab-h) + var(--safe-b) + 20px); left: 50%; transform: translateX(-50%) translateY(16px); background: var(--dark); color: var(--white); padding: 11px 22px; border-radius: 30px; font-size: .84rem; font-weight: 500; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; white-space: nowrap; z-index: 999; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── MODAL SHEET ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-end; opacity: 0; transition: opacity .22s; pointer-events: none; z-index: 200; }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-sheet { width: 100%; background: var(--white); border-radius: var(--radius) var(--radius) 0 0; padding: 22px 18px calc(22px + var(--safe-b)); transform: translateY(100%); transition: transform .28s cubic-bezier(.4,0,.2,1); }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    .modal-handle { width: 38px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 18px; }
+    .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 700; margin-bottom: 14px; }
+    .modal-sub { font-size: .82rem; color: var(--muted); margin-top: -10px; margin-bottom: 14px; }
+    .modal-input { width: 100%; padding: 12px 13px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: .9rem; font-family: 'Inter', sans-serif; outline: none; margin-bottom: 10px; background: var(--cream); -webkit-appearance: none; appearance: none; }
+    .modal-input:focus { border-color: var(--forest); }
+    select.modal-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1 1l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; padding-right: 36px; cursor: pointer; }
+    .modal-row { display: flex; gap: 9px; margin-top: 4px; }
+    .modal-btn { flex: 1; padding: 13px; border-radius: var(--radius-sm); font-size: .88rem; font-weight: 600; cursor: pointer; border: none; }
+    .modal-btn.primary { background: var(--forest); color: var(--white); }
+    .modal-btn.secondary { background: var(--sand); color: var(--dark); }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════ -->
+<div class="screen" id="screen-login">
+  <div class="login-logo">W</div>
+  <div class="login-title">Westwood Hills CC</div>
+  <div class="login-sub">Member &amp; Staff Portal</div>
+  <div class="login-card">
+    <label class="login-label" for="li-email">Email Address</label>
+    <input class="login-input" id="li-email" type="email" placeholder="you@example.com" autocomplete="email">
+    <label class="login-label" for="li-pin">PIN</label>
+    <input class="login-input" id="li-pin" type="password" placeholder="4-digit PIN" maxlength="4" pattern="[0-9]*" inputmode="numeric">
+    <div class="login-error" id="li-error"></div>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-bottom:12px;cursor:pointer;" onclick="showToast('Contact the Pro Shop at (573) 785-5253 to reset your PIN.')">Forgot your PIN?</p>
+    <div class="login-divider">quick demo access</div>
+    <div class="demo-btns">
+      <button class="demo-btn" onclick="demoLogin('member')">👤 Member Demo</button>
+      <button class="demo-btn" onclick="demoLogin('staff')">🏌️ Staff Demo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     MEMBER APP
+════════════════════════════════════ -->
+<div class="screen app-screen hidden" id="screen-member">
+  <div class="app-header">
+    <div class="hdr-logo">W</div>
+    <div class="hdr-title">Westwood Hills CC</div>
+    <div class="hdr-user" id="m-hdr-user">Member</div>
+  </div>
+
+  <!-- HOME -->
+  <div class="tab-content active" id="m-tab-home">
+    <div class="page">
+      <div class="greeting-banner">
+        <div class="greeting-name" id="m-greet-name">Welcome back!</div>
+        <div class="greeting-detail" id="m-greet-detail">Westwood Hills Country Club</div>
+        <div class="greeting-badge" id="m-greet-badge">Member</div>
+      </div>
+      <!-- WEATHER + CONDITIONS WIDGET -->
+      <div class="wx-card" id="wx-widget">
+        <div class="wx-top">
+          <div class="wx-main">
+            <div class="wx-icon" id="wx-icon">⛅</div>
+            <div>
+              <div class="wx-temp" id="wx-temp"><span class="wx-loading">Loading…</span></div>
+              <div class="wx-desc" id="wx-desc"></div>
+            </div>
+          </div>
+          <div id="wx-verdict"></div>
+        </div>
+        <div class="wx-stats">
+          <div class="wx-stat"><div class="wx-stat-lbl">🌧 Rain (3 hr)</div><div class="wx-stat-val" id="wx-rain">—</div></div>
+          <div class="wx-stat"><div class="wx-stat-lbl">💨 Wind</div><div class="wx-stat-val" id="wx-wind">—</div></div>
+          <div class="wx-stat"><div class="wx-stat-lbl">🌡 Feels Like</div><div class="wx-stat-val" id="wx-feels">—</div></div>
+        </div>
+        <hr class="wx-divider">
+        <div class="wx-cond-box">
+          <div class="wx-cond-hdr">Course Conditions</div>
+          <div id="wx-conditions"><span class="wx-loading">Loading conditions…</span></div>
+        </div>
+      </div>
+
+      <div class="quick-grid">
+        <button class="quick-action" onclick="goTab('member','course')"><div class="qa-icon">⛳</div><div class="qa-label">View Scorecard</div></button>
+        <button class="quick-action" onclick="openDiningRes()"><div class="qa-icon">🍽</div><div class="qa-label">Dining Reservation</div></button>
+        <button class="quick-action" onclick="goTab('member','events')"><div class="qa-icon">📅</div><div class="qa-label">Club Events</div></button>
+        <button class="quick-action" onclick="window.location.href='tel:+15737855253'"><div class="qa-icon">📞</div><div class="qa-label">Call Pro Shop</div></button>
+      </div>
+      <!-- AMENITIES STATUS -->
+      <div id="m-pool-chip" style="display:none;background:var(--white);border-radius:var(--radius);padding:11px 14px;box-shadow:var(--shadow);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+        <span class="pool-chip-status" style="font-size:.82rem;font-weight:700;"></span>
+        <span class="pool-chip-note" style="font-size:.74rem;color:var(--muted);display:none;"></span>
+      </div>
+      <!-- MY UPCOMING -->
+      <div class="card" id="m-upcoming-card" style="display:none;margin-bottom:14px;">
+        <div class="card-title" style="margin-bottom:10px;">📌 My Upcoming</div>
+        <div id="m-upcoming-list"></div>
+      </div>
+
+      <!-- FIND A GAME -->
+      <div class="sec-hdr"><h3>🤝 Find a Game</h3><a onclick="openModal('modal-partner-post')">+ Post</a></div>
+      <div id="m-partner-list" style="margin-bottom:8px;"></div>
+
+      <div class="sec-hdr"><h3>Upcoming Events</h3><a onclick="goTab('member','events')">All events →</a></div>
+      <div id="m-home-events"></div>
+    </div>
+  </div>
+
+  <!-- COURSE / SCORECARD -->
+  <div class="tab-content" id="m-tab-course">
+    <div class="page">
+      <div class="page-title">Scorecard</div>
+      <div class="page-sub">Westwood Hills CC — Par 71 · Est. 1936</div>
+      <!-- HOLE ALERTS -->
+      <div id="m-hole-alerts" style="display:none;background:var(--white);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:12px;"></div>
+      <div class="card" style="margin-bottom:12px;background:linear-gradient(140deg,var(--forest) 0%,#2e4d35 60%,var(--forest-light) 100%);color:var(--white);">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:var(--gold-light);margin-bottom:6px;">Westwood Hills CC</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.75);line-height:1.55;">Founded in 1936, Westwood Hills Country Club is Poplar Bluff's premier private golf experience. Our Par 71 layout winds through rolling terrain with strategic bunkering and scenic views — challenging for scratch players while welcoming to all skill levels.</div>
+        <div style="display:flex;gap:16px;margin-top:12px;">
+          <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--gold-light);">Par 71</div><div style="font-size:.65rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.05em;">Course Par</div></div>
+          <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--gold-light);">18</div><div style="font-size:.65rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.05em;">Holes</div></div>
+          <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--gold-light);">1936</div><div style="font-size:.65rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.05em;">Established</div></div>
+          <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--gold-light);">4</div><div style="font-size:.65rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.05em;">Tee Options</div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:4px;">
+        <div class="card-title" style="margin-bottom:10px;">Tee Information</div>
+        <div class="info-row"><div class="ir-label" style="font-weight:700;">⚫ Black</div><div class="ir-val">6,279 yds · 69.6 / 122</div></div>
+        <div class="info-row"><div class="ir-label" style="color:#2378c3;font-weight:700;">🔵 Blue</div><div class="ir-val">5,868 yds · 68.2 / 119</div></div>
+        <div class="info-row"><div class="ir-label" style="color:#777;font-weight:700;">⚪ White</div><div class="ir-val">5,450 yds · 68.7 / 117</div></div>
+        <div class="info-row" style="border:none;"><div class="ir-label" style="color:#c33232;font-weight:700;">🔴 Red</div><div class="ir-val">4,735 yds · 67.3 / 116</div></div>
+      </div>
+      <div class="sc-sec-hdr" style="margin-top:14px;">Front Nine</div>
+      <div style="overflow-x:auto;">
+        <table class="sc-table">
+          <thead><tr>
+            <th class="sc-th">HOLE</th><th class="sc-th">PAR</th><th class="sc-th">HCP</th>
+            <th class="sc-th sc-blk">BLK</th><th class="sc-th sc-blu">BLU</th><th class="sc-th sc-wht">WHT</th><th class="sc-th sc-red">RED</th>
+          </tr></thead>
+          <tbody>
+            <tr><td class="sc-td sc-hole">1</td><td class="sc-td">4</td><td class="sc-td">10</td><td class="sc-td">350</td><td class="sc-td">321</td><td class="sc-td">300</td><td class="sc-td">259</td></tr>
+            <tr class="sc-alt"><td class="sc-td sc-hole">2</td><td class="sc-td">5</td><td class="sc-td">4</td><td class="sc-td">485</td><td class="sc-td">470</td><td class="sc-td">450</td><td class="sc-td">410</td></tr>
+            <tr><td class="sc-td sc-hole">3</td><td class="sc-td">3</td><td class="sc-td">18</td><td class="sc-td">175</td><td class="sc-td">160</td><td class="sc-td">142</td><td class="sc-td">125</td></tr>
+            <tr class="sc-alt"><td class="sc-td sc-hole">4</td><td class="sc-td">4</td><td class="sc-td">8</td><td class="sc-td">404</td><td class="sc-td">364</td><td class="sc-td">309</td><td class="sc-td">290</td></tr>
+            <tr><td class="sc-td sc-hole">5</td><td class="sc-td">4</td><td class="sc-td">6</td><td class="sc-td">403</td><td class="sc-td">385</td><td class="sc-td">370</td><td class="sc-td">296</td></tr>
+            <tr class="sc-alt"><td class="sc-td sc-hole">6</td><td class="sc-td">4</td><td class="sc-td">14</td><td class="sc-td">320</td><td class="sc-td">303</td><td class="sc-td">282</td><td class="sc-td">273</td></tr>
+            <tr><td class="sc-td sc-hole">7</td><td class="sc-td">4</td><td class="sc-td">12</td><td class="sc-td">356</td><td class="sc-td">308</td><td class="sc-td">288</td><td class="sc-td">268</td></tr>
+            <tr class="sc-alt"><td class="sc-td sc-hole">8</td><td class="sc-td">3</td><td class="sc-td">16</td><td class="sc-td">214</td><td class="sc-td">192</td><td class="sc-td">174</td><td class="sc-td">130</td></tr>
+            <tr><td class="sc-td sc-hole">9</td><td class="sc-td">5</td><td class="sc-td">2</td><td class="sc-td">531</td><td class="sc-td">493</td><td class="sc-td">424</td><td class="sc-td">400</td></tr>
+            <tr class="sc-total"><td class="sc-td sc-hole">OUT</td><td class="sc-td">36</td><td class="sc-td">—</td><td class="sc-td">3,238</td><td class="sc-td">2,996</td><td class="sc-td">2,739</td><td class="sc-td">2,451</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sc-sec-hdr">Back Nine</div>
+      <div style="overflow-x:auto;">
+        <table class="sc-table">
+          <thead><tr>
+            <th class="sc-th">HOLE</th><th class="sc-th">PAR</th><th class="sc-th">HCP</th>
+            <th class="sc-th sc-blk">BLK</th><th class="sc-th sc-blu">BLU</th><th class="sc-th sc-wht">WHT</th><th class="sc-th sc-red">RED</th>
+          </tr></thead>
+          <tbody>
+            <tr><td class="sc-td sc-hole">10</td><td class="sc-td">3</td><td class="sc-td">13</td><td class="sc-td">194</td><td class="sc-td">187</td><td class="sc-td">181</td><td class="sc-td">160</td></tr>
+            <tr class="sc-alt"><td class="sc-td sc-hole">11</td><td class="sc-td">4</td><td class="sc-td">3</td><td class="sc-td">404</td><td class="sc-td">360</td><td class="sc-td">333</td><td class="sc-td">263</td></tr>
+            <tr><td class="sc-td sc-hole">12</td><td class="sc-td">3</td><td class="sc-td">17</td><td class="sc-td">147</td><td class="sc-td">131</td><td class="sc-td">130</td><td class="sc-td">91</td></tr>
+            <tr class="sc-alt"><td class="sc-td sc-hole">13</td><td class="sc-td">4</td><td class="sc-td">9</td><td class="sc-td">387</td><td class="sc-td">363</td><td class="sc-td">341</td><td class="sc-td">281</td></tr>
+            <tr><td class="sc-td sc-hole">14</td><td class="sc-td">5</td><td class="sc-td">1</td><td class="sc-td">526</td><td class="sc-td">485</td><td class="sc-td">474</td><td class="sc-td">374</td></tr>
+            <tr class="sc-alt"><td class="sc-td sc-hole">15</td><td class="sc-td">4</td><td class="sc-td">7</td><td class="sc-td">387</td><td class="sc-td">376</td><td class="sc-td">330</td><td class="sc-td">275</td></tr>
+            <tr><td class="sc-td sc-hole">16</td><td class="sc-td">3</td><td class="sc-td">15</td><td class="sc-td">166</td><td class="sc-td">158</td><td class="sc-td">158</td><td class="sc-td">142</td></tr>
+            <tr class="sc-alt"><td class="sc-td sc-hole">17</td><td class="sc-td">4</td><td class="sc-td">11</td><td class="sc-td">340</td><td class="sc-td">330</td><td class="sc-td">311</td><td class="sc-td">281</td></tr>
+            <tr><td class="sc-td sc-hole">18</td><td class="sc-td">5</td><td class="sc-td">5</td><td class="sc-td">490</td><td class="sc-td">482</td><td class="sc-td">453</td><td class="sc-td">417</td></tr>
+            <tr class="sc-total"><td class="sc-td sc-hole">IN</td><td class="sc-td">35</td><td class="sc-td">—</td><td class="sc-td">3,041</td><td class="sc-td">2,872</td><td class="sc-td">2,711</td><td class="sc-td">2,284</td></tr>
+            <tr class="sc-grand"><td class="sc-td sc-hole">TOT</td><td class="sc-td">71</td><td class="sc-td">—</td><td class="sc-td">6,279</td><td class="sc-td">5,868</td><td class="sc-td">5,450</td><td class="sc-td">4,735</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-body" style="font-size:.74rem;line-height:1.9;color:var(--muted);">
+          USGA Rules Govern All Play &nbsp;·&nbsp; Soft Spikes Only &nbsp;·&nbsp; Repair Ball Marks &nbsp;·&nbsp; Replace Divots &nbsp;·&nbsp; Rake Bunkers &nbsp;·&nbsp; Maintain Pace of Play
+        </div>
+      </div>
+
+      <!-- PIN SHEET -->
+      <div style="margin-top:14px;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);">
+        <div style="background:var(--forest);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:var(--white);">📋 Today's Pin Sheet</div>
+          <div style="font-size:.7rem;color:rgba(255,255,255,.55);" id="pin-sheet-date"></div>
+        </div>
+        <img id="pin-sheet-img" src="../images/pinsheet.jpg" alt="Today's Pin Sheet" style="width:100%;display:block;">
+      </div>
+
+      <!-- KEEP SCORE -->
+      <div class="card" id="score-start-card" style="margin-top:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <div>
+            <div class="card-title">⛳ Keep Score</div>
+            <div class="card-body" style="margin:3px 0 0;">Track your round hole by hole</div>
+          </div>
+          <button onclick="startScoring()" class="ev-reg-btn" style="margin:0;white-space:nowrap;flex-shrink:0;">Start Round</button>
+        </div>
+      </div>
+      <div id="score-entry-section" style="display:none;margin-bottom:20px;"></div>
+    </div>
+  </div>
+
+  <!-- DINING / MENU -->
+  <div class="tab-content" id="m-tab-dining">
+    <div class="page">
+      <div class="page-title">Dining</div>
+      <div class="page-sub">Westwood Grill — dine-in or order to-go</div>
+      <div class="card" style="display:flex;align-items:center;gap:13px;margin-bottom:12px;">
+        <div style="font-size:1.7rem;">🕐</div>
+        <div>
+          <div class="card-title">Grill Hours</div>
+          <div class="card-body">Tue – Sun: 11:00 AM – 8:00 PM · Closed Mon<br>Express Lunch: Tue – Fri, 11:30 AM – 1:00 PM</div>
+        </div>
+      </div>
+      <div class="express-app">
+        <div class="ex-badge">⚡ 15 Minute Guarantee</div>
+        <div class="ex-title">Express Lunch</div>
+        <div class="ex-detail">Tue – Fri &nbsp;·&nbsp; 11:30 AM – 1:00 PM</div>
+        <div class="ex-grid" id="m-express-items"></div>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:13px;">
+        <div style="font-size:1.7rem;">📞</div>
+        <div>
+          <div class="card-title">Order To-Go</div>
+          <div class="card-body">Call <strong>(573) 785-5253</strong> — our full menu is available for take-out any time.</div>
+        </div>
+      </div>
+      <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Request a Dining Reservation</button>
+      <div id="app-menu-content"></div>
+    </div>
+  </div>
+
+  <!-- EVENTS -->
+  <div class="tab-content" id="m-tab-events">
+    <div class="page">
+      <div class="page-title">Events</div>
+      <div class="page-sub">Upcoming club events &amp; tournaments</div>
+      <div id="m-events-list"></div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT -->
+  <div class="tab-content" id="m-tab-account">
+    <div class="page">
+      <div class="profile-card">
+        <div class="prof-avatar" id="m-avatar">JD</div>
+        <div class="prof-name" id="m-prof-name">Member</div>
+        <div class="prof-sub" id="m-prof-type">Full Membership</div>
+        <div class="hcp-badge" onclick="openModal('modal-hcp')" style="cursor:pointer;">Handicap: <span id="m-hcp">—</span> ⓘ</div>
+      </div>
+      <div class="card">
+        <div class="info-row"><div class="ir-label">Member #</div><div class="ir-val" id="m-membernum">—</div></div>
+        <div class="info-row"><div class="ir-label">Member Since</div><div class="ir-val" id="m-since">—</div></div>
+        <div class="info-row"><div class="ir-label">Email</div><div class="ir-val" id="m-email">—</div></div>
+        <div class="info-row"><div class="ir-label">Membership</div><div class="ir-val" id="m-memtype">—</div></div>
+        <div class="info-row" style="border-bottom:none;">
+          <div class="ir-label">Rounds This Year</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="ir-val" id="m-rounds">0</span>
+            <button onclick="logRound()" style="background:var(--forest);color:var(--white);border:none;border-radius:6px;padding:4px 10px;font-size:.72rem;font-weight:600;cursor:pointer;">+ Log Round</button>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="round-log-section" style="display:none;">
+        <div class="card-title" style="margin-bottom:10px;">Round History</div>
+        <div id="round-log-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px;">Contact the Club</div>
+        <div class="card-body" style="margin-bottom:10px;">📞 (573) 785-5253<br>📍 1 Birdie Ln, Poplar Bluff, MO</div>
+        <div class="info-row" style="border:none;padding:6px 0 0"><div class="ir-label">Pro Shop</div><div class="ir-val">Tue – Sun, 8 AM – 6 PM · Closed Mon</div></div>
+      </div>
+      <a href="https://westwoodhillscountryclub.com/pay" target="_blank" style="display:block;width:100%;padding:14px;background:var(--forest);color:var(--white);border-radius:var(--radius-sm);font-size:.84rem;font-weight:600;text-align:center;text-decoration:none;box-sizing:border-box;margin-bottom:8px;">💳 Pay My Bill</a>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="m-btn-home" onclick="goTab('member','home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21V12h6v9"/></svg>
+      <span>Home</span><div class="tab-dot"></div>
+    </button>
+    <button class="tab-btn" id="m-btn-course" onclick="goTab('member','course')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="20" r="1.5"/><line x1="12" y1="2" x2="12" y2="18.5"/><path d="M12 5l7 3.5-7 3.5"/></svg>
+      <span>Course</span><div class="tab-dot"></div>
+    </button>
+    <button class="tab-btn" id="m-btn-dining" onclick="goTab('member','dining')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      <span>Dining</span><div class="tab-dot"></div>
+    </button>
+    <button class="tab-btn" id="m-btn-events" onclick="goTab('member','events')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Events</span><div class="tab-dot"></div>
+    </button>
+    <button class="tab-btn" id="m-btn-account" onclick="goTab('member','account')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Account</span><div class="tab-dot"></div>
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     STAFF APP
+════════════════════════════════════ -->
+<div class="screen app-screen hidden" id="screen-staff">
+  <div class="app-header">
+    <div class="hdr-logo">W</div>
+    <div class="hdr-title">WHCC Staff</div>
+    <div class="hdr-user" id="s-hdr-user">Staff</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="tab-content active" id="s-tab-dash">
+    <div class="page">
+      <div class="greeting-banner" style="background:linear-gradient(140deg,var(--forest) 0%,#2e4d35 60%,var(--forest-light) 100%);">
+        <div class="greeting-name" id="s-greet-name">Good morning!</div>
+        <div class="greeting-detail" id="s-greet-detail">Today</div>
+        <div class="greeting-badge" style="background:rgba(255,255,255,.18);color:#fff;">Staff Portal</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-num" id="s-stat-rounds">—</div><div class="stat-label">On the Course</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-stat-res">—</div><div class="stat-label">Dining Reservations</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-stat-members">—</div><div class="stat-label">Members on Roster</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-stat-ev">—</div><div class="stat-label">Events This Week</div></div>
+      </div>
+      <!-- QUICK ACTIONS -->
+      <div class="quick-actions">
+        <button class="qa-btn" onclick="openModal('modal-add-tee')"><span class="qa-icon">⛳</span>Check In</button>
+        <button class="qa-btn" onclick="openModal('modal-add-res')"><span class="qa-icon">🍽</span>Dining</button>
+        <button class="qa-btn" onclick="(function(){var el=document.getElementById('notice-input');el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});})()"><span class="qa-icon">📣</span>Notice</button>
+        <button class="qa-btn" onclick="openModal('modal-add-incident')"><span class="qa-icon">🔧</span>Incident</button>
+        <button class="qa-btn" onclick="openModal('modal-add-lf')"><span class="qa-icon">🎒</span>Lost &amp; Found</button>
+      </div>
+      <!-- ON THE COURSE -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="card-title" style="margin:0;">⛳ On the Course</div>
+          <button class="ts-btn checkin" onclick="openModal('modal-add-tee')">+ Check In</button>
+        </div>
+        <div id="s-tee-list"><div class="ts-empty">No one checked in yet</div></div>
+        <div id="s-tee-count" style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:right;"></div>
+      </div>
+
+      <!-- DINING RESERVATIONS -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="card-title" style="margin:0;">🍽 Dining Reservations</div>
+          <button class="ts-btn checkin" onclick="openModal('modal-add-res')">+ Add</button>
+        </div>
+        <div id="s-dining-list"><div class="ts-empty">No reservations yet</div></div>
+        <div id="s-dining-count" style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:right;"></div>
+      </div>
+
+      <!-- COURSE CONDITIONS -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-title" style="margin-bottom:12px;">🌤 Course Conditions</div>
+        <div class="cond-field">
+          <label class="cond-label" for="cond-opens">Course Opens</label>
+          <input class="cond-input" id="cond-opens" type="text" placeholder="e.g. 9:00 AM">
+        </div>
+        <div class="cond-field">
+          <label class="cond-label" for="cond-carts">Cart Rules</label>
+          <select class="cond-select" id="cond-carts">
+            <option>Off Path — Anywhere on Course</option>
+            <option>Cart Path Only</option>
+            <option>Fairways Closed — Path Only</option>
+            <option>No Carts Today</option>
+          </select>
+        </div>
+        <div class="cond-field">
+          <label class="cond-label" for="cond-range">Driving Range</label>
+          <select class="cond-select" id="cond-range">
+            <option>Open</option>
+            <option>Open — Mats Only</option>
+            <option>Closed</option>
+          </select>
+        </div>
+        <div class="cond-field" style="margin-bottom:14px;">
+          <label class="cond-label" for="cond-notice">Notice / Alert <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <textarea class="cond-textarea" id="cond-notice" placeholder="e.g. Frost delay in effect…"></textarea>
+        </div>
+        <button class="ev-reg-btn" style="width:100%;margin:0;" onclick="saveConditions()">Save Conditions</button>
+      </div>
+
+      <!-- PIN SHEET UPLOAD -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="card-title" style="margin:0;">📋 Pin Sheet</div>
+          <div style="display:flex;gap:6px;">
+            <button class="ts-btn" id="ps-clear-btn" onclick="clearPinSheet()" style="display:none;">Reset</button>
+            <label class="ts-btn checkin" style="cursor:pointer;margin:0;">
+              📷 Upload
+              <input type="file" accept="image/*" capture="environment" onchange="uploadPinSheet(this)" style="display:none;">
+            </label>
+          </div>
+        </div>
+        <div id="ps-status" style="font-size:.75rem;color:var(--muted);margin-bottom:8px;"></div>
+        <img id="ps-preview" style="width:100%;border-radius:var(--radius-sm);display:none;" alt="Pin Sheet Preview">
+      </div>
+
+      <!-- MEMBER LOOKUP -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-title" style="margin:0 0 10px;">🔍 Member Lookup</div>
+        <input id="member-search" class="cond-input" type="search" placeholder="Search by name…" oninput="memberSearch(this.value)" style="margin-bottom:8px;">
+        <div id="member-results"></div>
+      </div>
+
+      <!-- STAFF MESSAGE BOARD -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="card-title" style="margin:0;">📝 Staff Message Board</div>
+        </div>
+        <div id="s-msg-list" style="margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+          <textarea id="s-msg-input" class="cond-textarea" placeholder="Leave a note for the team…" style="flex:1;min-height:60px;resize:none;margin:0;"></textarea>
+          <button class="ts-btn checkin" onclick="postStaffMessage()" style="white-space:nowrap;align-self:flex-end;">Post</button>
+        </div>
+      </div>
+
+      <!-- PUSH A NOTICE -->
+      <div class="card" style="margin-bottom:12px;border-left:3px solid #e67e22;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="card-title" style="margin:0;">📣 Push a Notice to Members</div>
+          <button class="ts-btn" id="notice-clear-btn" onclick="clearMemberNotice()" style="display:none;font-size:.65rem;">Clear</button>
+        </div>
+        <div id="notice-active" style="display:none;margin-bottom:10px;padding:9px 12px;background:#fff8f0;border-radius:var(--radius-sm);border:1px solid #f0c080;font-size:.8rem;color:#7a4500;"></div>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+          <input id="notice-input" class="cond-input" type="text" placeholder="e.g. Frost delay — tee times pushed 1 hour" style="flex:1;margin:0;">
+          <button class="ts-btn checkin" onclick="pushMemberNotice()" style="white-space:nowrap;align-self:flex-end;">Push</button>
+        </div>
+      </div>
+
+      <!-- LOST & FOUND -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="card-title" style="margin:0;">🎒 Lost &amp; Found</div>
+          <button class="ts-btn checkin" onclick="openModal('modal-add-lf')">+ Add</button>
+        </div>
+        <div id="s-lf-list"><div class="ts-empty">No items logged — tap + Add to log a found item.</div></div>
+      </div>
+
+      <!-- INCIDENT / MAINTENANCE LOG -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="card-title" style="margin:0;">🔧 Incident Log</div>
+          <button class="ts-btn checkin" onclick="openModal('modal-add-incident')">+ Log</button>
+        </div>
+        <div id="s-incident-list"><div class="ts-empty">No incidents logged — tap + Log to report an issue.</div></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0 4px;">
+        <div style="font-size:.78rem;color:var(--muted);" id="s-acct-info"></div>
+        <button class="logout-btn" onclick="doLogout()" style="padding:8px 20px;font-size:.8rem;">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POOL -->
+  <div class="tab-content" id="s-tab-pool">
+    <div class="page">
+      <div class="page-title">Pool</div>
+      <div class="page-sub">Aquatics &amp; Pool Operations</div>
+
+      <!-- POOL STATUS -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="card-title" style="margin:0;">🏊 Pool Status</div>
+          <div id="pool-status-badge" style="font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:20px;background:#dcfce7;color:#166534;">Open</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <button class="ts-btn checkin" onclick="setPoolStatus(true)" id="pool-open-btn">Open</button>
+          <button class="ts-btn" onclick="setPoolStatus(false)" id="pool-close-btn" style="background:rgba(220,38,38,.1);color:#991b1b;border-color:rgba(220,38,38,.2);">Close</button>
+        </div>
+        <input class="cond-input" id="pool-reason" type="text" placeholder="Reason if closing (e.g. Chemical treatment)" style="margin-bottom:0;">
+      </div>
+
+      <!-- BATHER COUNT -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-title" style="margin-bottom:10px;">👥 Current Bathers</div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <button onclick="adjustBathers(-1)" style="width:40px;height:40px;border-radius:50%;border:1.5px solid var(--border);background:var(--cream);font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+          <div style="text-align:center;flex:1;">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:700;color:var(--forest);line-height:1;" id="bather-count">0</div>
+            <div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">in pool area</div>
+          </div>
+          <button onclick="adjustBathers(1)" style="width:40px;height:40px;border-radius:50%;border:1.5px solid var(--border);background:var(--cream);font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+        </div>
+      </div>
+
+      <!-- POOL NOTICE -->
+      <div class="card" style="margin-bottom:12px;border-left:3px solid #3b82f6;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="card-title" style="margin:0;">📣 Pool Notice</div>
+          <button class="ts-btn" id="pool-notice-clear-btn" onclick="clearPoolNotice()" style="display:none;font-size:.65rem;">Clear</button>
+        </div>
+        <div id="pool-notice-active" style="display:none;margin-bottom:10px;padding:9px 12px;background:#eff6ff;border-radius:var(--radius-sm);border:1px solid #bfdbfe;font-size:.8rem;color:#1e40af;"></div>
+        <div style="display:flex;gap:8px;">
+          <input id="pool-notice-input" class="cond-input" type="text" placeholder="e.g. Adult swim 3–3:15 PM" style="flex:1;margin:0;">
+          <button class="ts-btn checkin" onclick="pushPoolNotice()" style="white-space:nowrap;">Push</button>
+        </div>
+      </div>
+
+      <!-- GUEST LOG -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="card-title" style="margin:0;">🪪 Guest Log</div>
+          <button class="ts-btn checkin" onclick="openModal('modal-add-pool-guest')">+ Add</button>
+        </div>
+        <div id="pool-guest-list"><div class="ts-empty">No guests logged today</div></div>
+      </div>
+
+      <!-- CHEMICAL LOG -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="card-title" style="margin:0;">🧪 Chemical Log</div>
+          <button class="ts-btn checkin" onclick="openModal('modal-add-chem')">+ Reading</button>
+        </div>
+        <div id="pool-chem-list"><div class="ts-empty">No readings today — tap + Reading to log</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROUNDS -->
+  <div class="tab-content" id="s-tab-grounds">
+    <div class="page">
+      <div class="page-title">Grounds</div>
+      <div class="page-sub">Course &amp; Maintenance Operations</div>
+
+      <!-- HOLE STATUS BOARD -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-title" style="margin-bottom:4px;">⛳ Hole Status Board</div>
+        <div style="font-size:.74rem;color:var(--muted);margin-bottom:12px;">Tap a hole to cycle status. Members see alerts on the Course tab.</div>
+        <div id="hole-status-board" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
+      </div>
+
+      <!-- WORK ORDERS -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="card-title" style="margin:0;">📋 Work Orders</div>
+          <button class="ts-btn checkin" onclick="openModal('modal-add-wo')">+ Add</button>
+        </div>
+        <div id="wo-list"><div class="ts-empty">No open work orders</div></div>
+      </div>
+
+      <!-- SPRAY LOG -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="card-title" style="margin:0;">🌿 Spray / Chemical Log</div>
+          <button class="ts-btn checkin" onclick="openModal('modal-add-spray')">+ Log</button>
+        </div>
+        <div id="spray-list"><div class="ts-empty">No applications logged</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU MANAGER -->
+  <div class="tab-content" id="s-tab-menus">
+    <div class="page">
+      <div class="page-title">Menu Manager</div>
+      <div class="page-sub">Tap any item to edit name, description, or price</div>
+      <!-- 86 LIST -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="card-title" style="margin:0;">🚫 86'd Today</div>
+          <button class="ts-btn checkin" onclick="open86Modal()">+ Mark 86</button>
+        </div>
+        <div id="s-86-list"><div class="ts-empty" style="font-size:.78rem;">No items 86'd — members see full menu</div></div>
+      </div>
+      <div id="s-menu-sections"></div>
+    </div>
+  </div>
+
+  <!-- EVENTS MANAGER -->
+  <div class="tab-content" id="s-tab-events">
+    <div class="page">
+      <div class="page-title">Events</div>
+      <div class="page-sub">Manage upcoming club events</div>
+      <button class="ev-reg-btn" style="margin-bottom:14px;" onclick="openAddEvent()">+ Add New Event</button>
+      <div id="s-events-list"></div>
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="s-btn-dash" onclick="goTab('staff','dash')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      <span>Dashboard</span><div class="tab-dot"></div>
+    </button>
+    <button class="tab-btn" id="s-btn-menus" onclick="goTab('staff','menus')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>Menus</span><div class="tab-dot"></div>
+    </button>
+    <button class="tab-btn" id="s-btn-events" onclick="goTab('staff','events')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Events</span><div class="tab-dot"></div>
+    </button>
+    <button class="tab-btn" id="s-btn-pool" onclick="goTab('staff','pool')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20M2 12c2-4 4-6 6-6s4 4 6 4 4-4 6-4M2 18c2-4 4-6 6-6s4 4 6 4 4-4 6-4"/></svg>
+      <span>Pool</span><div class="tab-dot"></div>
+    </button>
+    <button class="tab-btn" id="s-btn-grounds" onclick="goTab('staff','grounds')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 1 9 9c0 5-9 13-9 13S3 16 3 11a9 9 0 0 1 9-9z"/><circle cx="12" cy="11" r="3"/></svg>
+      <span>Grounds</span><div class="tab-dot"></div>
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     MODALS
+════════════════════════════════════ -->
+<!-- Pool Guest Log -->
+<div class="modal-overlay" id="modal-add-pool-guest" onclick="if(event.target===this)closeModal('modal-add-pool-guest')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Log Pool Guest</div>
+    <div class="modal-field">
+      <label class="modal-label">Member Name</label>
+      <input class="cond-input" id="pg-member" type="text" placeholder="e.g. Jamie Wilson">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Number of Guests</label>
+      <select class="cond-select" id="pg-count">
+        <option value="1">1 Guest</option>
+        <option value="2">2 Guests</option>
+        <option value="3">3 Guests</option>
+        <option value="4">4 Guests</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('modal-add-pool-guest')">Cancel</button>
+      <button class="modal-btn primary" onclick="addPoolGuest()">Log</button>
+    </div>
+  </div>
+</div>
+
+<!-- 86 Item Modal -->
+<div class="modal-overlay" id="modal-86-item" onclick="if(event.target===this)closeModal('modal-86-item')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Mark Item 86'd</div>
+    <div class="modal-field">
+      <label class="modal-label">Menu Section</label>
+      <select class="cond-select" id="86-section" onchange="render86SectionItems()" style="margin-bottom:10px;"></select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Item</label>
+      <select class="cond-select" id="86-item"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('modal-86-item')">Cancel</button>
+      <button class="modal-btn primary" onclick="add86Item()">Mark 86'd</button>
+    </div>
+  </div>
+</div>
+
+<!-- Chemical Reading -->
+<div class="modal-overlay" id="modal-add-chem" onclick="if(event.target===this)closeModal('modal-add-chem')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Log Chemical Reading</div>
+    <div class="modal-field">
+      <label class="modal-label">pH Level</label>
+      <input class="cond-input" id="chem-ph" type="number" step="0.1" min="6" max="9" placeholder="7.4">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Free Chlorine (ppm)</label>
+      <input class="cond-input" id="chem-cl" type="number" step="0.1" min="0" max="10" placeholder="2.0">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Notes <span style="font-weight:400;text-transform:none;">(optional)</span></label>
+      <input class="cond-input" id="chem-note" type="text" placeholder="e.g. Added 2 lbs shock">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('modal-add-chem')">Cancel</button>
+      <button class="modal-btn primary" onclick="addChemReading()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Work Order -->
+<div class="modal-overlay" id="modal-add-wo" onclick="if(event.target===this)closeModal('modal-add-wo')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">New Work Order</div>
+    <div class="modal-field">
+      <label class="modal-label">Task</label>
+      <input class="cond-input" id="wo-task" type="text" placeholder="e.g. Repair irrigation head Hole 12">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Priority</label>
+      <select class="cond-select" id="wo-priority">
+        <option value="low">Low</option>
+        <option value="medium" selected>Medium</option>
+        <option value="urgent">Urgent</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Assigned To <span style="font-weight:400;text-transform:none;">(optional)</span></label>
+      <input class="cond-input" id="wo-assign" type="text" placeholder="e.g. Dale, Full crew">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('modal-add-wo')">Cancel</button>
+      <button class="modal-btn primary" onclick="addWorkOrder()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- Spray / Chemical Log -->
+<div class="modal-overlay" id="modal-add-spray" onclick="if(event.target===this)closeModal('modal-add-spray')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Log Application</div>
+    <div class="modal-field">
+      <label class="modal-label">Product</label>
+      <input class="cond-input" id="spray-product" type="text" placeholder="e.g. Heritage fungicide, 19-19-19 fertilizer">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Location</label>
+      <input class="cond-input" id="spray-location" type="text" placeholder="e.g. Greens 1–9, Tee boxes">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Rate / Amount</label>
+      <input class="cond-input" id="spray-rate" type="text" placeholder="e.g. 2 oz/1000 sq ft">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Re-entry Interval</label>
+      <input class="cond-input" id="spray-rei" type="text" placeholder="e.g. 4 hours, None">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('modal-add-spray')">Cancel</button>
+      <button class="modal-btn primary" onclick="addSprayLog()">Log It</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dining reservation -->
+<div class="modal-overlay" id="modal-dining">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Dining Reservation</div>
+    <input class="modal-input" id="md-date" type="date">
+    <input class="modal-input" id="md-time" type="time" value="12:00">
+    <input class="modal-input" id="md-party" type="number" placeholder="Party size" min="1" max="20">
+    <input class="modal-input" id="md-notes" type="text" placeholder="Special requests (optional)">
+    <div class="modal-row">
+      <button class="modal-btn secondary" onclick="closeModal('modal-dining')">Cancel</button>
+      <button class="modal-btn primary" onclick="confirmDining()">Request Reservation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit menu item (staff) -->
+<div class="modal-overlay" id="modal-add-res" onclick="if(event.target===this)closeModal('modal-add-res')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Reservation</div>
+    <label class="login-label">Reservation Time</label>
+    <input class="modal-input" id="dr-time" type="time">
+    <label class="login-label">Party Name</label>
+    <input class="modal-input" id="dr-name" type="text" placeholder="e.g. Johnson Party">
+    <label class="login-label">Party Size</label>
+    <select class="modal-input" id="dr-party">
+      <option value="1">1 Guest</option>
+      <option value="2" selected>2 Guests</option>
+      <option value="3">3 Guests</option>
+      <option value="4">4 Guests</option>
+      <option value="5">5 Guests</option>
+      <option value="6">6 Guests</option>
+      <option value="7">7 Guests</option>
+      <option value="8">8 Guests</option>
+      <option value="10">10 Guests</option>
+      <option value="12">12 Guests</option>
+    </select>
+    <label class="login-label">Note <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.85em;">(optional)</span></label>
+    <input class="modal-input" id="dr-note" type="text" placeholder="e.g. Anniversary, window table request">
+    <div class="modal-row">
+      <button class="modal-btn secondary" onclick="closeModal('modal-add-res')">Cancel</button>
+      <button class="modal-btn primary" onclick="addReservation()">Add Reservation</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-tee" onclick="if(event.target===this)closeModal('modal-add-tee')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Check In — On the Course</div>
+    <label class="login-label">Member / Group Name</label>
+    <input class="modal-input" id="ts-name" type="text" placeholder="e.g. Smith, Johnson & Williams">
+    <label class="login-label">Players</label>
+    <select class="modal-input" id="ts-players">
+      <option value="1">1 Player</option>
+      <option value="2">2 Players</option>
+      <option value="3">3 Players</option>
+      <option value="4" selected>4 Players</option>
+    </select>
+    <div class="modal-row">
+      <button class="modal-btn secondary" onclick="closeModal('modal-add-tee')">Cancel</button>
+      <button class="modal-btn primary" onclick="addTeeTime()">Check In</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-lf" onclick="if(event.target===this)closeModal('modal-add-lf')">
+  <div class="modal-sheet">
+    <div class="modal-title">Log Found Item</div>
+    <div class="modal-field">
+      <label class="modal-label">Item Description</label>
+      <input class="cond-input" id="lf-item" type="text" placeholder="e.g. Titleist 3-wood, Oakley sunglasses">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Where Found</label>
+      <input class="cond-input" id="lf-location" type="text" placeholder="e.g. Hole 14 fairway, Clubhouse patio">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Member Contact <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+      <input class="cond-input" id="lf-contact" type="text" placeholder="Name or phone if known">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('modal-add-lf')">Cancel</button>
+      <button class="modal-btn primary" onclick="addLostFound()">Log Item</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-incident" onclick="if(event.target===this)closeModal('modal-add-incident')">
+  <div class="modal-sheet">
+    <div class="modal-title">Log Incident / Issue</div>
+    <div class="modal-field">
+      <label class="modal-label">Type</label>
+      <select class="cond-select" id="inc-type">
+        <option>Cart Path Damage</option>
+        <option>Equipment Issue</option>
+        <option>Course Hazard</option>
+        <option>Maintenance Needed</option>
+        <option>Safety Concern</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Priority</label>
+      <select class="cond-select" id="inc-priority">
+        <option value="low">Low — Monitor</option>
+        <option value="medium" selected>Medium — Address Soon</option>
+        <option value="urgent">Urgent — Act Now</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Location</label>
+      <input class="cond-input" id="inc-location" type="text" placeholder="e.g. Hole 7, Cart Barn, Parking Lot">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Description</label>
+      <textarea class="cond-textarea" id="inc-desc" placeholder="Describe the issue…" style="min-height:72px;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('modal-add-incident')">Cancel</button>
+      <button class="modal-btn primary" onclick="addIncident()">Log It</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-partner-post" onclick="if(event.target===this)closeModal('modal-partner-post')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🤝 Find a Game</div>
+    <div class="modal-sub">Let members know you're looking for a game</div>
+    <label class="login-label">Date</label>
+    <input class="modal-input" id="pp-date" type="date">
+    <label class="login-label">Preferred Time</label>
+    <select class="modal-input" id="pp-time">
+      <option value="">Select a time…</option>
+      <option>Early Morning (Before 9 AM)</option>
+      <option>Morning (9 AM – Noon)</option>
+      <option>Afternoon (Noon – 3 PM)</option>
+      <option>Late Afternoon (After 3 PM)</option>
+      <option>Flexible</option>
+    </select>
+    <label class="login-label">Holes</label>
+    <select class="modal-input" id="pp-holes">
+      <option value="">Select…</option>
+      <option>Front 9</option>
+      <option>Back 9</option>
+      <option>All 18</option>
+    </select>
+    <label class="login-label">Note <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.85em;">(optional)</span></label>
+    <input class="modal-input" id="pp-note" type="text" placeholder="e.g. Looking for 1–2 more players">
+    <div class="modal-row">
+      <button class="modal-btn secondary" onclick="closeModal('modal-partner-post')">Cancel</button>
+      <button class="modal-btn primary" onclick="submitPartnerPost()">Post Request</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-menu-edit">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Edit Item</div>
+    <input class="modal-input" id="me-name" type="text" placeholder="Item name">
+    <input class="modal-input" id="me-desc" type="text" placeholder="Description (optional)">
+    <input class="modal-input" id="me-price" type="text" placeholder="Price (e.g. $12) — leave blank to hide price">
+    <input type="hidden" id="me-section">
+    <input type="hidden" id="me-index">
+    <div class="modal-row">
+      <button class="modal-btn secondary" onclick="closeModal('modal-menu-edit')">Cancel</button>
+      <button class="modal-btn primary" onclick="saveMenuEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add event (staff) -->
+<div class="modal-overlay" id="modal-event-teesheet" onclick="if(event.target===this)closeModal('modal-event-teesheet')">
+  <div class="modal-sheet" style="max-height:80vh;overflow-y:auto;">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="ets-title">Event Tee Sheet</div>
+    <div id="ets-list" style="margin-bottom:12px;"></div>
+    <div style="border-top:1px solid var(--border);padding-top:12px;">
+      <div class="modal-field">
+        <label class="modal-label">Tee Time</label>
+        <input class="cond-input" id="ets-time" type="time" style="margin-bottom:8px;">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Group / Member Name(s)</label>
+        <input class="cond-input" id="ets-name" type="text" placeholder="e.g. Smith, Jones & Williams">
+      </div>
+      <div class="modal-actions" style="margin-top:8px;">
+        <button class="modal-btn secondary" onclick="closeModal('modal-event-teesheet')">Done</button>
+        <button class="modal-btn primary" onclick="addEventTeeSlot()">Add Slot</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-event">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Event</div>
+    <input class="modal-input" id="ae-title" type="text" placeholder="Event title">
+    <input class="modal-input" id="ae-date" type="date">
+    <input class="modal-input" id="ae-time" type="text" placeholder="Time (e.g. 8:00 AM Shotgun)">
+    <input class="modal-input" id="ae-desc" type="text" placeholder="Description">
+    <input class="modal-input" id="ae-fee" type="text" placeholder="Entry fee (optional, e.g. Member Event or $45/person)">
+    <div class="modal-row">
+      <button class="modal-btn secondary" onclick="closeModal('modal-add-event')">Cancel</button>
+      <button class="modal-btn primary" onclick="addEvent()">Add Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Event -->
+<div class="modal-overlay" id="modal-edit-event" onclick="if(event.target===this)closeModal('modal-edit-event')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Edit Event</div>
+    <input type="hidden" id="ee-idx">
+    <input class="modal-input" id="ee-title" type="text" placeholder="Event title">
+    <input class="modal-input" id="ee-date" type="date">
+    <input class="modal-input" id="ee-time" type="text" placeholder="Time (e.g. 8:00 AM Shotgun)">
+    <input class="modal-input" id="ee-desc" type="text" placeholder="Description">
+    <input class="modal-input" id="ee-fee" type="text" placeholder="Entry fee (optional, e.g. $45/person)">
+    <div class="modal-row">
+      <button class="modal-btn secondary" onclick="closeModal('modal-edit-event')">Cancel</button>
+      <button class="modal-btn primary" onclick="saveEditEvent()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Handicap detail -->
+<div class="modal-overlay" id="modal-hcp">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Handicap Index</div>
+    <div class="card" style="margin-bottom:12px;">
+      <div class="info-row"><div class="ir-label">Current Index</div><div class="ir-val" id="hcp-current" style="font-size:1.3rem;color:var(--forest);">—</div></div>
+      <div class="info-row"><div class="ir-label">Last Updated</div><div class="ir-val">1st &amp; 15th of each month</div></div>
+      <div class="info-row" style="border-bottom:none;"><div class="ir-label">Calculated by</div><div class="ir-val">USGA GHIN System</div></div>
+    </div>
+    <div class="card-body" style="margin-bottom:16px;">To update your handicap or view your full scoring record, contact the Pro Shop or visit your GHIN profile.</div>
+    <div class="modal-row">
+      <button class="modal-btn secondary" onclick="closeModal('modal-hcp')">Close</button>
+      <button class="modal-btn primary" onclick="window.location.href='tel:' + CLUB_PHONE_TEL">Call Pro Shop</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════
+// DATA & STATE
+// ════════════════════════════════════
+var CLUB_PHONE     = '(573) 785-5253';
+var CLUB_PHONE_TEL = '+15737855253';
+var CLUB_ADDRESS   = '1 Birdie Ln, Poplar Bluff, MO';
+
+var DEMO_ACCOUNTS = {
+  'member@wh.cc': { pin:'1234', role:'member', name:'Jamie Wilson', memberNumber:'1047', memberSince:'2019', membership:'Full Membership', handicap:'12.4', rounds:14 },
+  'staff@wh.cc':  { pin:'5678', role:'staff',  name:'Alex Rivera',  title:'Golf Operations' }
+};
+
+var MEMBER_DIRECTORY = [
+  { name:'Jamie Wilson',    number:'1047', membership:'Full Membership',   handicap:'12.4', since:'2019', phone:'(573) 555-0101', email:'jwilson@email.com' },
+  { name:'Robert Harmon',   number:'0832', membership:'Full Membership',   handicap:'8.1',  since:'2012', phone:'(573) 555-0142', email:'rharmon@email.com' },
+  { name:'Carol Jennings',  number:'1124', membership:'Social Membership', handicap:'22.7', since:'2021', phone:'(573) 555-0193', email:'cjennings@email.com' },
+  { name:'Mike Patterson',  number:'0561', membership:'Full Membership',   handicap:'5.3',  since:'2008', phone:'(573) 555-0204', email:'mpatterson@email.com' },
+  { name:'Susan Caldwell',  number:'1298', membership:'Ladies Membership', handicap:'18.2', since:'2020', phone:'(573) 555-0237', email:'scalfwell@email.com' },
+  { name:'Tom Bradley',     number:'0714', membership:'Full Membership',   handicap:'14.6', since:'2015', phone:'(573) 555-0288', email:'tbradley@email.com' },
+  { name:'Linda Foster',    number:'1356', membership:'Ladies Membership', handicap:'26.3', since:'2022', phone:'(573) 555-0319', email:'lfoster@email.com' },
+  { name:'Gary Hutchins',   number:'0489', membership:'Full Membership',   handicap:'3.8',  since:'2005', phone:'(573) 555-0355', email:'ghutchins@email.com' },
+  { name:'Patricia Owens',  number:'1433', membership:'Social Membership', handicap:'N/A',  since:'2023', phone:'(573) 555-0372', email:'powens@email.com' },
+  { name:'Dennis Kramer',   number:'0967', membership:'Full Membership',   handicap:'11.0', since:'2017', phone:'(573) 555-0398', email:'dkramer@email.com' },
+  { name:'Nancy Strickland',number:'1502', membership:'Ladies Membership', handicap:'20.1', since:'2021', phone:'(573) 555-0411', email:'nstrickland@email.com' },
+  { name:'Bill Norris',     number:'0342', membership:'Full Membership',   handicap:'7.5',  since:'2003', phone:'(573) 555-0447', email:'bnorris@email.com' },
+  { name:'Diane Marsh',     number:'1589', membership:'Social Membership', handicap:'N/A',  since:'2024', phone:'(573) 555-0463', email:'dmarsh@email.com' },
+  { name:'Chris Langford',  number:'1011', membership:'Full Membership',   handicap:'15.9', since:'2018', phone:'(573) 555-0479', email:'clangford@email.com' },
+  { name:'Rebecca Dunne',   number:'1645', membership:'Ladies Membership', handicap:'31.2', since:'2023', phone:'(573) 555-0502', email:'rdunne@email.com' },
+];
+
+var DEFAULT_EVENTS = [
+  {title:"St. Patty's Shootout", date:'2026-03-14', month:'MAR', day:'14', time:'10:30 AM – 2:30 PM', desc:'Fun format to kick off the season. All members welcome.', fee:'Member Event', capacity:60, registeredCount:22, registered:false},
+  {title:"Ladies Opening Day", date:'2026-04-07', month:'APR', day:'7', time:'9:00 AM – 1:00 PM', desc:'Kick off the season with our ladies opening day event.', fee:'Member Event', capacity:40, registeredCount:18, registered:false},
+  {title:"Men's Golf Master Dinner", date:'2026-04-08', month:'APR', day:'8', time:'6:30 – 9:30 PM', desc:'Annual Masters watch party & dinner. Great food, great company.', fee:'$45/person', capacity:50, registeredCount:31, registered:false},
+  {title:"Poplar Bluff Mules Invitational", date:'2026-04-13', month:'APR', day:'13', time:'9:00 AM – 2:00 PM', desc:'Supporting Poplar Bluff athletics. Open to invited teams.', fee:'$80/team', capacity:72, registeredCount:48, registered:false},
+  {title:"MGA Opening Day Draft", date:'2026-04-17', month:'APR', day:'17', time:'6:00 – 10:00 PM', desc:"Men's Golf Association season draft night. Sign up for your league team.", fee:'Member Event', capacity:64, registeredCount:40, registered:false},
+  {title:"Men's Opening Day", date:'2026-04-18', month:'APR', day:'18', time:'9:30 AM – 2:00 PM', desc:'Registration deadline April 16 at 5:00 PM. All members welcome.', fee:'Member Event', capacity:72, registeredCount:55, registered:false},
+  {title:"Ozark Invitational", date:'2026-04-25', month:'APR', day:'25', time:'2-Day · Apr 25–26', desc:"Westwood Hills' signature invitational event. 2-day tournament format.", fee:'$150/team', capacity:96, registeredCount:64, registered:false},
+  {title:"Friday Night Fights Begins", date:'2026-05-01', month:'MAY', day:'1', time:'6:00 – 10:00 PM', desc:'Weekly competitive series kicks off. Runs through the season every Friday.', fee:'$10/round', capacity:48, registeredCount:20, registered:false},
+  {title:"Hit & Giggle", date:'2026-05-06', month:'MAY', day:'6', time:'7:00 – 11:00 PM', desc:'Recurring social golf series. A great way to socialize on and off the course.', fee:'Member Event', capacity:40, registeredCount:15, registered:false},
+  {title:"Men's League Opening Night", date:'2026-05-07', month:'MAY', day:'7', time:'5:00 – 9:00 PM', desc:'Weekly men\'s league begins. Every Thursday through the season. Sign up for your team.', fee:'League Fee', capacity:80, registeredCount:62, registered:false},
+  {title:"Spring 2-Man Scramble", date:'2026-05-16', month:'MAY', day:'16', time:'8:00 AM Shotgun · May 16–17', desc:'2-day scramble event. Register your team of two for two rounds of competition.', fee:'$120/team', capacity:80, registeredCount:44, registered:false},
+  {title:"MGA 2-Man Best Ball", date:'2026-05-23', month:'MAY', day:'23', time:'8:00 AM – 12:00 PM', desc:"Men's Golf Association event. 2-player best ball format, 18 holes.", fee:'Member Event', capacity:64, registeredCount:38, registered:false},
+  {title:"Memorial Day Wing Ding", date:'2026-05-25', month:'MAY', day:'25', time:'10:00 AM – 2:00 PM', desc:'Annual Memorial Day celebration. Food, fun, & fellowship for the whole family.', fee:'$20/person', capacity:120, registeredCount:67, registered:false},
+  {title:"UCAN Golf Outing", date:'2026-06-05', month:'JUN', day:'5', time:'9:30 AM – 1:30 PM', desc:'Charity tournament raising money for local cancer patients through the UCAN Foundation.', fee:'$80/player', capacity:72, registeredCount:50, registered:false},
+  {title:"Ladies Cup Challenge Matches", date:'2026-06-06', month:'JUN', day:'6', time:'9:00 AM – 1:00 PM', desc:'Annual ladies match play competition. Sign up as an individual — brackets announced day of.', fee:'Member Event', capacity:32, registeredCount:20, registered:false},
+  {title:"Ladies Powder Puff", date:'2026-06-09', month:'JUN', day:'9', time:'9:00 AM – 1:00 PM', desc:'Ladies 2-player scramble. Fun format open to all lady members.', fee:'Member Event', capacity:40, registeredCount:18, registered:false},
+  {title:"Three Rivers College Outing", date:'2026-06-12', month:'JUN', day:'12', time:'9:30 AM – 2:00 PM', desc:'Supporting Three Rivers College. Community charity outing.', fee:'$75/player', capacity:72, registeredCount:36, registered:false},
+  {title:"Steak Stag — SEMO Qualifier", date:'2026-06-18', month:'JUN', day:'18', time:'6:00 – 10:00 PM', desc:'SEMO Cup qualifying event. Steak dinner included. Top finishers earn SEMO Cup points.', fee:'$60/player', capacity:48, registeredCount:29, registered:false},
+  {title:"Ladies Sweet Treat", date:'2026-08-11', month:'AUG', day:'11', time:'Full Day Event', desc:'4-player ladies scramble. A fun full-day event celebrating the ladies of Westwood Hills.', fee:'Member Event', capacity:48, registeredCount:12, registered:false}
+];
+
+var WH_MENU_VERSION = '3';
+var WH_MENU_DEFAULTS = {
+  grill: {
+    express: [
+      {name:'Chicken Bacon Ranch Wrap', desc:'', price:'$13'},
+      {name:'½ lb Cheeseburger', desc:'', price:'$14'},
+      {name:'Caesar Salad', desc:'', price:'$13'},
+      {name:'Soup & Salad Combo', desc:'', price:'$12'}
+    ],
+    starters: [
+      {name:'Cheese Balls', desc:'Regular or Spicy', price:'$14'},
+      {name:'Fried Green Beans', desc:'', price:'$10'},
+      {name:'Mini Tacos', desc:'', price:'$12'},
+      {name:'Chips & Queso', desc:'', price:'$13'},
+      {name:'Wings (6 pc)', desc:'Sweet Thai Chili, Buffalo, Garlic Parm, BBQ, or Plain', price:'$12'},
+      {name:'Wings (12 pc)', desc:'Sweet Thai Chili, Buffalo, Garlic Parm, BBQ, or Plain', price:'$16'}
+    ],
+    sandwiches: [
+      {name:'WHCC Club', desc:'With choice of side', price:'$15'},
+      {name:'Chicken Bacon Ranch Wrap', desc:'With choice of side', price:'$13'},
+      {name:'Chicken Sandwich', desc:'Grilled or Fried — with choice of side', price:'$15'},
+      {name:'WHCC Smashburger (Single)', desc:'With choice of side', price:'$11'},
+      {name:'WHCC Smashburger (Double)', desc:'With choice of side', price:'$14'},
+      {name:'Steak or Chicken Philly', desc:'With choice of side', price:'$14'},
+      {name:'Hot Ham & Cheese', desc:'With choice of side', price:'$11'},
+      {name:'Chicken Caesar Wrap', desc:'With choice of side', price:'$13'},
+      {name:'BLT', desc:'With choice of side', price:'$14'},
+      {name:'Quesadilla', desc:'Chicken or Steak — with choice of side', price:'$12'},
+      {name:'Grilled Cheese', desc:'With choice of side', price:'$8'}
+    ],
+    lunchEntrees: [
+      {name:'12oz Ribeye', desc:'', price:'$35'},
+      {name:'Pan Seared Salmon', desc:'', price:'$24'},
+      {name:'Grilled Chicken', desc:'', price:'$22'}
+    ],
+    lunchDesserts: [
+      {name:'House Salad', desc:'Add Chicken, Shrimp, or Salmon +$7', price:'$10'},
+      {name:'Caesar', desc:'Add Chicken, Shrimp, or Salmon +$7', price:'$11'},
+      {name:'Nicoise', desc:'Add Chicken, Shrimp, or Salmon +$7', price:'$13'},
+      {name:'Cranberry Pecan', desc:'Add Chicken, Shrimp, or Salmon +$7', price:'$13'}
+    ],
+    cocktails: [
+      {name:'Westwood Old Fashioned', desc:'Bulleit Rye, house demerara, Angostura, orange', price:'$13'},
+      {name:'The Westwood', desc:"Hendrick's Gin, elderflower, cucumber, tonic", price:'$12'},
+      {name:'Ozark Mule', desc:'Missouri bourbon, ginger beer, fresh lime', price:'$11'},
+      {name:'Birdie Aperol Spritz', desc:'Aperol, Prosecco, splash of soda, orange', price:'$12'}
+    ],
+    wine: [
+      {name:'Kim Crawford Sauvignon Blanc', desc:'New Zealand', price:'$11'},
+      {name:"Stags' Leap Chardonnay", desc:'Napa Valley', price:'$14'},
+      {name:'Decoy Pinot Noir', desc:'Sonoma, CA', price:'$13'},
+      {name:'Jordan Cabernet Sauvignon', desc:'Alexander Valley, CA', price:'$16'}
+    ],
+    quickBites: [
+      {name:'Hamburger', desc:'', price:'$7'},
+      {name:'Cheeseburger', desc:'', price:'$8'},
+      {name:'Mac & Cheese', desc:'', price:'$7'},
+      {name:'Boneless Wings', desc:'', price:'$10'}
+    ],
+    postRound: [
+      {name:'House or Caesar Salad', desc:'Included with sandwiches & entrees', price:''},
+      {name:'Onion Rings', desc:'Included with sandwiches & entrees', price:''},
+      {name:'Sauteed Vegetables', desc:'Included with sandwiches & entrees', price:''},
+      {name:'Baked Potato', desc:'Included with sandwiches & entrees', price:''},
+      {name:'Sweet Potato Fries', desc:'Included with sandwiches & entrees', price:''},
+      {name:'Fried Green Beans', desc:'Included with sandwiches & entrees', price:''},
+      {name:'House Chips', desc:'Included with sandwiches & entrees', price:''},
+      {name:'Fries', desc:'Hand Cut or Traditional — included with sandwiches & entrees', price:''}
+    ]
+  },
+  courseMenu: {
+    food: [
+      {name:'Clubhouse Burger', desc:'Half-pound Angus, cheddar, lettuce, tomato, house pickles', price:'$14'},
+      {name:'Chicken Wrap', desc:'Grilled chicken, bacon, ranch, mixed greens, tomato', price:'$12'},
+      {name:'BLT', desc:'Thick-cut bacon, lettuce, tomato, mayo, toasted sourdough', price:'$11'},
+      {name:'Turkey Club', desc:'Smoked turkey, bacon, swiss, honey mustard, triple-stacked', price:'$13'},
+      {name:'All-Beef Hot Dog', desc:'Quarter-pound dog, toasted bun, your choice of fixings', price:'$7'},
+      {name:'Basket of Fries', desc:'Seasoned crinkle-cut with ranch or ketchup', price:'$6'}
+    ],
+    drinks: [
+      {name:'Domestic Beer', desc:'Bud Light, Coors Light, Miller Lite', price:'$5'},
+      {name:'Craft / Import Beer', desc:"Rotating selection — ask for today's options", price:'$7'},
+      {name:'Soft Drink / Sweet Tea', desc:'Coke, Diet Coke, Sprite, Dr Pepper, Sweet Tea, Unsweet Tea', price:'$3'},
+      {name:'Water Bottle', desc:'Ice-cold bottled water', price:'$2'},
+      {name:'Bloody Mary', desc:"House-made mix, Tito's, celery, olive", price:'$10'},
+      {name:'Arnold Palmer', desc:'Half lemonade, half sweet tea', price:'$4'}
+    ],
+    quickBites: [
+      {name:'Trail Mix', desc:'Nuts, dried fruit, chocolate chips', price:'$4'},
+      {name:'Chips & Salsa', desc:'Tortilla chips with house-made salsa', price:'$5'},
+      {name:'Candy Bar', desc:'Snickers, Kit Kat, M&Ms', price:'$3'},
+      {name:'Banana', desc:'Fresh fruit, perfect mid-round energy', price:'$2'}
+    ]
+  }
+};
+
+var MENU_SECTION_LABELS = {
+  express:'Express Lunch', starters:'Starters', lunchDesserts:'Salads',
+  sandwiches:'Sandwiches', lunchEntrees:'Signature Entrees',
+  cocktails:'Cocktails', wine:'Wine by the Glass',
+  postRound:'Sides', quickBites:'Kids Menu'
+};
+
+var appEvents   = JSON.parse(localStorage.getItem('wh_app_events') || 'null') || JSON.parse(JSON.stringify(DEFAULT_EVENTS));
+var currentUser = null;
+
+// ════════════════════════════════════
+// AUTH
+// ════════════════════════════════════
+function doLogin() {
+  var email = document.getElementById('li-email').value.trim().toLowerCase();
+  var pin   = document.getElementById('li-pin').value.trim();
+  var err   = document.getElementById('li-error');
+  err.textContent = '';
+  if (!email || !pin) { err.textContent = 'Please enter your email and PIN.'; return; }
+  var acct = DEMO_ACCOUNTS[email];
+  if (!acct || acct.pin !== pin) { err.textContent = 'Invalid email or PIN. Try a demo button below.'; return; }
+  loginAs(acct, email);
+}
+
+function demoLogin(role) {
+  var email = role === 'member' ? 'member@wh.cc' : 'staff@wh.cc';
+  loginAs(DEMO_ACCOUNTS[email], email);
+}
+
+function loginAs(acct, email) {
+  currentUser = Object.assign({email: email}, acct);
+  localStorage.setItem('wh_current_user', JSON.stringify(currentUser));
+  if (acct.role === 'member') { initMember(); showScreen('screen-member'); }
+  else                         { initStaff();  showScreen('screen-staff');  }
+}
+
+function doLogout() {
+  currentUser = null;
+  localStorage.removeItem('wh_current_user');
+  showScreen('screen-login');
+  document.getElementById('li-email').value = '';
+  document.getElementById('li-pin').value   = '';
+  document.getElementById('li-error').textContent = '';
+}
+
+// ════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.add('hidden'); });
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function goTab(role, tab) {
+  var pre = role === 'member' ? 'm' : 's';
+  document.querySelectorAll('#screen-' + role + ' .tab-content').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('#screen-' + role + ' .tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  var tc  = document.getElementById(pre + '-tab-' + tab);
+  var btn = document.getElementById(pre + '-btn-' + tab);
+  if (tc)  tc.classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ════════════════════════════════════
+// MEMBER INIT
+// ════════════════════════════════════
+// ════════════════════════════════════
+// MY UPCOMING
+// ════════════════════════════════════
+function renderMyUpcoming() {
+  var MONTHS = {JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
+  var now = new Date(); now.setHours(0,0,0,0);
+  var registered = appEvents
+    .filter(function(ev){ return ev.registered; })
+    .map(function(ev){
+      var m = MONTHS[ev.month] !== undefined ? MONTHS[ev.month] : 0;
+      var date = new Date(now.getFullYear(), m, parseInt(ev.day));
+      if (date < now) date = new Date(now.getFullYear()+1, m, parseInt(ev.day));
+      return {ev:ev, date:date};
+    })
+    .filter(function(x){ return x.date >= now; })
+    .sort(function(a,b){ return a.date - b.date; })
+    .slice(0,3);
+
+  var card = document.getElementById('m-upcoming-card');
+  var list = document.getElementById('m-upcoming-list');
+  if (!card || !list) return;
+  if (!registered.length) { card.style.display='none'; return; }
+  card.style.display = 'block';
+  list.innerHTML = registered.map(function(x){
+    var ev = x.ev;
+    var days = Math.round((x.date - now) / 86400000);
+    var when = days===0 ? 'Today' : days===1 ? 'Tomorrow' : 'In '+days+' days';
+    return '<div class="upcoming-ev">' +
+      '<div class="ev-date-box" style="background:var(--gold);border-radius:7px;padding:5px 9px;text-align:center;color:var(--forest);flex-shrink:0;">' +
+        '<div class="edb-mo">'+ev.month+'</div><div class="edb-day">'+ev.day+'</div>' +
+      '</div>' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-size:.84rem;font-weight:600;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+ev.title+'</div>' +
+        '<div style="font-size:.72rem;color:var(--muted);margin-top:1px;">'+ev.time+'</div>' +
+      '</div>' +
+      '<div class="upcoming-when">'+when+'</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ════════════════════════════════════
+// FIND A PARTNER
+// ════════════════════════════════════
+function renderPartners() {
+  var posts = JSON.parse(localStorage.getItem('wh_partners') || '[]');
+  var now = new Date();
+  posts = posts.filter(function(p){ return (now - new Date(p.posted)) / 86400000 < 3; });
+  localStorage.setItem('wh_partners', JSON.stringify(posts));
+  var el = document.getElementById('m-partner-list');
+  if (!el) return;
+  if (!posts.length) {
+    el.innerHTML = '<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:12px 0 4px;">No posts yet — be the first to find a game!</div>';
+    return;
+  }
+  el.innerHTML = posts.map(function(p){
+    var mine = currentUser && p.email === currentUser.email;
+    return '<div class="partner-post">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+        '<div class="pp-name">'+p.name+'</div>' +
+        (mine ? '<button onclick="deletePartnerPost(\''+p.posted+'\')" style="font-size:.68rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;">Remove</button>' : '') +
+      '</div>' +
+      '<div class="pp-detail">📅 '+p.date+' &nbsp;·&nbsp; 🕐 '+p.time+' &nbsp;·&nbsp; ⛳ '+p.holes+'</div>' +
+      (p.note ? '<div class="pp-note">"'+p.note+'"</div>' : '') +
+      (!mine ? '<a href="mailto:'+p.email+'" class="pp-contact">📧 Send Email</a>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function submitPartnerPost() {
+  var date  = document.getElementById('pp-date').value;
+  var time  = document.getElementById('pp-time').value;
+  var holes = document.getElementById('pp-holes').value;
+  var note  = document.getElementById('pp-note').value.trim();
+  if (!date || !time || !holes) { showToast('Please fill in date, time, and holes'); return; }
+  var posts = JSON.parse(localStorage.getItem('wh_partners') || '[]');
+  var parts = currentUser.name.split(' ');
+  var displayName = parts[0] + (parts[1] ? ' ' + parts[1][0] + '.' : '');
+  posts.unshift({name:displayName, email:currentUser.email, date:date, time:time, holes:holes, note:note, posted:new Date().toISOString()});
+  localStorage.setItem('wh_partners', JSON.stringify(posts));
+  closeModal('modal-partner-post');
+  renderPartners();
+  showToast('✅ Posted! Other members can now find you.');
+}
+
+function deletePartnerPost(posted) {
+  var posts = JSON.parse(localStorage.getItem('wh_partners') || '[]');
+  localStorage.setItem('wh_partners', JSON.stringify(posts.filter(function(p){ return p.posted !== posted; })));
+  renderPartners();
+  showToast('Post removed');
+}
+
+function initMember() {
+  var u = currentUser;
+  var first = u.name.split(' ')[0];
+  var extraRounds = parseInt(localStorage.getItem('wh_extra_rounds_' + u.email) || '0');
+  document.getElementById('m-hdr-user').textContent = first;
+  document.getElementById('m-greet-name').textContent = greet() + ', ' + first + '!';
+  document.getElementById('m-greet-detail').textContent = 'Handicap Index: ' + u.handicap;
+  document.getElementById('m-greet-badge').textContent  = u.membership;
+  var ini = u.name.split(' ').map(function(n){ return n[0]; }).join('');
+  document.getElementById('m-avatar').textContent    = ini;
+  document.getElementById('m-prof-name').textContent = u.name;
+  document.getElementById('m-prof-type').textContent = u.membership;
+  document.getElementById('m-hcp').textContent       = u.handicap;
+  document.getElementById('hcp-current').textContent = u.handicap;
+  document.getElementById('m-membernum').textContent = u.memberNumber || '—';
+  document.getElementById('m-since').textContent     = u.memberSince;
+  document.getElementById('m-email').textContent     = u.email;
+  document.getElementById('m-memtype').textContent   = u.membership;
+  document.getElementById('m-rounds').textContent    = (u.rounds || 0) + extraRounds;
+  renderMemberEvents();
+  renderHomeEvents();
+  renderAppMenu();
+  renderRoundLog();
+  loadWeather();
+  loadConditions();
+  renderMyUpcoming();
+  renderPartners();
+  loadPinSheetForMember();
+  renderPoolChip();
+  renderHoleAlerts();
+  // Default partner post date to today
+  var ppd = document.getElementById('pp-date');
+  if (ppd) ppd.valueAsDate = new Date();
+  goTab('member','home');
+}
+
+function greet() {
+  var h = new Date().getHours();
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
+
+function logRound() {
+  var key   = 'wh_extra_rounds_' + currentUser.email;
+  var extra = parseInt(localStorage.getItem(key) || '0') + 1;
+  localStorage.setItem(key, extra);
+  var total = (currentUser.rounds || 0) + extra;
+  document.getElementById('m-rounds').textContent = total;
+  showToast('✅ Round logged! Total: ' + total + ' this year.');
+}
+
+// ════════════════════════════════════
+// SCORING
+// ════════════════════════════════════
+var HOLE_PARS = [4,5,3,4,4,4,4,3,5, 3,4,3,4,5,4,3,4,5];
+var HOLE_HDCP = [10,4,18,8,6,14,12,16,2, 13,3,17,9,1,7,15,11,5];
+var TEE_SLOPES = {Black:122, Blue:119, White:117, Red:116};
+
+var activeScores    = [];  // score per played hole (parallel to activeHoles)
+var activeHoles     = [];  // global hole indices 0-17
+var activeTee       = '';
+var activeCourseHCP = 0;
+
+function startScoring() {
+  document.getElementById('score-start-card').style.display = 'none';
+  document.getElementById('score-entry-section').style.display = 'block';
+  renderSetupForm();
+}
+
+function renderSetupForm() {
+  var userHCP = currentUser && currentUser.handicap ? currentUser.handicap : '';
+  var html =
+    '<div class="card" style="margin-top:0;">' +
+    '<div class="card-title" style="margin-bottom:16px;">Round Setup</div>' +
+
+    '<div style="margin-bottom:16px;">' +
+    '<div class="setup-lbl">Which holes?</div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+    '<button class="setup-choice active" id="sc-front" onclick="setupPick(\'holes\',\'front\')">Front 9</button>' +
+    '<button class="setup-choice" id="sc-back"  onclick="setupPick(\'holes\',\'back\')">Back 9</button>' +
+    '<button class="setup-choice" id="sc-all18" onclick="setupPick(\'holes\',\'all\')">All 18</button>' +
+    '</div></div>' +
+
+    '<div style="margin-bottom:16px;">' +
+    '<div class="setup-lbl">Tee Box</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+    '<button class="setup-choice tee-btn" id="sc-Black" onclick="setupPick(\'tee\',\'Black\')">⚫ Black</button>' +
+    '<button class="setup-choice tee-btn active" id="sc-Blue"  onclick="setupPick(\'tee\',\'Blue\')">🔵 Blue</button>' +
+    '<button class="setup-choice tee-btn" id="sc-White" onclick="setupPick(\'tee\',\'White\')">⚪ White</button>' +
+    '<button class="setup-choice tee-btn" id="sc-Red"   onclick="setupPick(\'tee\',\'Red\')">🔴 Red</button>' +
+    '</div></div>' +
+
+    '<div style="margin-bottom:20px;">' +
+    '<div class="setup-lbl">Handicap <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;">(optional — calculates net score)</span></div>' +
+    '<input type="number" id="sc-hcp-input" min="0" max="54" step="0.1" placeholder="e.g. 14.2" value="' + userHCP + '" ' +
+    'style="width:100%;padding:10px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.95rem;color:var(--dark);background:var(--white);box-sizing:border-box;">' +
+    '</div>' +
+
+    '<button class="ev-reg-btn" style="width:100%;margin:0;" onclick="beginRound()">Begin Round</button>' +
+    '<button onclick="cancelScoring()" style="width:100%;margin-top:8px;padding:10px;background:none;border:none;color:var(--muted);font-size:.82rem;cursor:pointer;">Cancel</button>' +
+    '</div>';
+  document.getElementById('score-entry-section').innerHTML = html;
+  window._setupHoles = 'front';
+  window._setupTee   = 'Blue';
+}
+
+function setupPick(type, val) {
+  if (type === 'holes') {
+    window._setupHoles = val;
+    ['front','back','all18'].forEach(function(k){ var e=document.getElementById('sc-'+k); if(e) e.classList.toggle('active', k===val); });
+  } else {
+    window._setupTee = val;
+    ['Black','Blue','White','Red'].forEach(function(k){ var e=document.getElementById('sc-'+k); if(e) e.classList.toggle('active', k===val); });
+  }
+}
+
+function beginRound() {
+  activeTee   = window._setupTee   || 'Blue';
+  var hChoice = window._setupHoles || 'front';
+  activeHoles = hChoice === 'back' ? [9,10,11,12,13,14,15,16,17]
+              : hChoice === 'all'  ? [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
+              :                      [0,1,2,3,4,5,6,7,8];
+  var hcpVal = parseFloat(document.getElementById('sc-hcp-input').value);
+  if (!isNaN(hcpVal) && hcpVal > 0) {
+    var courseHCP = Math.round(hcpVal * (TEE_SLOPES[activeTee] || 113) / 113);
+    activeCourseHCP = activeHoles.length === 9 ? Math.round(courseHCP / 2) : courseHCP;
+  } else {
+    activeCourseHCP = 0;
+  }
+  activeScores = activeHoles.map(function(h){ return HOLE_PARS[h]; });
+  renderScoreEntry();
+}
+
+function cancelScoring() {
+  activeScores = []; activeHoles = []; activeTee = ''; activeCourseHCP = 0;
+  document.getElementById('score-entry-section').style.display = 'none';
+  document.getElementById('score-entry-section').innerHTML = '';
+  document.getElementById('score-start-card').style.display = 'block';
+}
+
+function scoreClass(score, par) {
+  var d = score - par;
+  return d <= -2 ? 'se-eagle' : d === -1 ? 'se-birdie' : d === 0 ? 'se-par-score' : d === 1 ? 'se-bogey' : d === 2 ? 'se-dbl' : 'se-trip';
+}
+
+function stepperHTML(i) {
+  var s = activeScores[i], p = HOLE_PARS[activeHoles[i]];
+  return '<div class="se-stepper">' +
+    '<button class="se-btn" onclick="stepScore(' + i + ',-1)">−</button>' +
+    '<span class="se-val ' + scoreClass(s,p) + '" id="se-h' + i + '">' + s + '</span>' +
+    '<button class="se-btn" onclick="stepScore(' + i + ',1)">+</button>' +
+    '</div>';
+}
+
+function scoreTable(holeSlice, startIdx, label, parTotal) {
+  var html = '<table class="se-tbl"><thead><tr><th>HOLE</th><th>PAR</th><th>SCORE</th></tr></thead><tbody>';
+  holeSlice.forEach(function(holeIdx, j) {
+    var i = startIdx + j;
+    html += '<tr' + (j%2===1?' class="sc-alt"':'') + '>' +
+      '<td class="se-hole-num">' + (holeIdx+1) + '</td>' +
+      '<td>' + HOLE_PARS[holeIdx] + '</td>' +
+      '<td>' + stepperHTML(i) + '</td></tr>';
+  });
+  var sub = holeSlice.reduce(function(s,_,j){ return s + activeScores[startIdx+j]; }, 0);
+  html += '<tr class="se-total-row"><td class="se-hole-num">' + label + '</td><td>' + parTotal + '</td><td id="se-sub-' + startIdx + '">' + sub + '</td></tr>';
+  return html + '</tbody></table>';
+}
+
+function strokesOnHole(i) {
+  if (activeCourseHCP <= 0) return 0;
+  var holeIdx = activeHoles[i];
+  if (activeHoles.length === 18) {
+    var hdcp = HOLE_HDCP[holeIdx];
+    return Math.floor(activeCourseHCP / 18) + (activeCourseHCP % 18 >= hdcp ? 1 : 0);
+  } else {
+    var sorted = activeHoles.slice().sort(function(a,b){ return HOLE_HDCP[a] - HOLE_HDCP[b]; });
+    var rank = sorted.indexOf(holeIdx) + 1;
+    return Math.floor(activeCourseHCP / 9) + (activeCourseHCP % 9 >= rank ? 1 : 0);
+  }
+}
+
+function calcTotals() {
+  var gross = 0, net = 0, front = 0, back = 0;
+  activeHoles.forEach(function(h, i) {
+    var s = activeScores[i];
+    gross += s; net += s - strokesOnHole(i);
+    if (h < 9) front += s; else back += s;
+  });
+  var par = activeHoles.reduce(function(s,h){ return s + HOLE_PARS[h]; }, 0);
+  return {gross:gross, net:net, front:front, back:back, par:par, vpGross:gross-par, vpNet:net-par};
+}
+
+function fmtVp(n) { return n === 0 ? 'E' : (n > 0 ? '+'+n : ''+n); }
+function vpCls(n)  { return n < 0 ? 'se-under' : n === 0 ? 'se-even' : 'se-over'; }
+
+function renderScoreEntry() {
+  var t = calcTotals(), is18 = activeHoles.length === 18, hasHCP = activeCourseHCP > 0;
+  var html = '';
+  if (is18) {
+    html += '<div class="se-nine-hdr">Front Nine</div>' + scoreTable(activeHoles.slice(0,9), 0, 'OUT', 36);
+    html += '<div class="se-nine-hdr">Back Nine</div>'  + scoreTable(activeHoles.slice(9),   9, 'IN',  35);
+  } else {
+    var lbl = activeHoles[0] === 0 ? 'OUT' : 'IN';
+    var par9 = activeHoles.reduce(function(s,h){ return s+HOLE_PARS[h]; }, 0);
+    html += scoreTable(activeHoles, 0, lbl, par9);
+  }
+  var vp = hasHCP ? t.vpNet : t.vpGross;
+  html += '<div class="se-totals-bar">';
+  if (is18) {
+    html += '<div><div class="se-tot-lbl">Front</div><div class="se-tot-val" id="se-front">' + t.front + '</div></div>';
+    html += '<div><div class="se-tot-lbl">Back</div><div class="se-tot-val" id="se-back">' + t.back + '</div></div>';
+  }
+  html += '<div><div class="se-tot-lbl">Gross</div><div class="se-tot-val" id="se-gross">' + t.gross + '</div></div>';
+  if (hasHCP) html += '<div><div class="se-tot-lbl">Net</div><div class="se-tot-val se-under" id="se-net">' + t.net + '</div></div>';
+  html += '<div><div class="se-tot-lbl">vs Par</div><div class="se-tot-val ' + vpCls(vp) + '" id="se-vspar">' + fmtVp(vp) + '</div></div>';
+  html += '</div>';
+  html += '<div style="display:flex;gap:10px;margin-top:12px;">' +
+    '<button class="ev-reg-btn" style="flex:1;margin:0;" onclick="submitRound()">Submit Round</button>' +
+    '<button onclick="cancelScoring()" style="padding:10px 14px;background:none;border:1px solid var(--border);border-radius:var(--radius);color:var(--muted);font-size:.82rem;cursor:pointer;">Cancel</button>' +
+    '</div>';
+  document.getElementById('score-entry-section').innerHTML = html;
+}
+
+function stepScore(i, delta) {
+  activeScores[i] = Math.max(1, activeScores[i] + delta);
+  var span = document.getElementById('se-h' + i);
+  if (span) { span.textContent = activeScores[i]; span.className = 'se-val ' + scoreClass(activeScores[i], HOLE_PARS[activeHoles[i]]); }
+  var t = calcTotals(), hasHCP = activeCourseHCP > 0, is18 = activeHoles.length === 18, el;
+  if (is18) {
+    el = document.getElementById('se-sub-0'); if(el) el.textContent = t.front;
+    el = document.getElementById('se-sub-9'); if(el) el.textContent = t.back;
+    el = document.getElementById('se-front'); if(el) el.textContent = t.front;
+    el = document.getElementById('se-back');  if(el) el.textContent = t.back;
+  } else {
+    el = document.getElementById('se-sub-0'); if(el) el.textContent = t.gross;
+  }
+  el = document.getElementById('se-gross'); if(el) el.textContent = t.gross;
+  el = document.getElementById('se-net');   if(el) el.textContent = t.net;
+  var vp = hasHCP ? t.vpNet : t.vpGross;
+  el = document.getElementById('se-vspar'); if(el) { el.textContent = fmtVp(vp); el.className = 'se-tot-val ' + vpCls(vp); }
+}
+
+function submitRound() {
+  var t = calcTotals(), hasHCP = activeCourseHCP > 0;
+  var holesLabel = activeHoles.length === 18 ? '18 holes' : (activeHoles[0] === 0 ? 'Front 9' : 'Back 9');
+  var dateStr = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  var entry = {
+    date: dateStr, gross: t.gross, vsPar: t.vpGross,
+    net: hasHCP ? t.net : null, vsParNet: hasHCP ? t.vpNet : null,
+    tee: activeTee, holes: holesLabel
+  };
+  var rKey = 'wh_rounds_' + currentUser.email;
+  var rounds = JSON.parse(localStorage.getItem(rKey) || '[]');
+  rounds.unshift(entry);
+  localStorage.setItem(rKey, JSON.stringify(rounds));
+
+  var eKey = 'wh_extra_rounds_' + currentUser.email;
+  var extra = parseInt(localStorage.getItem(eKey) || '0') + 1;
+  localStorage.setItem(eKey, extra);
+  var el = document.getElementById('m-rounds'); if(el) el.textContent = (currentUser.rounds || 0) + extra;
+
+  cancelScoring();
+  renderRoundLog();
+  var msg = t.gross + ' gross'; if (hasHCP) msg += ' · ' + t.net + ' net';
+  showToast('Round submitted! ' + msg);
+}
+
+function renderRoundLog() {
+  var section = document.getElementById('round-log-section');
+  var list    = document.getElementById('round-log-list');
+  if (!section || !list || !currentUser) return;
+  var rounds = JSON.parse(localStorage.getItem('wh_rounds_' + currentUser.email) || '[]');
+  if (rounds.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = rounds.map(function(r) {
+    var gross = r.gross != null ? r.gross : r.score;
+    var vp    = r.vsParNet != null ? r.vsParNet : r.vsPar;
+    var vpTxt = vp === 0 ? 'Even' : (vp > 0 ? '+'+vp : ''+vp);
+    var vpC   = vp < 0 ? 'rl-under' : vp === 0 ? 'rl-even' : 'rl-over';
+    var sub   = [r.holes || '18 holes', r.tee ? r.tee + ' tees' : ''].filter(Boolean).join(' · ');
+    var scoreHtml = r.net != null
+      ? '<div class="rl-score">' + r.net + '<span style="font-size:.62rem;color:var(--muted);font-family:inherit;font-weight:400;"> net</span></div>' +
+        '<div style="font-size:.7rem;color:var(--muted);">Gross: ' + gross + '</div>'
+      : '<div class="rl-score">' + gross + '</div>';
+    return '<div class="rl-item">' +
+      '<div><div class="rl-date">' + r.date + '</div><div class="rl-holes">' + sub + '</div></div>' +
+      '<div style="text-align:right;">' + scoreHtml + '<div class="rl-par ' + vpC + '">' + vpTxt + '</div></div>' +
+      '</div>';
+  }).join('');
+}
+
+// ════════════════════════════════════
+// EVENTS
+// ════════════════════════════════════
+function eventCardHTML(ev, idx, isStaff) {
+  var btn = isStaff
+    ? '<div style="display:flex;gap:8px;margin-bottom:8px;">' +
+        '<button class="ts-btn checkin" onclick="openEventTeeSheet(' + idx + ')" style="font-size:.72rem;">📋 Tee Sheet</button>' +
+        '<button class="ts-btn" onclick="openEditEvent(' + idx + ')" style="font-size:.72rem;">✏️ Edit</button>' +
+      '</div>' +
+      '<button class="ev-del-btn" onclick="deleteEvent(' + idx + ')">Remove Event</button>'
+    : '<button class="ev-reg-btn' + (ev.registered ? ' registered' : '') + '" onclick="toggleReg(' + idx + ')">' + (ev.registered ? '✓ Registered' : 'Register') + '</button>';
+  var metaRows = '';
+  var feeHTML = ev.fee ? '<div class="ev-fee-row"><span class="ev-fee-lbl">Entry Fee</span><span class="ev-fee-val">' + ev.fee + '</span></div>' : '';
+  var typeHTML = ev.type ? '<div class="ev-fee-row" style="margin-top:-6px;"><span class="ev-fee-lbl">Type</span><span class="ev-fee-val">' + ev.type + '</span></div>' : '';
+  return '<div class="event-card">' +
+    '<div class="event-hdr">' +
+      '<div class="ev-date-box"><div class="edb-mo">' + ev.month + '</div><div class="edb-day">' + ev.day + '</div></div>' +
+      '<div><div class="ev-ttl">' + ev.title + '</div><div class="ev-time">' + ev.time + '</div></div>' +
+    '</div>' +
+    '<div class="event-body">' +
+      '<div class="ev-desc">' + ev.desc + '</div>' +
+      feeHTML + typeHTML +
+      btn +
+    '</div>' +
+  '</div>';
+}
+
+function renderMemberEvents() {
+  var el = document.getElementById('m-events-list');
+  if (el) el.innerHTML = appEvents.map(function(ev, i){ return eventCardHTML(ev, i, false); }).join('');
+}
+
+function renderHomeEvents() {
+  var el = document.getElementById('m-home-events');
+  if (!el) return;
+  el.innerHTML = appEvents.slice(0, 2).map(function(ev) {
+    return '<div class="card" style="display:flex;align-items:center;gap:12px;">' +
+      '<div class="ev-date-box" style="background:var(--forest);border-radius:8px;padding:7px 10px;text-align:center;">' +
+        '<div class="edb-mo" style="color:rgba(255,255,255,.6);">' + ev.month + '</div>' +
+        '<div class="edb-day" style="color:var(--gold);">' + ev.day + '</div>' +
+      '</div>' +
+      '<div><div class="card-title" style="font-size:.92rem;">' + ev.title + '</div><div class="card-body">' + ev.time + '</div></div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderStaffEvents() {
+  var el = document.getElementById('s-events-list');
+  if (el) el.innerHTML = appEvents.map(function(ev, i){ return eventCardHTML(ev, i, true); }).join('');
+}
+
+function toggleReg(idx) {
+  appEvents[idx].registered = !appEvents[idx].registered;
+  saveEvents();
+  renderMemberEvents();
+  showToast(appEvents[idx].registered ? '✅ Registered!' : 'Registration cancelled.');
+}
+
+function deleteEvent(idx) {
+  appEvents.splice(idx, 1);
+  saveEvents();
+  renderStaffEvents();
+  renderMemberEvents();
+  renderHomeEvents();
+  showToast('Event removed.');
+}
+
+function openAddEvent() {
+  document.getElementById('ae-title').value = '';
+  document.getElementById('ae-date').value  = new Date().toISOString().split('T')[0];
+  document.getElementById('ae-time').value  = '';
+  document.getElementById('ae-desc').value  = '';
+  document.getElementById('ae-fee').value   = '';
+  openModal('modal-add-event');
+}
+
+function addEvent() {
+  var title = document.getElementById('ae-title').value.trim();
+  var date  = document.getElementById('ae-date').value;
+  var time  = document.getElementById('ae-time').value.trim();
+  var desc  = document.getElementById('ae-desc').value.trim();
+  var fee   = document.getElementById('ae-fee').value.trim();
+  if (!title || !date) { showToast('Title and date are required.'); return; }
+  var d = new Date(date + 'T12:00:00');
+  var mos = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  appEvents.push({ title:title, date:date, month:mos[d.getMonth()], day:String(d.getDate()), time:time||'TBD', desc:desc, fee:fee||'Member Event', registered:false });
+  appEvents.sort(function(a,b){ return a.date.localeCompare(b.date); });
+  saveEvents();
+  closeModal('modal-add-event');
+  renderStaffEvents();
+  renderMemberEvents();
+  renderHomeEvents();
+  showToast('✅ Event added!');
+}
+
+function openEditEvent(idx) {
+  var ev = appEvents[idx];
+  document.getElementById('ee-idx').value   = idx;
+  document.getElementById('ee-title').value = ev.title;
+  document.getElementById('ee-date').value  = ev.date;
+  document.getElementById('ee-time').value  = ev.time;
+  document.getElementById('ee-desc').value  = ev.desc || '';
+  document.getElementById('ee-fee').value   = ev.fee || '';
+  openModal('modal-edit-event');
+}
+
+function saveEditEvent() {
+  var idx   = parseInt(document.getElementById('ee-idx').value);
+  var title = document.getElementById('ee-title').value.trim();
+  var date  = document.getElementById('ee-date').value;
+  var time  = document.getElementById('ee-time').value.trim();
+  var desc  = document.getElementById('ee-desc').value.trim();
+  var fee   = document.getElementById('ee-fee').value.trim();
+  if (!title || !date) { showToast('Title and date are required.'); return; }
+  var d = new Date(date + 'T12:00:00');
+  var mos = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  var ev = appEvents[idx];
+  appEvents[idx] = Object.assign({}, ev, { title:title, date:date, month:mos[d.getMonth()], day:String(d.getDate()), time:time||'TBD', desc:desc, fee:fee });
+  appEvents.sort(function(a,b){ return a.date.localeCompare(b.date); });
+  saveEvents();
+  closeModal('modal-edit-event');
+  renderStaffEvents();
+  renderMemberEvents();
+  renderHomeEvents();
+  showToast('✅ Event updated!');
+}
+
+function saveEvents() { localStorage.setItem('wh_app_events', JSON.stringify(appEvents)); }
+
+var currentEtsIdx = null;
+function openEventTeeSheet(idx) {
+  currentEtsIdx = idx;
+  var ev = appEvents[idx];
+  document.getElementById('ets-title').textContent = '📋 ' + ev.title + ' — Tee Sheet';
+  var now = new Date(); var h = now.getHours(); var m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('ets-time').value = String(h).padStart(2,'0') + ':' + m;
+  document.getElementById('ets-name').value = '';
+  renderEventTeeSheet(idx);
+  openModal('modal-event-teesheet');
+}
+function renderEventTeeSheet(idx) {
+  var key = 'wh_ev_ts_' + idx;
+  var slots = JSON.parse(localStorage.getItem(key) || '[]').sort(function(a,b){ return a.time.localeCompare(b.time); });
+  var el = document.getElementById('ets-list');
+  if (!slots.length) {
+    el.innerHTML = '<div class="ts-empty">No tee times added yet</div>';
+    return;
+  }
+  el.innerHTML = slots.map(function(s) {
+    var t = s.time.split(':'); var h = parseInt(t[0]); var ampm = h>=12?'PM':'AM'; h=h%12||12;
+    var disp = h + ':' + t[1] + ' ' + ampm;
+    return '<div class="ts-row">' +
+      '<div class="ts-time">' + disp + '</div>' +
+      '<div class="ts-info"><div class="ts-name">' + s.name + '</div></div>' +
+      '<button class="ts-btn" onclick="removeEventTeeSlot(\'' + s.id + '\')">✕</button>' +
+    '</div>';
+  }).join('');
+}
+function addEventTeeSlot() {
+  if (currentEtsIdx === null) return;
+  var time = document.getElementById('ets-time').value;
+  var name = document.getElementById('ets-name').value.trim();
+  if (!time || !name) { showToast('Please enter a time and name'); return; }
+  var key = 'wh_ev_ts_' + currentEtsIdx;
+  var slots = JSON.parse(localStorage.getItem(key) || '[]');
+  slots.push({ id: Date.now().toString(), time: time, name: name });
+  localStorage.setItem(key, JSON.stringify(slots));
+  document.getElementById('ets-name').value = '';
+  renderEventTeeSheet(currentEtsIdx);
+  showToast('Slot added');
+}
+function removeEventTeeSlot(id) {
+  if (currentEtsIdx === null) return;
+  var key = 'wh_ev_ts_' + currentEtsIdx;
+  var slots = JSON.parse(localStorage.getItem(key) || '[]').filter(function(s){ return s.id !== id; });
+  localStorage.setItem(key, JSON.stringify(slots));
+  renderEventTeeSheet(currentEtsIdx);
+}
+
+// ════════════════════════════════════
+// DINING RESERVATION
+// ════════════════════════════════════
+function openDiningRes() {
+  var today = new Date();
+  document.getElementById('md-date').value  = today.toISOString().split('T')[0];
+  document.getElementById('md-party').value = '';
+  document.getElementById('md-notes').value = '';
+  openModal('modal-dining');
+}
+
+function confirmDining() {
+  var date  = document.getElementById('md-date').value;
+  var time  = document.getElementById('md-time').value;
+  var party = document.getElementById('md-party').value;
+  if (!date || !party) { showToast('Please fill in date and party size.'); return; }
+  closeModal('modal-dining');
+  showToast('✅ Reservation requested for ' + party + ' on ' + date + ' at ' + time);
+}
+
+// ════════════════════════════════════
+// MENU (reads shared localStorage)
+// ════════════════════════════════════
+function menuLoad() {
+  try {
+    var d = JSON.parse(localStorage.getItem('wh_menus'));
+    if (d && d._version === WH_MENU_VERSION) return d;
+    return JSON.parse(JSON.stringify(WH_MENU_DEFAULTS));
+  } catch(e) { return JSON.parse(JSON.stringify(WH_MENU_DEFAULTS)); }
+}
+
+function menuSave(data) {
+  data._version = WH_MENU_VERSION;
+  localStorage.setItem('wh_menus', JSON.stringify(data));
+}
+
+function miHTML(item) {
+  return '<div class="mi-row">' +
+    '<div class="mi-info"><div class="mi-name">' + item.name + '</div>' +
+    (item.desc ? '<div class="mi-desc">' + item.desc + '</div>' : '') + '</div>' +
+    (item.price ? '<div class="mi-price">' + item.price + '</div>' : '') +
+  '</div>';
+}
+
+function renderAppMenu() {
+  var g = menuLoad().grill;
+
+  // Render express items into the special styled card
+  var exEl = document.getElementById('m-express-items');
+  if (exEl) {
+    var exItems = g.express || [];
+    exEl.innerHTML = exItems.map(function(item) {
+      return '<div class="ex-item"><div class="ex-item-name">' + item.name + '</div><div class="ex-item-price">' + item.price + '</div></div>';
+    }).join('');
+  }
+
+  // Render regular menu sections in correct order
+  var secs = [
+    {k:'starters',     l:'Starters'},
+    {k:'lunchDesserts',l:'Salads'},
+    {k:'sandwiches',   l:'Sandwiches'},
+    {k:'lunchEntrees', l:'Signature Entrees'},
+    {k:'cocktails',    l:'Cocktails'},
+    {k:'wine',         l:'Wine by the Glass'},
+    {k:'postRound',    l:'Sides'},
+    {k:'quickBites',   l:'Kids Menu'}
+  ];
+  var html = '';
+  secs.forEach(function(s) {
+    var items = g[s.k] || [];
+    if (!items.length) return;
+    html += '<div class="menu-sec-title">' + s.l + '</div>';
+    items.forEach(function(item){ html += miHTML(item); });
+  });
+  document.getElementById('app-menu-content').innerHTML = html;
+}
+
+// ════════════════════════════════════
+// STAFF MENU EDITOR
+// ════════════════════════════════════
+function load86List() { return JSON.parse(localStorage.getItem('wh_86_list') || '[]').filter(function(i){ return i.date === new Date().toDateString(); }); }
+function save86List(list) {
+  var today = new Date().toDateString();
+  var other = JSON.parse(localStorage.getItem('wh_86_list') || '[]').filter(function(i){ return i.date !== today; });
+  localStorage.setItem('wh_86_list', JSON.stringify(other.concat(list)));
+}
+function render86List() {
+  var el = document.getElementById('s-86-list');
+  if (!el) return;
+  var list = load86List();
+  if (!list.length) { el.innerHTML = '<div class="ts-empty" style="font-size:.78rem;">No items 86\'d — members see full menu</div>'; return; }
+  el.innerHTML = list.map(function(item) {
+    return '<div class="ts-row"><div class="ts-info"><div class="ts-name" style="text-decoration:line-through;color:var(--muted);">' + item.name + '</div><div class="ts-detail">' + MENU_SECTION_LABELS[item.section] + '</div></div><button class="ts-btn" onclick="remove86Item(\'' + item.id + '\')">Restore</button></div>';
+  }).join('');
+}
+function open86Modal() {
+  var secEl = document.getElementById('86-section');
+  if (!secEl) return;
+  var orderedKeys = ['express','starters','lunchDesserts','sandwiches','lunchEntrees','cocktails','wine','postRound','quickBites'];
+  secEl.innerHTML = orderedKeys.map(function(k){ return '<option value="'+k+'">'+MENU_SECTION_LABELS[k]+'</option>'; }).join('');
+  render86SectionItems();
+  openModal('modal-86-item');
+}
+function render86SectionItems() {
+  var sec = document.getElementById('86-section').value;
+  var g = menuLoad().grill;
+  var items = g[sec] || [];
+  var current86 = load86List();
+  var itemEl = document.getElementById('86-item');
+  itemEl.innerHTML = items.map(function(item, idx){
+    var already = current86.some(function(i){ return i.section === sec && i.idx === idx; });
+    return '<option value="'+idx+'" '+(already?'disabled':'')+'>'+item.name+(already?' (already 86\'d)':'')+'</option>';
+  }).join('');
+}
+function add86Item() {
+  var sec = document.getElementById('86-section').value;
+  var idx = parseInt(document.getElementById('86-item').value);
+  var g = menuLoad().grill;
+  var item = g[sec][idx];
+  if (!item) return;
+  var list = load86List();
+  if (list.some(function(i){ return i.section === sec && i.idx === idx; })) { showToast('Already 86\'d'); return; }
+  list.push({ id:Date.now().toString(), date:new Date().toDateString(), section:sec, idx:idx, name:item.name });
+  save86List(list);
+  closeModal('modal-86-item');
+  render86List();
+  renderStaffMenus();
+  showToast('🚫 ' + item.name + ' marked 86\'d');
+}
+function remove86Item(id) {
+  save86List(load86List().filter(function(i){ return i.id !== id; }));
+  render86List();
+  renderStaffMenus();
+  showToast('✅ Item restored to menu');
+}
+
+function renderStaffMenus() {
+  var g    = menuLoad().grill;
+  var el   = document.getElementById('s-menu-sections');
+  if (!el) return;
+  var html = '';
+  var list86 = load86List();
+  var orderedKeys = ['express','starters','lunchDesserts','sandwiches','lunchEntrees','cocktails','wine','postRound','quickBites'];
+  orderedKeys.forEach(function(key) {
+    var items = g[key] || [];
+    html += '<div class="menu-sec-title">' + MENU_SECTION_LABELS[key] + '</div>';
+    items.forEach(function(item, idx) {
+      var is86 = list86.some(function(i){ return i.section === key && i.idx === idx; });
+      html += '<div class="smi"' + (is86 ? ' style="opacity:.45;"' : '') + '>' +
+        '<div class="smi-info">' +
+          '<div class="smi-name"' + (is86 ? ' style="text-decoration:line-through;"' : '') + '>' + item.name + (is86 ? ' <span style="font-size:.65rem;font-weight:700;color:#991b1b;background:#fee2e2;padding:1px 6px;border-radius:10px;">86\'d</span>' : '') + '</div>' +
+          '<div class="smi-price">' + (item.price || '(no price)') +
+            (item.desc ? ' · ' + item.desc.substring(0,32) + (item.desc.length > 32 ? '…' : '') : '') + '</div>' +
+        '</div>' +
+        '<button class="smi-edit" onclick="openMenuEdit(\'' + key + '\',' + idx + ')">Edit</button>' +
+      '</div>';
+    });
+  });
+  el.innerHTML = html;
+  render86List();
+}
+
+function openMenuEdit(section, idx) {
+  var g    = menuLoad().grill;
+  var item = g[section][idx];
+  document.getElementById('me-name').value    = item.name;
+  document.getElementById('me-desc').value    = item.desc || '';
+  document.getElementById('me-price').value   = item.price || '';
+  document.getElementById('me-section').value = section;
+  document.getElementById('me-index').value   = idx;
+  openModal('modal-menu-edit');
+}
+
+function saveMenuEdit() {
+  var section = document.getElementById('me-section').value;
+  var idx     = parseInt(document.getElementById('me-index').value);
+  var data    = menuLoad();
+  data.grill[section][idx] = {
+    name:  document.getElementById('me-name').value.trim(),
+    desc:  document.getElementById('me-desc').value.trim(),
+    price: document.getElementById('me-price').value.trim()
+  };
+  menuSave(data);
+  closeModal('modal-menu-edit');
+  renderStaffMenus();
+  renderAppMenu();
+  showToast('✅ Menu item updated!');
+}
+
+// ════════════════════════════════════
+// STAFF INIT
+// ════════════════════════════════════
+// ════════════════════════════════════
+// PIN SHEET UPLOAD
+// ════════════════════════════════════
+function uploadPinSheet(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var data = {src: e.target.result, uploaded: new Date().toISOString(), date: new Date().toDateString()};
+    localStorage.setItem('wh_pin_sheet', JSON.stringify(data));
+    renderPinSheetUpload();
+    // Update member view immediately
+    var memberImg = document.getElementById('pin-sheet-img');
+    if (memberImg) memberImg.src = e.target.result;
+    showToast('✅ Pin sheet updated — members see it now');
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+function renderPinSheetUpload() {
+  var raw = localStorage.getItem('wh_pin_sheet');
+  var preview = document.getElementById('ps-preview');
+  var status  = document.getElementById('ps-status');
+  var clearBtn = document.getElementById('ps-clear-btn');
+  if (!preview) return;
+  if (raw) {
+    var data = JSON.parse(raw);
+    var uploaded = new Date(data.uploaded);
+    var timeStr = uploaded.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    var dateStr = uploaded.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    preview.src = data.src;
+    preview.style.display = 'block';
+    if (status) status.textContent = 'Last uploaded ' + dateStr + ' at ' + timeStr;
+    if (clearBtn) clearBtn.style.display = 'inline-block';
+  } else {
+    preview.style.display = 'none';
+    if (status) status.textContent = 'No custom pin sheet uploaded — members see the default.';
+    if (clearBtn) clearBtn.style.display = 'none';
+  }
+}
+function clearPinSheet() {
+  localStorage.removeItem('wh_pin_sheet');
+  renderPinSheetUpload();
+  var memberImg = document.getElementById('pin-sheet-img');
+  if (memberImg) memberImg.src = '../images/pinsheet.jpg';
+  showToast('Pin sheet reset to default');
+}
+function loadPinSheetForMember() {
+  var raw = localStorage.getItem('wh_pin_sheet');
+  var img = document.getElementById('pin-sheet-img');
+  var dateEl = document.getElementById('pin-sheet-date');
+  if (!img) return;
+  if (raw) {
+    var data = JSON.parse(raw);
+    img.src = data.src;
+    if (dateEl) {
+      var d = new Date(data.uploaded);
+      dateEl.textContent = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) + ' · Updated ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    }
+  } else {
+    if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  }
+}
+
+// ════════════════════════════════════
+// POOL OPERATIONS
+// ════════════════════════════════════
+function poolLoad() { return JSON.parse(localStorage.getItem('wh_pool') || 'null') || {open:true, reason:'', bathers:0, notice:''}; }
+function poolSave(d) { localStorage.setItem('wh_pool', JSON.stringify(d)); }
+
+function initPool() { renderPoolStatus(); renderPoolNoticeCard(); renderPoolGuests(); renderChemLog(); }
+
+function renderPoolStatus() {
+  var d = poolLoad();
+  var badge = document.getElementById('pool-status-badge');
+  var reason = document.getElementById('pool-reason');
+  if (badge) { badge.textContent = d.open ? 'Open' : 'Closed'; badge.style.background = d.open ? '#dcfce7' : '#fee2e2'; badge.style.color = d.open ? '#166534' : '#991b1b'; }
+  if (reason) reason.value = d.reason || '';
+  var cnt = document.getElementById('bather-count');
+  if (cnt) cnt.textContent = d.bathers || 0;
+}
+function setPoolStatus(open) {
+  var d = poolLoad();
+  d.open = open;
+  d.reason = document.getElementById('pool-reason').value.trim();
+  if (open) d.reason = '';
+  poolSave(d);
+  renderPoolStatus();
+  // Refresh member home pool chip
+  renderPoolChip();
+  showToast(open ? '🏊 Pool marked Open' : '🚫 Pool marked Closed');
+}
+function adjustBathers(delta) {
+  var d = poolLoad();
+  d.bathers = Math.max(0, (d.bathers||0) + delta);
+  poolSave(d);
+  var cnt = document.getElementById('bather-count');
+  if (cnt) cnt.textContent = d.bathers;
+}
+function renderPoolNoticeCard() {
+  var d = poolLoad();
+  var notice = (d.notice||'').trim();
+  var activeEl = document.getElementById('pool-notice-active');
+  var clearBtn = document.getElementById('pool-notice-clear-btn');
+  var input    = document.getElementById('pool-notice-input');
+  if (!activeEl) return;
+  if (notice) { activeEl.style.display='block'; activeEl.textContent='📣 Active: '+notice; if(clearBtn) clearBtn.style.display=''; if(input) input.value=''; }
+  else { activeEl.style.display='none'; if(clearBtn) clearBtn.style.display='none'; }
+}
+function pushPoolNotice() {
+  var input = document.getElementById('pool-notice-input');
+  var text  = input ? input.value.trim() : '';
+  if (!text) return;
+  var d = poolLoad(); d.notice = text; poolSave(d);
+  renderPoolNoticeCard(); renderPoolChip();
+  showToast('Pool notice pushed!');
+}
+function clearPoolNotice() {
+  var d = poolLoad(); d.notice = ''; poolSave(d);
+  renderPoolNoticeCard(); renderPoolChip();
+  showToast('Pool notice cleared');
+}
+
+function poolGuestLoad() { return JSON.parse(localStorage.getItem('wh_pool_guests') || '[]').filter(function(g){ return g.date === new Date().toDateString(); }); }
+function poolGuestSave(list) {
+  var today = new Date().toDateString();
+  var other = JSON.parse(localStorage.getItem('wh_pool_guests') || '[]').filter(function(g){ return g.date !== today; });
+  localStorage.setItem('wh_pool_guests', JSON.stringify(other.concat(list)));
+}
+function renderPoolGuests() {
+  var el = document.getElementById('pool-guest-list');
+  if (!el) return;
+  var list = poolGuestLoad();
+  if (!list.length) { el.innerHTML = '<div class="ts-empty">No guests logged today</div>'; return; }
+  var total = list.reduce(function(s,g){ return s+g.count; }, 0);
+  el.innerHTML = list.map(function(g) {
+    return '<div class="ts-row"><div class="ts-info"><div class="ts-name">'+g.member+'</div><div class="ts-detail">'+g.count+' guest'+(g.count>1?'s':'')+'</div></div><button class="ts-btn" onclick="removePoolGuest(\''+g.id+'\')">✕</button></div>';
+  }).join('') + '<div style="font-size:.72rem;color:var(--muted);text-align:right;margin-top:6px;">'+total+' total guest'+(total>1?'s':'')+' today</div>';
+}
+function addPoolGuest() {
+  var member = document.getElementById('pg-member').value.trim();
+  var count  = parseInt(document.getElementById('pg-count').value);
+  if (!member) { showToast('Please enter a member name'); return; }
+  var list = poolGuestLoad();
+  list.push({id:Date.now().toString(), date:new Date().toDateString(), member:member, count:count});
+  poolGuestSave(list); closeModal('modal-add-pool-guest');
+  document.getElementById('pg-member').value = '';
+  renderPoolGuests(); showToast('Guest logged');
+}
+function removePoolGuest(id) {
+  poolGuestSave(poolGuestLoad().filter(function(g){ return g.id !== id; }));
+  renderPoolGuests();
+}
+
+function chemLoad() { return JSON.parse(localStorage.getItem('wh_pool_chem') || '[]').filter(function(r){ return r.date === new Date().toDateString(); }); }
+function chemSaveAll(list) {
+  var today = new Date().toDateString();
+  var other = JSON.parse(localStorage.getItem('wh_pool_chem') || '[]').filter(function(r){ return r.date !== today; });
+  localStorage.setItem('wh_pool_chem', JSON.stringify(other.concat(list)));
+}
+function renderChemLog() {
+  var el = document.getElementById('pool-chem-list');
+  if (!el) return;
+  var list = chemLoad().slice().sort(function(a,b){ return b.logged-a.logged; });
+  if (!list.length) { el.innerHTML = '<div class="ts-empty">No readings today — tap + Reading to log</div>'; return; }
+  el.innerHTML = list.map(function(r) {
+    var d = new Date(r.logged);
+    var t = d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    var phOk = r.ph >= 7.2 && r.ph <= 7.6;
+    var clOk = r.cl >= 1.0 && r.cl <= 3.0;
+    var cls = (phOk && clOk) ? 'good' : (!phOk || r.cl < 0.5) ? 'bad' : 'warn';
+    var lbl = cls === 'good' ? '✓ Good' : cls === 'bad' ? '⚠ Attention' : '~ Marginal';
+    return '<div class="chem-row"><div class="chem-time">'+t+'</div><div class="chem-vals">pH '+r.ph+' &nbsp;·&nbsp; Cl '+r.cl+' ppm'+(r.note ? '<br><span style="font-size:.7rem;color:var(--muted);">'+r.note+'</span>' : '')+'</div><span class="chem-badge '+cls+'">'+lbl+'</span></div>';
+  }).join('');
+}
+function addChemReading() {
+  var ph   = parseFloat(document.getElementById('chem-ph').value);
+  var cl   = parseFloat(document.getElementById('chem-cl').value);
+  var note = document.getElementById('chem-note').value.trim();
+  if (isNaN(ph) || isNaN(cl)) { showToast('Please enter pH and chlorine values'); return; }
+  var today = new Date().toDateString();
+  var all = JSON.parse(localStorage.getItem('wh_pool_chem') || '[]');
+  all.push({id:Date.now().toString(), date:today, ph:ph, cl:cl, note:note, logged:Date.now()});
+  localStorage.setItem('wh_pool_chem', JSON.stringify(all));
+  closeModal('modal-add-chem');
+  document.getElementById('chem-ph').value = '';
+  document.getElementById('chem-cl').value = '';
+  document.getElementById('chem-note').value = '';
+  renderChemLog(); showToast('Reading logged');
+}
+
+// Pool chip on member home
+function renderPoolChip() {
+  var el = document.getElementById('m-pool-chip');
+  if (!el) return;
+  var d = poolLoad();
+  el.style.display = 'flex';
+  el.querySelector('.pool-chip-status').textContent = d.open ? '🏊 Pool Open' : '🚫 Pool Closed';
+  el.querySelector('.pool-chip-status').style.color = d.open ? '#166534' : '#991b1b';
+  var noteEl = el.querySelector('.pool-chip-note');
+  if (d.notice) { noteEl.textContent = d.notice; noteEl.style.display=''; }
+  else if (!d.open && d.reason) { noteEl.textContent = d.reason; noteEl.style.display=''; }
+  else { noteEl.style.display='none'; }
+}
+
+// ════════════════════════════════════
+// GROUNDS OPERATIONS
+// ════════════════════════════════════
+var HOLE_STATUSES = ['open','temp','closed'];
+var HOLE_STATUS_LABELS = {open:'Open', temp:'Temp Rules', closed:'Closed'};
+
+function holeStatusLoad() {
+  var raw = JSON.parse(localStorage.getItem('wh_hole_status') || 'null');
+  if (!raw) {
+    raw = [];
+    for (var i=1;i<=18;i++) raw.push({hole:i, status:'open', note:''});
+  }
+  return raw;
+}
+function holeStatusSave(list) { localStorage.setItem('wh_hole_status', JSON.stringify(list)); }
+
+function renderHoleBoard() {
+  var el = document.getElementById('hole-status-board');
+  if (!el) return;
+  var list = holeStatusLoad();
+  el.innerHTML = list.map(function(h) {
+    return '<div class="hole-tile '+h.status+'" onclick="cycleHoleStatus('+h.hole+')">' +
+      '<div class="hole-tile-num">'+h.hole+'</div>' +
+      '<div class="hole-tile-lbl">'+HOLE_STATUS_LABELS[h.status]+'</div>' +
+    '</div>';
+  }).join('');
+}
+function cycleHoleStatus(holeNum) {
+  var list = holeStatusLoad();
+  var h = list.find(function(x){ return x.hole === holeNum; });
+  if (!h) return;
+  var idx = HOLE_STATUSES.indexOf(h.status);
+  h.status = HOLE_STATUSES[(idx+1) % HOLE_STATUSES.length];
+  if (h.status === 'open') h.note = '';
+  holeStatusSave(list);
+  renderHoleBoard();
+  renderHoleAlerts();
+  showToast('Hole '+holeNum+': '+HOLE_STATUS_LABELS[h.status]);
+}
+function renderHoleAlerts() {
+  var el = document.getElementById('m-hole-alerts');
+  if (!el) return;
+  var alerts = holeStatusLoad().filter(function(h){ return h.status !== 'open'; });
+  if (!alerts.length) { el.style.display='none'; return; }
+  el.style.display='block';
+  el.innerHTML = '<div style="font-family:\'Cormorant Garamond\',serif;font-size:.9rem;font-weight:700;color:var(--dark);margin-bottom:8px;">⚠️ Course Alerts</div>' +
+    alerts.map(function(h) {
+      var cls = h.status === 'closed' ? '#991b1b' : '#7a4500';
+      var bg  = h.status === 'closed' ? '#fee2e2' : '#fff3cd';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);">' +
+        '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.1rem;font-weight:700;color:'+cls+';min-width:28px;">'+h.hole+'</div>' +
+        '<div style="font-size:.78rem;font-weight:600;padding:2px 8px;border-radius:20px;background:'+bg+';color:'+cls+';">'+HOLE_STATUS_LABELS[h.status]+'</div>' +
+        (h.note ? '<div style="font-size:.74rem;color:var(--muted);">'+h.note+'</div>' : '') +
+      '</div>';
+    }).join('');
+}
+
+function woLoad() { return JSON.parse(localStorage.getItem('wh_work_orders') || '[]'); }
+function woSave(list) { localStorage.setItem('wh_work_orders', JSON.stringify(list)); }
+function renderWorkOrders() {
+  var el = document.getElementById('wo-list');
+  if (!el) return;
+  var list = woLoad().slice().sort(function(a,b){
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    var p = {urgent:0,medium:1,low:2};
+    return (p[a.priority]||1)-(p[b.priority]||1);
+  });
+  if (!list.length) { el.innerHTML='<div class="ts-empty">No open work orders</div>'; return; }
+  el.innerHTML = list.map(function(w) {
+    var priCls = w.done ? '' : w.priority;
+    var priBadge = {urgent:'🔴 Urgent',medium:'🟡 Medium',low:'🟢 Low'}[w.priority]||'';
+    return '<div class="wo-row '+(w.done?'done':priCls)+'">' +
+      '<div class="wo-task">'+(w.done?'<s>':'')+w.task+(w.done?'</s>':'')+'</div>' +
+      '<div class="wo-meta">'+priBadge+(w.assign?' &nbsp;·&nbsp; Assigned: '+w.assign:'')+'</div>' +
+      '<div class="wo-actions">' +
+        (!w.done ? '<button class="inc-btn resolve" onclick="completeWO(\''+w.id+'\')">Complete</button>' : '') +
+        '<button class="inc-btn del" onclick="deleteWO(\''+w.id+'\')">Remove</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+function addWorkOrder() {
+  var task   = document.getElementById('wo-task').value.trim();
+  var prio   = document.getElementById('wo-priority').value;
+  var assign = document.getElementById('wo-assign').value.trim();
+  if (!task) { showToast('Please enter a task description'); return; }
+  var list = woLoad();
+  list.push({id:Date.now().toString(), task:task, priority:prio, assign:assign, done:false, created:Date.now()});
+  woSave(list); closeModal('modal-add-wo');
+  document.getElementById('wo-task').value = '';
+  document.getElementById('wo-assign').value = '';
+  renderWorkOrders(); showToast('Work order created');
+}
+function completeWO(id) {
+  woSave(woLoad().map(function(w){ return w.id===id ? Object.assign({},w,{done:true}) : w; }));
+  renderWorkOrders();
+}
+function deleteWO(id) {
+  woSave(woLoad().filter(function(w){ return w.id!==id; }));
+  renderWorkOrders();
+}
+
+function sprayLoad() { return JSON.parse(localStorage.getItem('wh_spray_log') || '[]'); }
+function spraySave(list) { localStorage.setItem('wh_spray_log', JSON.stringify(list)); }
+function renderSprayLog() {
+  var el = document.getElementById('spray-list');
+  if (!el) return;
+  var list = sprayLoad().slice().sort(function(a,b){ return b.logged-a.logged; });
+  if (!list.length) { el.innerHTML='<div class="ts-empty">No applications logged</div>'; return; }
+  el.innerHTML = list.map(function(s) {
+    var d = new Date(s.logged);
+    var dateStr = d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    return '<div class="spray-row">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+        '<div class="spray-product">'+s.product+'</div>' +
+        '<button class="ts-btn" onclick="deleteSpray(\''+s.id+'\')" style="font-size:.7rem;padding:2px 7px;">✕</button>' +
+      '</div>' +
+      '<div class="spray-meta">📍 '+s.location+' &nbsp;·&nbsp; '+s.rate+' &nbsp;·&nbsp; '+dateStr+'</div>' +
+      (s.rei ? '<div class="spray-rei">⏱ Re-entry: '+s.rei+'</div>' : '') +
+    '</div>';
+  }).join('');
+}
+function addSprayLog() {
+  var product  = document.getElementById('spray-product').value.trim();
+  var location = document.getElementById('spray-location').value.trim();
+  var rate     = document.getElementById('spray-rate').value.trim();
+  var rei      = document.getElementById('spray-rei').value.trim();
+  if (!product || !location) { showToast('Please enter product and location'); return; }
+  var list = sprayLoad();
+  list.push({id:Date.now().toString(), product:product, location:location, rate:rate, rei:rei, logged:Date.now()});
+  spraySave(list); closeModal('modal-add-spray');
+  document.getElementById('spray-product').value = '';
+  document.getElementById('spray-location').value = '';
+  document.getElementById('spray-rate').value = '';
+  document.getElementById('spray-rei').value = '';
+  renderSprayLog(); showToast('Application logged');
+}
+function deleteSpray(id) {
+  spraySave(sprayLoad().filter(function(s){ return s.id!==id; }));
+  renderSprayLog();
+}
+
+function initGrounds() {
+  renderHoleBoard();
+  renderWorkOrders();
+  renderSprayLog();
+}
+
+// ════════════════════════════════════
+// MEMBER LOOKUP
+// ════════════════════════════════════
+function memberSearch(q) {
+  var el = document.getElementById('member-results');
+  if (!el) return;
+  var term = q.trim().toLowerCase();
+  if (!term) { el.innerHTML = ''; return; }
+  var results = MEMBER_DIRECTORY.filter(function(m) {
+    return m.name.toLowerCase().indexOf(term) !== -1 ||
+           m.number.indexOf(term) !== -1;
+  });
+  if (!results.length) {
+    el.innerHTML = '<div class="mem-empty">No members found for "' + q + '"</div>';
+    return;
+  }
+  el.innerHTML = results.map(function(m) {
+    var hcpPill = m.handicap !== 'N/A'
+      ? '<span class="mem-pill hcp">HCP ' + m.handicap + '</span>'
+      : '';
+    return '<div class="mem-result">' +
+      '<div><span class="mem-name">' + m.name + '</span><span class="mem-number">#' + m.number + '</span></div>' +
+      '<div class="mem-pills">' +
+        '<span class="mem-pill type">' + m.membership + '</span>' +
+        hcpPill +
+        '<span class="mem-pill since">Member since ' + m.since + '</span>' +
+      '</div>' +
+      '<div class="mem-contact-row">' +
+        '<a href="tel:' + m.phone.replace(/\D/g,'') + '" class="mem-contact-btn">📞 ' + m.phone + '</a>' +
+        '<a href="mailto:' + m.email + '" class="mem-contact-btn">✉️ Email</a>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ════════════════════════════════════
+// STAFF MESSAGE BOARD
+// ════════════════════════════════════
+function staffMsgLoad() {
+  return JSON.parse(localStorage.getItem('wh_staff_messages') || '[]');
+}
+function staffMsgSave(list) {
+  localStorage.setItem('wh_staff_messages', JSON.stringify(list));
+}
+function renderStaffMessages() {
+  var el = document.getElementById('s-msg-list');
+  if (!el) return;
+  var msgs = staffMsgLoad();
+  if (!msgs.length) {
+    el.innerHTML = '<div class="ts-empty">No messages yet — be the first to leave a note.</div>';
+    return;
+  }
+  // newest first
+  el.innerHTML = msgs.slice().reverse().map(function(m) {
+    var d = new Date(m.posted);
+    var timeStr = d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    return '<div class="staff-msg">' +
+      '<div class="staff-msg-meta">' +
+        '<span class="staff-msg-author">' + m.author + '</span>' +
+        '<span>' +
+          '<span class="staff-msg-time">' + timeStr + '</span>' +
+          '<button class="staff-msg-del" onclick="deleteStaffMessage(' + m.posted + ')">✕</button>' +
+        '</span>' +
+      '</div>' +
+      '<div class="staff-msg-text">' + m.text.replace(/</g,'&lt;') + '</div>' +
+    '</div>';
+  }).join('');
+}
+function postStaffMessage() {
+  var input = document.getElementById('s-msg-input');
+  var text = input ? input.value.trim() : '';
+  if (!text) return;
+  var author = (currentUser && currentUser.name) ? currentUser.name : 'Staff';
+  var msgs = staffMsgLoad();
+  msgs.push({ author: author, text: text, posted: Date.now() });
+  staffMsgSave(msgs);
+  input.value = '';
+  renderStaffMessages();
+  showToast('Message posted');
+}
+function deleteStaffMessage(posted) {
+  var msgs = staffMsgLoad().filter(function(m){ return m.posted !== posted; });
+  staffMsgSave(msgs);
+  renderStaffMessages();
+}
+
+// ════════════════════════════════════
+// LOST & FOUND
+// ════════════════════════════════════
+function lfLoad() {
+  return JSON.parse(localStorage.getItem('wh_lost_found') || '[]');
+}
+function lfSave(list) {
+  localStorage.setItem('wh_lost_found', JSON.stringify(list));
+}
+function renderLostFound() {
+  var el = document.getElementById('s-lf-list');
+  if (!el) return;
+  var list = lfLoad().slice().sort(function(a,b){
+    if (a.claimed !== b.claimed) return a.claimed ? 1 : -1;
+    return b.logged - a.logged;
+  });
+  if (!list.length) {
+    el.innerHTML = '<div class="ts-empty">No items logged — tap + Add to log a found item.</div>';
+    return;
+  }
+  el.innerHTML = list.map(function(item) {
+    var d = new Date(item.logged);
+    var dateStr = d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    var statusCls = item.claimed ? 'claimed' : 'unclaimed';
+    var statusLbl = item.claimed ? '✓ Claimed' : 'Unclaimed';
+    var claimBtn = !item.claimed
+      ? '<button class="inc-btn resolve" onclick="claimLostFound(' + item.logged + ')">Mark Claimed</button>'
+      : '';
+    var contactRow = item.contact
+      ? '<div class="lf-contact">📞 ' + item.contact + '</div>'
+      : '';
+    return '<div class="lf-row ' + (item.claimed ? 'claimed' : '') + '">' +
+      '<div class="lf-item">' + item.item.replace(/</g,'&lt;') + '</div>' +
+      '<div class="lf-detail">📍 ' + (item.location || 'Location not noted') + ' · Found ' + dateStr + '</div>' +
+      contactRow +
+      '<span class="lf-status ' + statusCls + '">' + statusLbl + '</span>' +
+      '<div class="inc-actions">' +
+        claimBtn +
+        '<button class="inc-btn del" onclick="deleteLostFound(' + item.logged + ')">Remove</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+function addLostFound() {
+  var item    = document.getElementById('lf-item').value.trim();
+  var location = document.getElementById('lf-location').value.trim();
+  var contact = document.getElementById('lf-contact').value.trim();
+  if (!item) { showToast('Please describe the item'); return; }
+  var list = lfLoad();
+  list.push({ item:item, location:location, contact:contact, logged:Date.now(), claimed:false });
+  lfSave(list);
+  renderLostFound();
+  closeModal('modal-add-lf');
+  document.getElementById('lf-item').value = '';
+  document.getElementById('lf-location').value = '';
+  document.getElementById('lf-contact').value = '';
+  showToast('Item logged');
+}
+function claimLostFound(logged) {
+  lfSave(lfLoad().map(function(i){ return i.logged === logged ? Object.assign({},i,{claimed:true}) : i; }));
+  renderLostFound();
+}
+function deleteLostFound(logged) {
+  lfSave(lfLoad().filter(function(i){ return i.logged !== logged; }));
+  renderLostFound();
+}
+
+// ════════════════════════════════════
+// INCIDENT / MAINTENANCE LOG
+// ════════════════════════════════════
+function incidentLoad() {
+  return JSON.parse(localStorage.getItem('wh_incidents') || '[]');
+}
+function incidentSave(list) {
+  localStorage.setItem('wh_incidents', JSON.stringify(list));
+}
+function renderIncidents() {
+  var el = document.getElementById('s-incident-list');
+  if (!el) return;
+  var list = incidentLoad().slice().sort(function(a,b){ return b.logged - a.logged; });
+  if (!list.length) {
+    el.innerHTML = '<div class="ts-empty">No incidents logged — tap + Log to report an issue.</div>';
+    return;
+  }
+  var priorityOrder = {urgent:0, medium:1, low:2};
+  list.sort(function(a,b){
+    if (a.resolved !== b.resolved) return a.resolved ? 1 : -1;
+    return (priorityOrder[a.priority]||1) - (priorityOrder[b.priority]||1);
+  });
+  el.innerHTML = list.map(function(inc) {
+    var d = new Date(inc.logged);
+    var timeStr = d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    var badgeCls = inc.resolved ? 'resolved' : inc.priority;
+    var badgeLbl = inc.resolved ? '✓ Resolved' : (inc.priority === 'urgent' ? '🔴 Urgent' : inc.priority === 'medium' ? '🟡 Medium' : '🟢 Low');
+    var resolveBtn = !inc.resolved
+      ? '<button class="inc-btn resolve" onclick="resolveIncident(' + inc.logged + ')">Mark Resolved</button>'
+      : '';
+    return '<div class="inc-row ' + (inc.resolved ? 'resolved' : inc.priority) + '">' +
+      '<div class="inc-top">' +
+        '<span class="inc-badge ' + badgeCls + '">' + badgeLbl + '</span>' +
+        '<span class="inc-type">' + inc.type + '</span>' +
+        (inc.location ? '<span class="inc-loc">· ' + inc.location + '</span>' : '') +
+      '</div>' +
+      '<div class="inc-desc">' + inc.desc.replace(/</g,'&lt;') + '</div>' +
+      '<div class="inc-meta">Logged by ' + inc.reporter + ' · ' + timeStr + '</div>' +
+      '<div class="inc-actions">' +
+        resolveBtn +
+        '<button class="inc-btn del" onclick="deleteIncident(' + inc.logged + ')">Remove</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+function addIncident() {
+  var type     = document.getElementById('inc-type').value;
+  var priority = document.getElementById('inc-priority').value;
+  var location = document.getElementById('inc-location').value.trim();
+  var desc     = document.getElementById('inc-desc').value.trim();
+  if (!desc) { showToast('Please describe the issue'); return; }
+  var reporter = (currentUser && currentUser.name) ? currentUser.name : 'Staff';
+  var list = incidentLoad();
+  list.push({ type:type, priority:priority, location:location, desc:desc, reporter:reporter, logged:Date.now(), resolved:false });
+  incidentSave(list);
+  renderIncidents();
+  closeModal('modal-add-incident');
+  document.getElementById('inc-desc').value = '';
+  document.getElementById('inc-location').value = '';
+  showToast('Incident logged');
+}
+function resolveIncident(logged) {
+  var list = incidentLoad().map(function(i){ return i.logged === logged ? Object.assign({},i,{resolved:true}) : i; });
+  incidentSave(list);
+  renderIncidents();
+}
+function deleteIncident(logged) {
+  incidentSave(incidentLoad().filter(function(i){ return i.logged !== logged; }));
+  renderIncidents();
+}
+
+// ════════════════════════════════════
+// TODAY AT A GLANCE
+// ════════════════════════════════════
+function refreshGlance() {
+  // On the course
+  var onCourse = JSON.parse(localStorage.getItem('wh_on_course') || '[]');
+  var totalOnCourse = onCourse.reduce(function(s,t){ return s + t.players; }, 0);
+  var el = document.getElementById('s-stat-rounds');
+  if (el) el.textContent = totalOnCourse;
+
+  // Dining reservations today
+  var today = new Date().toDateString();
+  var resList = JSON.parse(localStorage.getItem('wh_dining_res') || '[]').filter(function(r){ return r.date === today; });
+  el = document.getElementById('s-stat-res');
+  if (el) el.textContent = resList.length;
+
+  // Active members (directory size)
+  el = document.getElementById('s-stat-members');
+  if (el) el.textContent = MEMBER_DIRECTORY.length;
+
+  // Events this week (Mon–Sun window)
+  var now  = new Date();
+  var dow  = now.getDay(); // 0=Sun
+  var mon  = new Date(now); mon.setDate(now.getDate() - ((dow + 6) % 7)); mon.setHours(0,0,0,0);
+  var sun  = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+  var events = JSON.parse(localStorage.getItem('wh_events') || 'null') || DEFAULT_EVENTS;
+  var evCount = events.filter(function(e){
+    var d = new Date(e.date + 'T00:00:00');
+    return d >= mon && d <= sun;
+  }).length;
+  el = document.getElementById('s-stat-ev');
+  if (el) el.textContent = evCount;
+}
+
+// ════════════════════════════════════
+// PUSH A NOTICE TO MEMBERS
+// ════════════════════════════════════
+function renderNoticeCard() {
+  var data = JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {};
+  var notice = (data.notice || '').trim();
+  var activeEl  = document.getElementById('notice-active');
+  var clearBtn  = document.getElementById('notice-clear-btn');
+  var input     = document.getElementById('notice-input');
+  if (!activeEl) return;
+  if (notice) {
+    activeEl.style.display = 'block';
+    activeEl.textContent   = '⚠️ Active: ' + notice;
+    if (clearBtn) clearBtn.style.display = '';
+    if (input)    input.value = '';
+  } else {
+    activeEl.style.display = 'none';
+    if (clearBtn) clearBtn.style.display = 'none';
+  }
+}
+function pushMemberNotice() {
+  var input  = document.getElementById('notice-input');
+  var text   = input ? input.value.trim() : '';
+  if (!text) return;
+  var data   = Object.assign({}, WH_COND_DEFAULTS, JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {});
+  data.notice = text;
+  localStorage.setItem('wh_conditions', JSON.stringify(data));
+  renderNoticeCard();
+  loadConditions();          // refresh member-side display
+  loadConditionsEditor();    // keep editor in sync
+  showToast('📣 Notice pushed to members!');
+}
+function clearMemberNotice() {
+  var data   = Object.assign({}, WH_COND_DEFAULTS, JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {});
+  data.notice = '';
+  localStorage.setItem('wh_conditions', JSON.stringify(data));
+  renderNoticeCard();
+  loadConditions();
+  loadConditionsEditor();
+  showToast('Notice cleared');
+}
+
+// ════════════════════════════════════
+// DINING RESERVATION LOG
+// ════════════════════════════════════
+function diningLoad() {
+  var today = new Date().toDateString();
+  return JSON.parse(localStorage.getItem('wh_dining_res') || '[]').filter(function(r){ return r.date === today; });
+}
+function diningSave(list) {
+  var today = new Date().toDateString();
+  var other = JSON.parse(localStorage.getItem('wh_dining_res') || '[]').filter(function(r){ return r.date !== today; });
+  localStorage.setItem('wh_dining_res', JSON.stringify(other.concat(list)));
+  refreshGlance();
+}
+function renderDiningLog() {
+  var list = diningLoad().sort(function(a,b){ return a.time24.localeCompare(b.time24); });
+  var el = document.getElementById('s-dining-list');
+  var cnt = document.getElementById('s-dining-count');
+  if (!el) return;
+  if (!list.length) {
+    el.innerHTML = '<div class="ts-empty">No reservations yet — tap + Add</div>';
+    if (cnt) cnt.textContent = '';
+    return;
+  }
+  var totalGuests = list.reduce(function(s,r){ return s + r.party; }, 0);
+  el.innerHTML = list.map(function(r){
+    return '<div class="dr-row">' +
+      '<div class="dr-time">' + r.timeDisplay + '</div>' +
+      '<div class="dr-info">' +
+        '<div class="dr-name">' + r.name + '</div>' +
+        '<div class="dr-detail">Party of ' + r.party + (r.note ? ' &nbsp;·&nbsp; ' + r.note : '') + '</div>' +
+      '</div>' +
+      '<button class="ts-btn" onclick="removeReservation(\'' + r.id + '\')">✕</button>' +
+    '</div>';
+  }).join('');
+  if (cnt) cnt.textContent = list.length + ' reservations  ·  ' + totalGuests + ' total guests';
+}
+function addReservation() {
+  var time24 = document.getElementById('dr-time').value;
+  var name   = document.getElementById('dr-name').value.trim();
+  var party  = parseInt(document.getElementById('dr-party').value);
+  var note   = document.getElementById('dr-note').value.trim();
+  if (!time24 || !name) { showToast('Please enter a time and party name'); return; }
+  var h = parseInt(time24.split(':')[0]), m = time24.split(':')[1];
+  var ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+  var list = diningLoad();
+  list.push({id:Date.now().toString(), date:new Date().toDateString(), time24:time24, timeDisplay:h+':'+m+' '+ampm, name:name, party:party, note:note, seated:false});
+  diningSave(list);
+  closeModal('modal-add-res');
+  document.getElementById('dr-name').value = '';
+  document.getElementById('dr-note').value = '';
+  renderDiningLog();
+  showToast('✅ Reservation added');
+}
+function seatReservation(id) {
+  diningSave(diningLoad().map(function(r){ if(r.id===id) r.seated=true; return r; }));
+  renderDiningLog();
+}
+function removeReservation(id) {
+  diningSave(diningLoad().filter(function(r){ return r.id !== id; }));
+  renderDiningLog();
+}
+function clearSeated() {
+  diningSave(diningLoad().filter(function(r){ return !r.seated; }));
+  renderDiningLog();
+  showToast('Seated reservations cleared');
+}
+
+// ════════════════════════════════════
+// TEE SHEET
+// ════════════════════════════════════
+function teeSheetLoad() {
+  var today = new Date().toDateString();
+  var raw = JSON.parse(localStorage.getItem('wh_tee_sheet') || '[]');
+  return raw.filter(function(t){ return t.date === today; });
+}
+function teeSheetSave(list) {
+  localStorage.setItem('wh_on_course', JSON.stringify(list));
+  refreshGlance();
+}
+function teeSheetLoad() {
+  return JSON.parse(localStorage.getItem('wh_on_course') || '[]');
+}
+function renderTeeSheet() {
+  var list = teeSheetLoad().sort(function(a,b){ return a.checkedIn - b.checkedIn; });
+  var el  = document.getElementById('s-tee-list');
+  var cnt = document.getElementById('s-tee-count');
+  if (!el) return;
+  if (!list.length) {
+    el.innerHTML = '<div class="ts-empty">No one checked in yet</div>';
+    if (cnt) cnt.textContent = '';
+    return;
+  }
+  var now = Date.now();
+  el.innerHTML = list.map(function(t){
+    var elapsed = Math.floor((now - t.checkedIn) / 60000);
+    var duration = elapsed < 60
+      ? elapsed + ' min ago'
+      : Math.floor(elapsed/60) + 'h ' + (elapsed%60) + 'm ago';
+    return '<div class="ts-row">' +
+      '<div class="ts-time" style="font-size:.72rem;color:var(--muted);min-width:52px;">' + duration + '</div>' +
+      '<div class="ts-info">' +
+        '<div class="ts-name">' + t.name + '</div>' +
+        '<div class="ts-detail">' + t.players + ' player' + (t.players>1?'s':'') + '</div>' +
+      '</div>' +
+      '<button class="ts-btn" onclick="removeTeeTime(\'' + t.id + '\')">✕</button>' +
+    '</div>';
+  }).join('');
+  var totalPlayers = list.reduce(function(s,t){ return s + t.players; }, 0);
+  if (cnt) cnt.textContent = list.length + ' group' + (list.length!==1?'s':'') + ' · ' + totalPlayers + ' players on course';
+}
+function addTeeTime() {
+  var name    = document.getElementById('ts-name').value.trim();
+  var players = parseInt(document.getElementById('ts-players').value);
+  if (!name) { showToast('Please enter a name'); return; }
+  var list = teeSheetLoad();
+  list.push({ id: Date.now().toString(), name: name, players: players, checkedIn: Date.now() });
+  teeSheetSave(list);
+  closeModal('modal-add-tee');
+  document.getElementById('ts-name').value = '';
+  renderTeeSheet();
+  showToast('✅ Checked in');
+}
+function removeTeeTime(id) {
+  teeSheetSave(teeSheetLoad().filter(function(t){ return t.id !== id; }));
+  renderTeeSheet();
+}
+
+function initStaff() {
+  var u     = currentUser;
+  var first = u.name.split(' ')[0];
+  var now   = new Date();
+  var dateStr = now.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
+
+  document.getElementById('s-hdr-user').textContent    = first;
+  document.getElementById('s-greet-name').textContent  = greet() + ', ' + first + '!';
+  document.getElementById('s-greet-detail').textContent = dateStr;
+  var ini = u.name.split(' ').map(function(n){ return n[0]; }).join('');
+  var elAvatar = document.getElementById('s-avatar'); if (elAvatar) elAvatar.textContent = ini;
+  var elProfName = document.getElementById('s-prof-name'); if (elProfName) elProfName.textContent = u.name;
+  var elProfRole = document.getElementById('s-prof-role'); if (elProfRole) elProfRole.textContent = u.title || 'Staff';
+  var elEmail = document.getElementById('s-email'); if (elEmail) elEmail.textContent = u.email;
+  var elRole = document.getElementById('s-role'); if (elRole) elRole.textContent = u.title || 'Golf Operations';
+  var acctInfo = document.getElementById('s-acct-info');
+  if (acctInfo) acctInfo.textContent = (u.email || '') + (u.title ? '  ·  ' + u.title : '');
+
+  renderStaffMenus();
+  renderStaffEvents();
+  loadConditionsEditor();
+  renderNoticeCard();
+  refreshGlance();
+  initPool();
+  initGrounds();
+  renderTeeSheet();
+  renderDiningLog();
+  renderPinSheetUpload();
+  renderStaffMessages();
+  renderLostFound();
+  renderIncidents();
+  // Default time inputs to current time rounded to nearest 10 min
+  var n=new Date(); n.setMinutes(Math.round(n.getMinutes()/10)*10,0,0); var tStr=n.toTimeString().slice(0,5);
+  var tsInput = document.getElementById('ts-time'); if (tsInput) tsInput.value = tStr;
+  var drInput = document.getElementById('dr-time'); if (drInput) drInput.value = tStr;
+  goTab('staff','dash');
+}
+
+// ════════════════════════════════════
+// WEATHER + CONDITIONS
+// ════════════════════════════════════
+var WH_COND_DEFAULTS = {courseOpens:'9:00 AM', cartRules:'Off Path — Anywhere on Course', range:'Open', notice:''};
+
+function loadConditions() {
+  var data = JSON.parse(localStorage.getItem('wh_conditions') || 'null') || WH_COND_DEFAULTS;
+  var el = document.getElementById('wx-conditions');
+  if (!el) return;
+  var html =
+    '<div class="wx-cond-row"><span class="wx-cond-lbl">Opens</span><span class="wx-cond-val">' + data.courseOpens + '</span></div>' +
+    '<div class="wx-cond-row"><span class="wx-cond-lbl">Carts</span><span class="wx-cond-val">' + data.cartRules + '</span></div>' +
+    '<div class="wx-cond-row"><span class="wx-cond-lbl">Range</span><span class="wx-cond-val">' + (data.range || 'Open') + '</span></div>';
+  if (data.notice && data.notice.trim()) html += '<div class="wx-notice">⚠️ ' + data.notice + '</div>';
+  el.innerHTML = html;
+}
+
+function loadConditionsEditor() {
+  var data = JSON.parse(localStorage.getItem('wh_conditions') || 'null') || WH_COND_DEFAULTS;
+  var e;
+  e = document.getElementById('cond-opens'); if(e) e.value = data.courseOpens || '9:00 AM';
+  e = document.getElementById('cond-carts'); if(e) e.value = data.cartRules  || 'Off Path — Anywhere on Course';
+  e = document.getElementById('cond-range'); if(e) e.value = data.range      || 'Open';
+  e = document.getElementById('cond-notice'); if(e) e.value = data.notice    || '';
+}
+
+function saveConditions() {
+  var data = {
+    courseOpens: document.getElementById('cond-opens').value.trim()  || '9:00 AM',
+    cartRules:   document.getElementById('cond-carts').value,
+    range:       document.getElementById('cond-range').value,
+    notice:      document.getElementById('cond-notice').value.trim()
+  };
+  localStorage.setItem('wh_conditions', JSON.stringify(data));
+  loadConditions();
+  showToast('✅ Course conditions updated!');
+}
+
+function degToCardinal(d) {
+  return ['N','NE','E','SE','S','SW','W','NW'][Math.round(d / 45) % 8];
+}
+
+function wmoDesc(code) {
+  if (code === 0)  return {icon:'☀️',  desc:'Clear skies'};
+  if (code === 1)  return {icon:'🌤️', desc:'Mainly clear'};
+  if (code === 2)  return {icon:'⛅',  desc:'Partly cloudy'};
+  if (code === 3)  return {icon:'☁️',  desc:'Overcast'};
+  if (code <= 48)  return {icon:'🌫️', desc:'Foggy'};
+  if (code <= 55)  return {icon:'🌦️', desc:'Drizzle'};
+  if (code <= 65)  return {icon:'🌧️', desc:'Rain'};
+  if (code <= 77)  return {icon:'❄️',  desc:'Snow'};
+  if (code <= 82)  return {icon:'🌦️', desc:'Rain showers'};
+  if (code >= 95)  return {icon:'⛈️', desc:'Thunderstorm'};
+  return {icon:'🌡️', desc:'Mixed'};
+}
+
+function playVerdict(code, rain, wind, temp) {
+  // Severe weather always wins
+  if (code >= 95 || wind > 35)  return {cls:'poor',  label:'⚡ Delay Likely'};
+  if (code >= 61 || rain >= 70) return {cls:'poor',  label:'🌧 Rain Expected'};
+  // Extreme temperatures
+  if (temp <= 28)  return {cls:'poor',  label:'🥶 Too Cold to Play'};
+  if (temp >= 105) return {cls:'poor',  label:'🌡 Dangerously Hot'};
+  // Rain / wind concerns
+  if (rain >= 40 || wind > 25 || code >= 51) return {cls:'watch', label:'🌦 Watch the Sky'};
+  // Chilly but playable
+  if (temp <= 40)  return {cls:'cold',  label:'🧤 Bundle Up'};
+  if (temp <= 50)  return {cls:'cold',  label:'❄️ Chilly Round'};
+  // Hot but playable
+  if (temp >= 95)  return {cls:'hot',   label:'🥵 Drink Water'};
+  if (temp >= 88)  return {cls:'watch', label:'☀️ Stay Hydrated'};
+  // Some rain chance or clouds
+  if (rain >= 20 || code >= 3)  return {cls:'good',  label:'⛅ Play On'};
+  // Perfect
+  if (temp >= 65 && temp <= 85) return {cls:'great', label:'☀️ Perfect Round'};
+  return {cls:'great', label:'☀️ Great Day'};
+}
+
+function loadWeather() {
+  var url = 'https://api.open-meteo.com/v1/forecast' +
+    '?latitude=36.7566&longitude=-90.3932' +
+    '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m' +
+    '&hourly=precipitation_probability' +
+    '&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FChicago&forecast_days=1';
+
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      var cur  = data.current;
+      var temp = Math.round(cur.temperature_2m);
+      var feel = Math.round(cur.apparent_temperature);
+      var code = cur.weather_code;
+      var wind = Math.round(cur.wind_speed_10m);
+      var dir  = degToCardinal(cur.wind_direction_10m);
+
+      // Max rain probability for current hour + next 3 hrs
+      var nowHour = new Date().getHours();
+      var maxRain = 0;
+      data.hourly.time.forEach(function(t, i) {
+        var h = parseInt(t.split('T')[1]);
+        if (h >= nowHour && h <= nowHour + 3) maxRain = Math.max(maxRain, data.hourly.precipitation_probability[i]);
+      });
+
+      var info    = wmoDesc(code);
+      var verdict = playVerdict(code, maxRain, wind, temp);
+
+      var el;
+      el = document.getElementById('wx-icon');    if(el) el.textContent = info.icon;
+      el = document.getElementById('wx-temp');    if(el) el.innerHTML   = temp + '<span style="font-size:1.1rem;">°F</span>';
+      el = document.getElementById('wx-desc');    if(el) el.textContent = info.desc;
+      el = document.getElementById('wx-rain');    if(el) el.textContent = maxRain + '%';
+      el = document.getElementById('wx-wind');    if(el) el.textContent = wind + ' ' + dir;
+      el = document.getElementById('wx-feels');   if(el) el.textContent = feel + '°';
+      el = document.getElementById('wx-verdict'); if(el) el.innerHTML   = '<div class="wx-badge ' + verdict.cls + '">' + verdict.label + '</div>';
+    })
+    .catch(function() {
+      var el = document.getElementById('wx-temp');
+      if(el) el.innerHTML = '<span style="font-size:.8rem;opacity:.5;">Weather unavailable</span>';
+      var el2 = document.getElementById('wx-desc');
+      if(el2) el2.textContent = 'Check weather app for current conditions';
+    });
+}
+
+// ════════════════════════════════════
+// MODALS
+// ════════════════════════════════════
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(function(m) {
+  m.addEventListener('click', function(e){ if (e.target === m) closeModal(m.id); });
+});
+
+// ════════════════════════════════════
+// TOAST
+// ════════════════════════════════════
+var toastTimer = null;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+// ════════════════════════════════════
+// LOGIN KEYBOARD
+// ════════════════════════════════════
+document.getElementById('li-email').addEventListener('keydown', function(e){ if (e.key === 'Enter') document.getElementById('li-pin').focus(); });
+document.getElementById('li-pin').addEventListener('keydown',   function(e){ if (e.key === 'Enter') doLogin(); });
+
+// ════════════════════════════════════
+// SESSION RESTORE
+// ════════════════════════════════════
+(function() {
+  try {
+    var saved = localStorage.getItem('wh_current_user');
+    if (saved) {
+      var u = JSON.parse(saved);
+      if (u && u.email && u.role) {
+        currentUser = u;
+        if (u.role === 'member') { initMember(); showScreen('screen-member'); }
+        else                      { initStaff();  showScreen('screen-staff');  }
+      }
+    }
+  } catch(e) {}
+})();
+
+// ════════════════════════════════════
+// SERVICE WORKER
+// ════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js')
+      .then(function(r){ console.log('SW:', r.scope); })
+      .catch(function(e){ console.log('SW failed:', e); });
+  });
+}
+</script>
+</body>
+</html>

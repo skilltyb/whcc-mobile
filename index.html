@@ -595,29 +595,82 @@
   <div class="tab-content" id="m-tab-dining">
     <div class="page">
       <div class="page-title">Dining</div>
-      <div class="page-sub">Westwood Grill — dine-in or order to-go</div>
-      <div class="card" style="display:flex;align-items:center;gap:13px;margin-bottom:12px;">
-        <div style="font-size:1.7rem;">🕐</div>
-        <div>
-          <div class="card-title">Grill Hours</div>
-          <div class="card-body">Tue – Sun: 11:00 AM – 8:00 PM · Closed Mon<br>Express Lunch: Tue – Fri, 11:30 AM – 1:00 PM</div>
+      <!-- Venue toggle -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button id="dt-hoovers-btn" onclick="switchDiningView('hoovers')" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--forest);color:var(--white);font-size:.8rem;font-weight:700;cursor:pointer;">Hoover's</button>
+        <button id="dt-grill-btn" onclick="switchDiningView('grill')" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;">Westwood Grill</button>
+      </div>
+
+      <!-- HOOVER'S SECTION -->
+      <div id="dt-hoovers-section">
+        <div style="background:var(--forest);border-radius:12px;padding:18px;margin-bottom:12px;text-align:center;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:var(--cream);letter-spacing:.06em;">Hoover's</div>
+          <div style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">at Westwood Hills</div>
+          <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+            <div style="text-align:center;"><div style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.5);margin-bottom:2px;">Thu – Sat</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">5 PM – 9 PM</div></div>
+          </div>
+          <div style="font-size:.68rem;color:rgba(245,240,232,.4);margin-top:8px;font-style:italic;">Members only · Open to public 3rd Saturday by reservation</div>
         </div>
-      </div>
-      <div class="express-app">
-        <div class="ex-badge">⚡ 15 Minute Guarantee</div>
-        <div class="ex-title">Express Lunch</div>
-        <div class="ex-detail">Tue – Fri &nbsp;·&nbsp; 11:30 AM – 1:00 PM</div>
-        <div class="ex-grid" id="m-express-items"></div>
-      </div>
-      <div class="card" style="display:flex;align-items:center;gap:13px;">
-        <div style="font-size:1.7rem;">📞</div>
-        <div>
-          <div class="card-title">Order To-Go</div>
-          <div class="card-body">Call <strong>(573) 785-5253</strong> — our full menu is available for take-out any time.</div>
+        <div class="card" style="margin-bottom:10px;">
+          <div class="card-title" style="margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-size:1rem;letter-spacing:.05em;">Tapas</div>
+          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Asian Steak Bites</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Cubed filet bites marinated in bulgogi sauce, our special blend of spices from the far east</div></div>
+          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Chicken Loli's</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Chicken drumsticks prepared with savory spices, arranged with your choice of dipping sauce</div></div>
+          <div><div style="font-weight:600;font-size:.84rem;">Golden Seared Prawns</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Full body prawns seared and grilled to perfection in scampi sauce</div></div>
         </div>
+        <div class="card" style="margin-bottom:10px;">
+          <div class="card-title" style="margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-size:1rem;letter-spacing:.05em;">Salad</div>
+          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Caprese</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Sliced mozzarella, tomatoes, sweet basil, balsamic glaze</div></div>
+          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Caesar</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Parmesan cheese, croutons, caesar dressing</div></div>
+          <div><div style="font-weight:600;font-size:.84rem;">Wedge</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Cherry tomatoes, bacon, diced red onion, and parmesan cheese</div></div>
+        </div>
+        <div class="card" style="margin-bottom:10px;">
+          <div class="card-title" style="margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-size:1rem;letter-spacing:.05em;">Entrées</div>
+          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Filet Oscar</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">8 oz. filet topped with fresh crab and Béarnaise sauce. Served with fondant potatoes and garlic butter mushrooms</div><div style="font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic;">Pairs with Pinot Noir, Bordeaux, or Cabernet</div></div>
+          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Ahi Steak</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Fresh caught Ahi tuna steak featuring a peppercorn crust and flat top grilled. Served with forbidden rice and smashed brussel sprouts</div><div style="font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic;">Pairs with Chardonnay or Pinot Noir</div></div>
+          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Veal Milanese</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Marinated veal cutlets breaded and cooked to golden perfection. Served over a bed of risotto and green bean almondine</div><div style="font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic;">Pairs with Pinot Noir, Cabernet, or Bordeaux</div></div>
+          <div><div style="font-weight:600;font-size:.84rem;">Chicken d'Hoover</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Seasoned chicken breast served over a bed of homemade gnocchi in a parmesan cream sauce</div><div style="font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic;">Pairs with Chianti or Pinot Noir</div></div>
+        </div>
+        <div class="card" style="margin-bottom:10px;">
+          <div class="card-title" style="margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-size:1rem;letter-spacing:.05em;">Dessert</div>
+          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Buried Treasure</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">A decadent chocolate covered strawberry encased in cheesecake</div></div>
+          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Chocolate Mousse Brownie</div></div>
+          <div><div style="font-weight:600;font-size:.84rem;">Sorbet of the Day</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Rotating flavors, inquire for details</div></div>
+        </div>
+        <div style="background:var(--forest);border-radius:12px;padding:18px;margin-bottom:12px;text-align:center;">
+          <div style="font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">House Specialty</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--cream);margin-bottom:6px;">Tomahawk Pork Chop</div>
+          <div style="font-size:.76rem;color:rgba(245,240,232,.55);line-height:1.5;">14 oz. Tomahawk Pork Chop served on a bed of pommes potatoes with a side of bacon wrapped asparagus</div>
+          <div style="font-size:.7rem;color:var(--gold);font-style:italic;margin-top:8px;">Pairs with Cabernet or Sauvignon Blanc</div>
+        </div>
+        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Reserve a Table at Hoover's</button>
       </div>
-      <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Request a Dining Reservation</button>
-      <div id="app-menu-content"></div>
+
+      <!-- WESTWOOD GRILL SECTION -->
+      <div id="dt-grill-section" style="display:none;">
+        <div class="page-sub" style="margin-bottom:12px;">Westwood Grill — dine-in or order to-go</div>
+        <div class="card" style="display:flex;align-items:center;gap:13px;margin-bottom:12px;">
+          <div style="font-size:1.7rem;">🕐</div>
+          <div>
+            <div class="card-title">Grill Hours</div>
+            <div class="card-body">Tue – Sun: 11:00 AM – 8:00 PM · Closed Mon<br>Express Lunch: Tue – Fri, 11:30 AM – 1:00 PM</div>
+          </div>
+        </div>
+        <div class="express-app">
+          <div class="ex-badge">⚡ 15 Minute Guarantee</div>
+          <div class="ex-title">Express Lunch</div>
+          <div class="ex-detail">Tue – Fri &nbsp;·&nbsp; 11:30 AM – 1:00 PM</div>
+          <div class="ex-grid" id="m-express-items"></div>
+        </div>
+        <div class="card" style="display:flex;align-items:center;gap:13px;">
+          <div style="font-size:1.7rem;">📞</div>
+          <div>
+            <div class="card-title">Order To-Go</div>
+            <div class="card-body">Call <strong>(573) 785-5253</strong> — our full menu is available for take-out any time.</div>
+          </div>
+        </div>
+        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Request a Dining Reservation</button>
+        <div id="app-menu-content"></div>
+      </div>
     </div>
   </div>
 
@@ -2169,6 +2222,32 @@ function confirmDining() {
   if (!date || !party) { showToast('Please fill in date and party size.'); return; }
   closeModal('modal-dining');
   showToast('✅ Reservation requested for ' + party + ' on ' + date + ' at ' + time);
+}
+
+function switchDiningView(view) {
+  var hooversSection = document.getElementById('dt-hoovers-section');
+  var grillSection = document.getElementById('dt-grill-section');
+  var hooversBtn = document.getElementById('dt-hoovers-btn');
+  var grillBtn = document.getElementById('dt-grill-btn');
+  if (view === 'hoovers') {
+    hooversSection.style.display = 'block';
+    grillSection.style.display = 'none';
+    hooversBtn.style.background = 'var(--forest)';
+    hooversBtn.style.color = 'var(--white)';
+    hooversBtn.style.border = 'none';
+    grillBtn.style.background = 'transparent';
+    grillBtn.style.color = 'var(--muted)';
+    grillBtn.style.border = '2px solid var(--border)';
+  } else {
+    hooversSection.style.display = 'none';
+    grillSection.style.display = 'block';
+    grillBtn.style.background = 'var(--forest)';
+    grillBtn.style.color = 'var(--white)';
+    grillBtn.style.border = 'none';
+    hooversBtn.style.background = 'transparent';
+    hooversBtn.style.color = 'var(--muted)';
+    hooversBtn.style.border = '2px solid var(--border)';
+  }
 }
 
 // ════════════════════════════════════

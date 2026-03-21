@@ -1467,6 +1467,10 @@
         </div>
       </div>
       <div class="modal-field">
+        <label class="modal-label">GHIN #</label>
+        <input class="cond-input" id="app-reg-ghin" type="text" placeholder="Optional"/>
+      </div>
+      <div class="modal-field">
         <label class="modal-label">Notes</label>
         <input class="cond-input" id="app-reg-notes" type="text" placeholder="Any special requests"/>
       </div>
@@ -2178,6 +2182,7 @@ function submitAppReg() {
     phone: document.getElementById('app-reg-phone').value.trim(),
     partner: document.getElementById('app-reg-partner').value.trim(),
     players: document.getElementById('app-reg-players').value,
+    ghin: document.getElementById('app-reg-ghin') ? document.getElementById('app-reg-ghin').value.trim() : '',
     notes: document.getElementById('app-reg-notes').value.trim(),
     timestamp: new Date().toISOString(),
     source: 'mobile-app'
@@ -2187,6 +2192,14 @@ function submitAppReg() {
     var all = JSON.parse(localStorage.getItem('wh_registrations') || '[]');
     all.push(reg);
     localStorage.setItem('wh_registrations', JSON.stringify(all));
+  } catch(e) {}
+  // POST to Google Apps Script
+  try {
+    fetch('https://script.google.com/macros/s/AKfycbxLIwXQMtgijncf-a6nnP4EsCliKGEM-yTsfja9hYFzLueQujBhevo-n8ICUHFRAEp1/exec', {
+      method: 'POST',
+      body: JSON.stringify(reg),
+      headers: { 'Content-Type': 'text/plain' }
+    }).catch(function() {});
   } catch(e) {}
   // Show success
   document.getElementById('app-reg-form-wrap').style.display = 'none';

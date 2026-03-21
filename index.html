@@ -1433,7 +1433,8 @@
     <div class="modal-handle"></div>
     <div id="app-reg-form-wrap">
       <div class="modal-title" id="app-reg-title">Register</div>
-      <div style="font-size:.75rem;color:var(--muted);margin-bottom:16px;" id="app-reg-meta"></div>
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:4px;" id="app-reg-meta"></div>
+      <div style="font-size:.72rem;font-weight:600;margin-bottom:14px;" id="app-reg-spots"></div>
       <div class="modal-field">
         <label class="modal-label">First Name *</label>
         <input class="cond-input" id="app-reg-fname" type="text" placeholder="Jane" required/>
@@ -2081,19 +2082,75 @@ function renderRoundLog() {
 }
 
 // ═══════════════════════════════════════
+// EVENT REGISTRY — types: 'single', 'twosome', 'foursome'
+// ═══════════════════════════════════════
+var WHCC_EVENTS = {
+  "St. Patty's Shootout":           { type:'single',   capacity:60,  fee:'Member Event' },
+  "Ladies Opening Day":              { type:'single',   capacity:40,  fee:'Member Event' },
+  "Men's Golf Master Dinner":        { type:'single',   capacity:50,  fee:'$45/person' },
+  "Poplar Bluff Mules Invitational": { type:'foursome', capacity:18,  fee:'$80/team' },
+  "MGA Opening Day Draft":           { type:'single',   capacity:64,  fee:'Member Event' },
+  "Men's Opening Day":               { type:'single',   capacity:72,  fee:'Member Event' },
+  "Ozark Invitational":              { type:'twosome',  capacity:48,  fee:'$150/team' },
+  "Friday Night Fights":             { type:'single',   capacity:48,  fee:'$10/round' },
+  "Hit & Giggle":                    { type:'single',   capacity:40,  fee:'Member Event' },
+  "Men's League Opening Night":      { type:'single',   capacity:80,  fee:'League Fee' },
+  "Spring 2-Man Scramble":           { type:'twosome',  capacity:40,  fee:'$120/team' },
+  "MGA 2-Man Best Ball":             { type:'twosome',  capacity:32,  fee:'Member Event' },
+  "Memorial Day Wing Ding":          { type:'single',   capacity:120, fee:'$20/person' },
+  "UCAN Golf Outing":                { type:'foursome', capacity:18,  fee:'$80/player' },
+  "Ladies Cup Challenge Matches":    { type:'single',   capacity:32,  fee:'Member Event' },
+  "Ladies Powder Puff":              { type:'twosome',  capacity:20,  fee:'Member Event' },
+  "Three Rivers College Outing":     { type:'foursome', capacity:18,  fee:'$75/player' },
+  "Steak Stag — SEMO Qualifier":     { type:'single',   capacity:48,  fee:'$60/player' },
+  "Ladies Sweet Treat":              { type:'foursome', capacity:12,  fee:'Member Event' }
+};
+
+function getEventInfo(title) {
+  return WHCC_EVENTS[title] || { type:'single', capacity:72, fee:'Member Event' };
+}
+
+// ═══════════════════════════════════════
 // APP EVENT REGISTRATION
 // ═══════════════════════════════════════
 var appCurrentRegEvent = null;
 
 function openAppReg(eventTitle, eventMeta, isTeam) {
-  appCurrentRegEvent = { title: eventTitle, meta: eventMeta, isTeam: !!isTeam };
+  var info = typeof getEventInfo==='function' ? getEventInfo(eventTitle) : {type: isTeam?'twosome':'single', capacity:72};
+  var evType = info.type || (isTeam ? 'twosome' : 'single');
+  appCurrentRegEvent = { title: eventTitle, meta: eventMeta, type: evType, capacity: info.capacity, fee: info.fee };
+
   document.getElementById('app-reg-title').textContent = eventTitle;
-  document.getElementById('app-reg-meta').textContent = eventMeta || '';
-  document.getElementById('app-reg-team-fields').style.display = isTeam ? 'block' : 'none';
+  var metaStr = (eventMeta||'') + (info.fee && info.fee!=='Member Event' ? ' · '+info.fee : '');
+  document.getElementById('app-reg-meta').textContent = metaStr;
+
+  // Adapt team fields
+  var teamFields = document.getElementById('app-reg-team-fields');
+  var partnerInput = document.getElementById('app-reg-partner');
+  if (evType === 'single') {
+    teamFields.style.display = 'none';
+  } else if (evType === 'twosome') {
+    teamFields.style.display = 'block';
+    if (partnerInput) { partnerInput.placeholder = "Partner's full name"; partnerInput.previousElementSibling.textContent = 'Partner Name'; }
+  } else {
+    teamFields.style.display = 'block';
+    if (partnerInput) { partnerInput.placeholder = 'Partner 1 (list others in notes)'; partnerInput.previousElementSibling.textContent = 'Partner Names'; }
+  }
+
+  // Show spots remaining
+  var regs = [];
+  try { regs = (JSON.parse(localStorage.getItem('wh_registrations')||'[]')).filter(function(r){return r.event===eventTitle;}); } catch(e){}
+  var spotsEl = document.getElementById('app-reg-spots');
+  if (spotsEl) {
+    var rem = info.capacity - regs.length;
+    spotsEl.textContent = rem > 0 ? rem + ' spots remaining' : 'Event full';
+    spotsEl.style.color = rem <= 5 ? 'var(--danger)' : 'var(--gold)';
+  }
+
   document.getElementById('app-reg-form-wrap').style.display = 'block';
   document.getElementById('app-reg-success').style.display = 'none';
-  document.getElementById('app-reg-error').style.display = 'none';
-  // Pre-fill from logged-in user
+
+  // Pre-fill
   if (currentUser) {
     var parts = (currentUser.name||'').split(' ');
     document.getElementById('app-reg-fname').value = parts[0]||'';

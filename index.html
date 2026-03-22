@@ -2117,7 +2117,88 @@ function getEventInfo(title) {
 // ═══════════════════════════════════════
 // APP EVENT REGISTRATION
 // ═══════════════════════════════════════
+var WHCC_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLIwXQMtgijncf-a6nnP4EsCliKGEM-yTsfja9hYFzLueQujBhevo-n8ICUHFRAEp1/exec';
 var appCurrentRegEvent = null;
+
+// ════════════════════════════════════════════════════════
+// WHCC SYNC ENGINE  —  Sheet ↔ Website ↔ Mobile App
+// ════════════════════════════════════════════════════════
+var WHCC_SYNC = {
+  TTL: 90000,
+
+  getCount: function(ev) {
+    try { return (JSON.parse(localStorage.getItem('wh_counts') || '{}'))[ev] || 0; }
+    catch(e) { return 0; }
+  },
+
+  fetchCounts: function(cb) {
+    var ts = +localStorage.getItem('wh_counts_ts') || 0;
+    var stale = (Date.now() - ts) > this.TTL;
+    if (!stale && !cb) return;
+    fetch(WHCC_SCRIPT_URL + '?action=counts')
+      .then(function(r) { return r.json(); })
+      .then(function(c) {
+        localStorage.setItem('wh_counts', JSON.stringify(c));
+        localStorage.setItem('wh_counts_ts', Date.now());
+        if (cb) cb(c, null);
+      })
+      .catch(function(err) { if (cb) cb(null, err); });
+  },
+
+  fetchAll: function(cb) {
+    fetch(WHCC_SCRIPT_URL + '?action=all')
+      .then(function(r) { return r.json(); })
+      .then(function(rows) {
+        if (!Array.isArray(rows)) { if (cb) cb(null, 'bad data'); return; }
+        var regs = rows.map(function(row) {
+          return {
+            id:        row['ID']              || '',
+            event:     row['Event']           || '',
+            eventMeta: row['Event Date/Time'] || '',
+            firstName: row['First Name']      || '',
+            lastName:  row['Last Name']       || '',
+            email:     row['Email']           || '',
+            phone:     row['Phone']           || '',
+            partner:   row['Partner/Team']    || '',
+            players:   row['Players']         || '1',
+            memberNum: row['Member #']        || '',
+            ghin:      row['GHIN']            || '',
+            notes:     row['Notes']           || '',
+            timestamp: row['Registered At']   || '',
+            source:    row['Source']          || ''
+          };
+        }).filter(function(r) { return r.firstName || r.lastName; });
+        localStorage.setItem('wh_registrations', JSON.stringify(regs));
+        var c = {};
+        regs.forEach(function(r) { if (r.event) c[r.event] = (c[r.event] || 0) + 1; });
+        localStorage.setItem('wh_counts', JSON.stringify(c));
+        localStorage.setItem('wh_counts_ts', Date.now());
+        if (cb) cb(regs, null);
+      })
+      .catch(function(err) { if (cb) cb(null, err); });
+  },
+
+  deleteReg: function(id, cb) {
+    try {
+      var all = JSON.parse(localStorage.getItem('wh_registrations') || '[]');
+      var kept = all.filter(function(r) { return r.id !== id; });
+      localStorage.setItem('wh_registrations', JSON.stringify(kept));
+      var c = {};
+      kept.forEach(function(r) { if (r.event) c[r.event] = (c[r.event] || 0) + 1; });
+      localStorage.setItem('wh_counts', JSON.stringify(c));
+    } catch(e) {}
+    fetch(WHCC_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'delete', id: id })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) { if (cb) cb(res); })
+    .catch(function() { if (cb) cb({ error: 'network' }); });
+  }
+};
+
+document.addEventListener('DOMContentLoaded', function() { WHCC_SYNC.fetchCounts(); });
 
 function openAppReg(eventTitle, eventMeta, isTeam) {
   var info = typeof getEventInfo==='function' ? getEventInfo(eventTitle) : {type: isTeam?'twosome':'single', capacity:72};
@@ -2141,15 +2222,16 @@ function openAppReg(eventTitle, eventMeta, isTeam) {
     if (partnerInput) { partnerInput.placeholder = 'Partner 1 (list others in notes)'; partnerInput.previousElementSibling.textContent = 'Partner Names'; }
   }
 
-  // Show spots remaining
-  var regs = [];
-  try { regs = (JSON.parse(localStorage.getItem('wh_registrations')||'[]')).filter(function(r){return r.event===eventTitle;}); } catch(e){}
+  // Show spots remaining — cached first (instant), then live-refresh from Sheet
   var spotsEl = document.getElementById('app-reg-spots');
-  if (spotsEl) {
-    var rem = info.capacity - regs.length;
+  function _updateAppSpots(count) {
+    if (!spotsEl) return;
+    var rem = info.capacity - count;
     spotsEl.textContent = rem > 0 ? rem + ' spots remaining' : 'Event full';
     spotsEl.style.color = rem <= 5 ? 'var(--danger)' : 'var(--gold)';
   }
+  _updateAppSpots(WHCC_SYNC.getCount(eventTitle));
+  WHCC_SYNC.fetchCounts(function(c) { if (c) _updateAppSpots(c[eventTitle] || 0); });
 
   document.getElementById('app-reg-form-wrap').style.display = 'block';
   document.getElementById('app-reg-success').style.display = 'none';
@@ -2195,7 +2277,7 @@ function submitAppReg() {
   } catch(e) {}
   // POST to Google Apps Script
   try {
-    fetch('https://script.google.com/macros/s/AKfycbxLIwXQMtgijncf-a6nnP4EsCliKGEM-yTsfja9hYFzLueQujBhevo-n8ICUHFRAEp1/exec', {
+    fetch(WHCC_SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify(reg),
       headers: { 'Content-Type': 'text/plain' }

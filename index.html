@@ -3892,9 +3892,15 @@ document.getElementById('li-pin').addEventListener('keydown',   function(e){ if 
 // SERVICE WORKER
 // ════════════════════════════════════
 if ('serviceWorker' in navigator) {
+  // Auto-reload when a new service worker takes control (breaks the stale-cache loop)
+  navigator.serviceWorker.addEventListener('controllerchange', function() {
+    window.location.reload();
+  });
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('sw.js?v=4', { updateViaCache: 'none' })
-      .then(function(r){ r.update(); console.log('SW:', r.scope); })
+      .then(function(r) {
+        r.update(); // immediately check for a newer worker
+      })
       .catch(function(e){ console.log('SW failed:', e); });
   });
 }

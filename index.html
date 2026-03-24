@@ -434,7 +434,7 @@
   <div class="app-header">
     <div class="hdr-logo">W</div>
     <div class="hdr-title">Westwood Hills CC</div>
-    <div class="hdr-user" id="m-hdr-user">Member</div>
+    <button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;letter-spacing:.03em;">Sign Out</button>
   </div>
 
   <!-- HOME -->
@@ -683,6 +683,34 @@
     </div>
   </div>
 
+  <!-- TEE SHEET TAB -->
+  <div class="tab-content" id="m-tab-teesheet">
+    <div style="padding:16px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#f5f0e8;margin-bottom:4px;">Today's <em style="color:#d4b483;">Tee Sheet</em></div>
+      <div style="font-size:.72rem;color:rgba(245,240,232,.45);margin-bottom:14px;">Current groupings and tee times · Auto-refreshes every 60s</div>
+
+      <!-- Event selector -->
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <select id="m-ts-event" onchange="mTeeSheetLoad()" style="flex:1;background:#1e3a20;border:1px solid rgba(184,151,106,.4);color:#f5f0e8;padding:8px 10px;font-size:12px;border-radius:2px;">
+          <option value="">— Loading events… —</option>
+        </select>
+        <button onclick="mTeeSheetBuildEventDropdown()" style="background:none;border:1px solid rgba(184,151,106,.3);color:rgba(184,151,106,.7);font-size:11px;padding:6px 10px;border-radius:2px;cursor:pointer;white-space:nowrap;">↻ Refresh</button>
+      </div>
+
+      <!-- Round selector -->
+      <div style="display:flex;gap:6px;margin-bottom:12px;" id="m-ts-round-row" style="display:none;">
+        <span style="font-size:.7rem;color:rgba(245,240,232,.4);align-self:center;">Round:</span>
+        <button onclick="mTeeSheetSetRound(1)" id="m-ts-r1" style="padding:4px 10px;font-size:.68rem;background:rgba(184,151,106,.2);border:1px solid rgba(184,151,106,.4);color:#d4b483;border-radius:2px;cursor:pointer;">1</button>
+        <button onclick="mTeeSheetSetRound(2)" id="m-ts-r2" style="padding:4px 10px;font-size:.68rem;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(245,240,232,.4);border-radius:2px;cursor:pointer;">2</button>
+        <button onclick="mTeeSheetSetRound(3)" id="m-ts-r3" style="padding:4px 10px;font-size:.68rem;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(245,240,232,.4);border-radius:2px;cursor:pointer;">3</button>
+        <button onclick="mTeeSheetSetRound(4)" id="m-ts-r4" style="padding:4px 10px;font-size:.68rem;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(245,240,232,.4);border-radius:2px;cursor:pointer;">4</button>
+        <span id="m-ts-saved" style="font-size:.6rem;color:rgba(245,240,232,.25);align-self:center;margin-left:4px;"></span>
+      </div>
+
+      <div id="m-ts-output"><div style="font-size:.8rem;color:rgba(245,240,232,.3);text-align:center;padding:40px 0;">Select an event to view the tee sheet</div></div>
+    </div>
+  </div>
+
   <!-- ACCOUNT -->
   <div class="tab-content" id="m-tab-account">
     <div class="page">
@@ -737,6 +765,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <span>Events</span><div class="tab-dot"></div>
     </button>
+    <button class="tab-btn" id="m-btn-teesheet" onclick="goTab('member','teesheet')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>Tee Sheet</span><div class="tab-dot"></div>
+    </button>
     <button class="tab-btn" id="m-btn-account" onclick="goTab('member','account')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span>Account</span><div class="tab-dot"></div>
@@ -751,7 +783,7 @@
   <div class="app-header">
     <div class="hdr-logo">W</div>
     <div class="hdr-title">WHCC Staff</div>
-    <div class="hdr-user" id="s-hdr-user">Staff</div>
+    <button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;letter-spacing:.03em;">Sign Out</button>
   </div>
 
   <!-- DASHBOARD -->
@@ -1539,7 +1571,23 @@ var DEFAULT_EVENTS = [
   {title:"Ladies Powder Puff", date:'2026-06-09', month:'JUN', day:'9', time:'9:00 AM – 1:00 PM', desc:'Ladies 2-player scramble. Fun format open to all lady members.', fee:'Member Event', capacity:40, registeredCount:18, registered:false},
   {title:"Three Rivers College Outing", date:'2026-06-12', month:'JUN', day:'12', time:'9:30 AM – 2:00 PM', desc:'Supporting Three Rivers College. Community charity outing.', fee:'$75/player', capacity:72, registeredCount:36, registered:false},
   {title:"Steak Stag — SEMO Qualifier", date:'2026-06-18', month:'JUN', day:'18', time:'6:00 – 10:00 PM', desc:'SEMO Cup qualifying event. Steak dinner included. Top finishers earn SEMO Cup points.', fee:'$60/player', capacity:48, registeredCount:29, registered:false},
-  {title:"Ladies Sweet Treat", date:'2026-08-11', month:'AUG', day:'11', time:'Full Day Event', desc:'4-player ladies scramble. A fun full-day event celebrating the ladies of Westwood Hills.', fee:'Member Event', capacity:48, registeredCount:12, registered:false}
+  {title:"Ladies Sweet Treat", date:'2026-08-11', month:'AUG', day:'11', time:'Full Day Event', desc:'4-player ladies scramble. A fun full-day event celebrating the ladies of Westwood Hills.', fee:'Member Event', capacity:48, registeredCount:12, registered:false},
+  {title:"Men's League — May 9",  date:'2026-05-09', month:'MAY', day:'9',  time:'5:00 PM', desc:"Week 1 of 16 — Men's League season. 14–20 players, handicap-based team draw.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — May 16", date:'2026-05-16', month:'MAY', day:'16', time:'5:00 PM', desc:"Week 2 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — May 23", date:'2026-05-23', month:'MAY', day:'23', time:'5:00 PM', desc:"Week 3 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — May 30", date:'2026-05-30', month:'MAY', day:'30', time:'5:00 PM', desc:"Week 4 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jun 6",  date:'2026-06-06', month:'JUN', day:'6',  time:'5:00 PM', desc:"Week 5 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jun 13", date:'2026-06-13', month:'JUN', day:'13', time:'5:00 PM', desc:"Week 6 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jun 20", date:'2026-06-20', month:'JUN', day:'20', time:'5:00 PM', desc:"Week 7 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jun 27", date:'2026-06-27', month:'JUN', day:'27', time:'5:00 PM', desc:"Week 8 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jul 4",  date:'2026-07-04', month:'JUL', day:'4',  time:'5:00 PM', desc:"Week 9 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jul 11", date:'2026-07-11', month:'JUL', day:'11', time:'5:00 PM', desc:"Week 10 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jul 18", date:'2026-07-18', month:'JUL', day:'18', time:'5:00 PM', desc:"Week 11 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jul 25", date:'2026-07-25', month:'JUL', day:'25', time:'5:00 PM', desc:"Week 12 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Aug 1",  date:'2026-08-01', month:'AUG', day:'1',  time:'5:00 PM', desc:"Week 13 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Aug 8",  date:'2026-08-08', month:'AUG', day:'8',  time:'5:00 PM', desc:"Week 14 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Aug 15", date:'2026-08-15', month:'AUG', day:'15', time:'5:00 PM', desc:"Week 15 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Aug 22", date:'2026-08-22', month:'AUG', day:'22', time:'5:00 PM', desc:"Week 16 of 16 — Men's League season finale.", fee:'Member Event', capacity:24, registeredCount:0, registered:false}
 ];
 
 var WH_MENU_VERSION = '3';
@@ -1645,7 +1693,20 @@ var MENU_SECTION_LABELS = {
   postRound:'Sides', quickBites:'Kids Menu'
 };
 
-var appEvents   = JSON.parse(localStorage.getItem('wh_app_events') || 'null') || JSON.parse(JSON.stringify(DEFAULT_EVENTS));
+var appEvents = JSON.parse(localStorage.getItem('wh_app_events') || 'null') || JSON.parse(JSON.stringify(DEFAULT_EVENTS));
+// Merge any DEFAULT_EVENTS entries that aren't in the stored list (e.g. new season events added to the app)
+(function() {
+  var storedTitles = {};
+  appEvents.forEach(function(e) { storedTitles[e.title] = true; });
+  var added = false;
+  DEFAULT_EVENTS.forEach(function(e) {
+    if (!storedTitles[e.title]) { appEvents.push(JSON.parse(JSON.stringify(e))); added = true; }
+  });
+  if (added) {
+    appEvents.sort(function(a, b) { return a.date.localeCompare(b.date); });
+    localStorage.setItem('wh_app_events', JSON.stringify(appEvents));
+  }
+})();
 var currentUser = null;
 
 // ════════════════════════════════════
@@ -1699,6 +1760,7 @@ function goTab(role, tab) {
   var btn = document.getElementById(pre + '-btn-' + tab);
   if (tc)  tc.classList.add('active');
   if (btn) btn.classList.add('active');
+  if (tab === 'teesheet') mTeeSheetBuildEventDropdown();
 }
 
 // ════════════════════════════════════
@@ -2117,7 +2179,7 @@ function getEventInfo(title) {
 // ═══════════════════════════════════════
 // APP EVENT REGISTRATION
 // ═══════════════════════════════════════
-var WHCC_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLIwXQMtgijncf-a6nnP4EsCliKGEM-yTsfja9hYFzLueQujBhevo-n8ICUHFRAEp1/exec';
+var WHCC_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWRVoY7tgV1Y8M7K1Bbrhp2DsQ8CfvYYe0trVh_tCZfQ6dIsAN8Xj63b1HPvsrxaaF/exec';
 var appCurrentRegEvent = null;
 
 // ════════════════════════════════════════════════════════
@@ -2207,10 +2269,147 @@ var WHCC_SYNC = {
     .then(function(r) { return r.json(); })
     .then(function(res) { if (cb) cb(res); })
     .catch(function() { if (cb) cb({ error: 'network' }); });
-  }
+  },
+  loadTeeSheets: function(event, cb) {
+    var url = WHCC_SCRIPT_URL + '?action=get-teesheets' + (event ? '&event=' + encodeURIComponent(event) : '');
+    fetch(url).then(function(r){ return r.json(); })
+      .then(function(d){ if (cb) cb(d, null); })
+      .catch(function(e){ if (cb) cb(null, e); });
+  },
+  saveScores: function(event, round, scores, cb) {
+    var body = JSON.stringify({ action: 'save-scores', event: event, round: round, scores: scores });
+    fetch(WHCC_SCRIPT_URL, { method: 'POST', headers: {'Content-Type':'text/plain'}, body: body })
+      .then(function(r){ return r.json(); })
+      .then(function(d){ if (cb) cb(d, null); })
+      .catch(function(e){ if (cb) cb(null, e); });
+  },
 };
 
 document.addEventListener('DOMContentLoaded', function() { WHCC_SYNC.fetchCounts(); });
+
+// ── MOBILE TEE SHEET ──────────────────────────────────────────────────────────
+var mTeeSheetData = null;
+var mTeeSheetRound = 1;
+var mTeeSheetTimer = null;
+
+function mTeeSheetLoad() {
+  var event = document.getElementById('m-ts-event').value;
+  var out   = document.getElementById('m-ts-output');
+  if (!event) { if (out) out.innerHTML = '<div style="font-size:.8rem;color:rgba(245,240,232,.3);text-align:center;padding:40px 0;">Select an event to view the tee sheet</div>'; return; }
+  if (out) out.innerHTML = '<div style="font-size:.8rem;color:rgba(245,240,232,.3);text-align:center;padding:30px 0;">Loading…</div>';
+  WHCC_SYNC.loadTeeSheets(event, function(data, err) {
+    if (err || !data || !data.length) {
+      if (out) out.innerHTML = '<div style="font-size:.8rem;color:rgba(245,240,232,.3);text-align:center;padding:30px 0;">No tee sheet saved for this event yet.</div>';
+      return;
+    }
+    mTeeSheetData = data;
+    mTeeSheetRender();
+    var roundRow = document.getElementById('m-ts-round-row');
+    if (roundRow) roundRow.style.display = 'flex';
+  });
+  // Auto-refresh every 60 seconds
+  if (mTeeSheetTimer) clearInterval(mTeeSheetTimer);
+  mTeeSheetTimer = setInterval(function() {
+    if (document.getElementById('m-tab-teesheet').style.display !== 'none') mTeeSheetLoad();
+  }, 60000);
+}
+
+function mTeeSheetBuildEventDropdown() {
+  var sel = document.getElementById('m-ts-event');
+  if (!sel) return;
+  WHCC_SYNC.loadTeeSheets(null, function(data, err) {
+    if (err || !data || !data.length) {
+      sel.innerHTML = '<option value="">— No tee sheets saved yet —</option>';
+      return;
+    }
+    // Collect distinct event names preserving first-seen order
+    var seen = {}, events = [];
+    data.forEach(function(ts) { if (ts.event && !seen[ts.event]) { seen[ts.event] = true; events.push(ts.event); } });
+    events.sort();
+    sel.innerHTML = '<option value="">— Select Event —</option>';
+    events.forEach(function(ev) {
+      var o = document.createElement('option');
+      o.value = ev; o.textContent = ev;
+      sel.appendChild(o);
+    });
+  });
+}
+
+function mTeeSheetSetRound(r) {
+  mTeeSheetRound = r;
+  [1,2,3,4].forEach(function(n) {
+    var btn = document.getElementById('m-ts-r' + n);
+    if (!btn) return;
+    btn.style.background = n === r ? 'rgba(184,151,106,.2)' : 'transparent';
+    btn.style.color = n === r ? '#d4b483' : 'rgba(245,240,232,.4)';
+    btn.style.borderColor = n === r ? 'rgba(184,151,106,.4)' : 'rgba(255,255,255,.1)';
+  });
+  mTeeSheetRender();
+}
+
+function mTeeSheetRender() {
+  var out = document.getElementById('m-ts-output');
+  var saved = document.getElementById('m-ts-saved');
+  if (!out || !mTeeSheetData) return;
+
+  // Find matching round or latest
+  var sheet = null;
+  mTeeSheetData.forEach(function(d) { if (d.round === mTeeSheetRound) sheet = d; });
+  if (!sheet) sheet = mTeeSheetData[mTeeSheetData.length - 1];
+  if (!sheet || !sheet.groups || !sheet.groups.length) {
+    out.innerHTML = '<div style="font-size:.8rem;color:rgba(245,240,232,.3);text-align:center;padding:30px 0;">No groups for this round yet.</div>';
+    return;
+  }
+
+  if (saved && sheet.savedAt) saved.textContent = 'Updated ' + new Date(sheet.savedAt).toLocaleString();
+
+  var cfg = sheet.config || {};
+  var fmt = cfg.format || 'sequential';
+  var startTime = cfg.startTime || '08:00';
+  var interval  = parseInt(cfg.intervalMin) || 10;
+  var startHole = parseInt(cfg.startHole)   || 1;
+
+  var parts = startTime.split(':');
+  var baseMin = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+
+  var html = '';
+  sheet.groups.forEach(function(g, idx) {
+    var label, sub;
+    if (fmt === 'shotgun') {
+      var hole = ((startHole - 1 + idx) % 18) + 1;
+      label = 'Hole ' + hole;
+      sub   = 'Simultaneous start';
+    } else {
+      var totalMin = baseMin + idx * interval;
+      var h = Math.floor(totalMin / 60) % 24;
+      var m = totalMin % 60;
+      var ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      label = h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+      sub   = 'Hole ' + (((startHole - 1 + idx) % 18) + 1);
+    }
+
+    var score = g.scores && g.scores['r' + mTeeSheetRound];
+    html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(184,151,106,.12);margin-bottom:8px;border-radius:2px;overflow:hidden;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(184,151,106,.07);">';
+    html += '<div><div style="font-family:\'Cormorant Garamond\',serif;font-size:17px;color:#d4b483;">' + label + '</div>';
+    html += '<div style="font-size:.62rem;color:rgba(245,240,232,.35);">Group ' + g.id + ' · ' + sub + '</div></div>';
+    if (score !== null && score !== undefined) {
+      html += '<div style="font-size:13px;font-weight:700;color:#f5f0e8;background:rgba(184,151,106,.15);padding:3px 8px;border-radius:2px;">' + score + '</div>';
+    }
+    html += '</div>';
+    (g.players || []).forEach(function(tp) {
+      var p = tp.player || tp;
+      var hcp = p.hcap !== undefined ? p.hcap : (tp.hcap || '');
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;border-top:1px solid rgba(255,255,255,.04);">';
+      html += '<div style="font-size:.8rem;color:#f5f0e8;">' + (p.name || p) + '</div>';
+      if (hcp !== '') html += '<div style="font-size:.68rem;color:rgba(245,240,232,.35);">HCP ' + hcp + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  out.innerHTML = html;
+}
 
 function openAppReg(eventTitle, eventMeta, isTeam) {
   var info = typeof getEventInfo==='function' ? getEventInfo(eventTitle) : {type: isTeam?'twosome':'single', capacity:72};
@@ -3694,8 +3893,8 @@ document.getElementById('li-pin').addEventListener('keydown',   function(e){ if 
 // ════════════════════════════════════
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js')
-      .then(function(r){ console.log('SW:', r.scope); })
+    navigator.serviceWorker.register('sw.js?v=4', { updateViaCache: 'none' })
+      .then(function(r){ r.update(); console.log('SW:', r.scope); })
       .catch(function(e){ console.log('SW failed:', e); });
   });
 }

@@ -1,4 +1,4 @@
-var CACHE_NAME = 'whcc-app-v2';
+var CACHE_NAME = 'whcc-app-v4';
 var ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', function(e) {
@@ -20,12 +20,21 @@ self.addEventListener('activate', function(e) {
   self.clients.claim();
 });
 
+// Network-first: always try the network, fall back to cache only when offline
 self.addEventListener('fetch', function(e) {
   e.respondWith(
-    caches.match(e.request).then(function(cached) {
-      return cached || fetch(e.request).catch(function() {
-        return caches.match('./index.html');
-      });
-    })
+    fetch(e.request)
+      .then(function(response) {
+        // Update cache with fresh response
+        var clone = response.clone();
+        caches.open(CACHE_NAME).then(function(cache) { cache.put(e.request, clone); });
+        return response;
+      })
+      .catch(function() {
+        // Offline fallback
+        return caches.match(e.request).then(function(cached) {
+          return cached || caches.match('./index.html');
+        });
+      })
   );
 });

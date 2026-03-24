@@ -574,7 +574,7 @@
           <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:var(--white);">📋 Today's Pin Sheet</div>
           <div style="font-size:.7rem;color:rgba(255,255,255,.55);" id="pin-sheet-date"></div>
         </div>
-        <img id="pin-sheet-img" src="../images/pinsheet.jpg" alt="Today's Pin Sheet" style="width:100%;display:block;">
+        <img id="pin-sheet-img" src="https://skilltyb.github.io/whcc-website/images/pinsheet.jpg" alt="Today's Pin Sheet" style="width:100%;display:block;">
       </div>
 
       <!-- KEEP SCORE -->
@@ -2946,7 +2946,7 @@ function clearPinSheet() {
   localStorage.removeItem('wh_pin_sheet');
   renderPinSheetUpload();
   var memberImg = document.getElementById('pin-sheet-img');
-  if (memberImg) memberImg.src = '../images/pinsheet.jpg';
+  if (memberImg) memberImg.src = 'https://skilltyb.github.io/whcc-website/images/pinsheet.jpg';
   showToast('Pin sheet reset to default');
 }
 function loadPinSheetForMember() {

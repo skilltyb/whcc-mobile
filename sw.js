@@ -1,4 +1,4 @@
-var CACHE_NAME = 'whcc-app-v4';
+var CACHE_NAME = 'whcc-app-v5';
 var ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', function(e) {

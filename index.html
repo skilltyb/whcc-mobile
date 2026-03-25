@@ -1493,6 +1493,10 @@
           <input class="cond-input" id="app-reg-partner" type="text" placeholder="e.g. John Doe"/>
         </div>
         <div class="modal-field">
+          <label class="modal-label">Partner GHIN #</label>
+          <input class="cond-input" id="app-reg-partner-ghin" type="text" placeholder="Optional"/>
+        </div>
+        <div class="modal-field">
           <label class="modal-label">Players in Group</label>
           <select class="cond-input" id="app-reg-players">
             <option value="1">1 Player</option>
@@ -1559,12 +1563,13 @@ var MEMBER_DIRECTORY = [
 var DEFAULT_EVENTS = [
   {title:"St. Patty's Shootout", date:'2026-03-14', month:'MAR', day:'14', time:'10:30 AM – 2:30 PM', desc:'Fun format to kick off the season. All members welcome.', fee:'Member Event', capacity:60, registeredCount:22, registered:false},
   {title:"Ladies Opening Day", date:'2026-04-07', month:'APR', day:'7', time:'9:00 AM – 1:00 PM', desc:'Kick off the season with our ladies opening day event.', fee:'Member Event', capacity:40, registeredCount:18, registered:false},
-  {title:"Men's Golf Master Dinner", date:'2026-04-08', month:'APR', day:'8', time:'6:30 – 9:30 PM', desc:'Annual Masters watch party & dinner. Great food, great company.', fee:'$45/person', capacity:50, registeredCount:31, registered:false},
-  {title:"Poplar Bluff Mules Invitational", date:'2026-04-13', month:'APR', day:'13', time:'9:00 AM – 2:00 PM', desc:'Supporting Poplar Bluff athletics. Open to invited teams.', fee:'$80/team', capacity:72, registeredCount:48, registered:false},
-  {title:"MGA Opening Day Draft", date:'2026-04-17', month:'APR', day:'17', time:'6:00 – 10:00 PM', desc:"Men's Golf Association season draft night. Sign up for your league team.", fee:'Member Event', capacity:64, registeredCount:40, registered:false},
+  {title:"Masters Dinner", date:'2026-04-08', month:'APR', day:'8', time:'6:30 – 9:30 PM', desc:'Annual Masters watch party & dinner. Great food, great company.', fee:'$45/person', capacity:50, registeredCount:31, registered:false},
+  {title:"Mules Invitational", date:'2026-04-13', month:'APR', day:'13', time:'9:00 AM – 2:00 PM', desc:'Supporting Poplar Bluff athletics. Open to invited teams.', fee:'$80/team', capacity:72, registeredCount:48, registered:false},
+  {title:"MGA Draft Day", date:'2026-04-17', month:'APR', day:'17', time:'6:00 – 10:00 PM', desc:"Men's Golf Association season draft night. Sign up for your league team.", fee:'Member Event', capacity:64, registeredCount:40, registered:false},
   {title:"Men's Opening Day", date:'2026-04-18', month:'APR', day:'18', time:'9:30 AM – 2:00 PM', desc:'Registration deadline April 16 at 5:00 PM. All members welcome.', fee:'Member Event', capacity:72, registeredCount:55, registered:false},
   {title:"Ozark Invitational", date:'2026-04-25', month:'APR', day:'25', time:'2-Day · Apr 25–26', desc:"Westwood Hills' signature invitational event. 2-day tournament format.", fee:'$150/team', capacity:96, registeredCount:64, registered:false},
-  {title:"Friday Night Fights Begins", date:'2026-05-01', month:'MAY', day:'1', time:'6:00 – 10:00 PM', desc:'Weekly competitive series kicks off. Runs through the season every Friday.', fee:'$10/round', capacity:48, registeredCount:20, registered:false},
+  {title:"Friday Night Fights", date:'2026-05-01', month:'MAY', day:'1', time:'6:00 – 10:00 PM', desc:'Weekly competitive series kicks off. Runs through the season every Friday.', fee:'$10/round', capacity:48, registeredCount:20, registered:false},
+  {title:"Tuesday Ladies Night", date:'2026-05-05', month:'MAY', day:'5', time:'5:30 PM · Every Tuesday', desc:'Weekly ladies golf series. Runs every Tuesday May through September.', fee:'Member Event', capacity:36, registeredCount:0, registered:false},
   {title:"Hit & Giggle", date:'2026-05-06', month:'MAY', day:'6', time:'7:00 – 11:00 PM', desc:'Recurring social golf series. A great way to socialize on and off the course.', fee:'Member Event', capacity:40, registeredCount:15, registered:false},
   {title:"Men's League Opening Night", date:'2026-05-07', month:'MAY', day:'7', time:'5:00 – 9:00 PM', desc:'Weekly men\'s league begins. Every Thursday through the season. Sign up for your team.', fee:'League Fee', capacity:80, registeredCount:62, registered:false},
   {title:"Spring 2-Man Scramble", date:'2026-05-16', month:'MAY', day:'16', time:'8:00 AM Shotgun · May 16–17', desc:'2-day scramble event. Register your team of two for two rounds of competition.', fee:'$120/team', capacity:80, registeredCount:44, registered:false},
@@ -2155,9 +2160,10 @@ function renderRoundLog() {
 var WHCC_EVENTS = {
   "St. Patty's Shootout":           { type:'single',   capacity:60,  fee:'Member Event' },
   "Ladies Opening Day":              { type:'single',   capacity:40,  fee:'Member Event' },
-  "Men's Golf Master Dinner":        { type:'single',   capacity:50,  fee:'$45/person' },
-  "Poplar Bluff Mules Invitational": { type:'foursome', capacity:18,  fee:'$80/team' },
-  "MGA Opening Day Draft":           { type:'single',   capacity:64,  fee:'Member Event' },
+  "Masters Dinner":                  { type:'single',   capacity:50,  fee:'$45/person' },
+  "Mules Invitational":              { type:'foursome', capacity:18,  fee:'$80/team' },
+  "MGA Draft Day":                   { type:'single',   capacity:64,  fee:'Member Event' },
+  "Tuesday Ladies Night":            { type:'single',   capacity:36,  fee:'Member Event' },
   "Men's Opening Day":               { type:'single',   capacity:72,  fee:'Member Event' },
   "Ozark Invitational":              { type:'twosome',  capacity:48,  fee:'$150/team' },
   "Friday Night Fights":             { type:'single',   capacity:48,  fee:'$10/round' },
@@ -2476,7 +2482,9 @@ function submitAppReg() {
     firstName: fname, lastName: lname, email: email,
     phone: document.getElementById('app-reg-phone').value.trim(),
     partner: document.getElementById('app-reg-partner').value.trim(),
+    partnerGhin: document.getElementById('app-reg-partner-ghin') ? document.getElementById('app-reg-partner-ghin').value.trim() : '',
     players: document.getElementById('app-reg-players').value,
+    memberNum: currentUser ? (currentUser.memberNumber || '') : '',
     ghin: document.getElementById('app-reg-ghin') ? document.getElementById('app-reg-ghin').value.trim() : '',
     notes: document.getElementById('app-reg-notes').value.trim(),
     timestamp: new Date().toISOString(),
@@ -3506,7 +3514,7 @@ function refreshGlance() {
   var dow  = now.getDay(); // 0=Sun
   var mon  = new Date(now); mon.setDate(now.getDate() - ((dow + 6) % 7)); mon.setHours(0,0,0,0);
   var sun  = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
-  var events = JSON.parse(localStorage.getItem('wh_events') || 'null') || DEFAULT_EVENTS;
+  var events = JSON.parse(localStorage.getItem('wh_app_events') || 'null') || DEFAULT_EVENTS;
   var evCount = events.filter(function(e){
     var d = new Date(e.date + 'T00:00:00');
     return d >= mon && d <= sun;

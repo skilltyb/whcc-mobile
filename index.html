@@ -1943,7 +1943,7 @@ function renderSetupForm() {
     '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
     '<button class="setup-choice active" id="sc-front" onclick="setupPick(\'holes\',\'front\')">Front 9</button>' +
     '<button class="setup-choice" id="sc-back"  onclick="setupPick(\'holes\',\'back\')">Back 9</button>' +
-    '<button class="setup-choice" id="sc-all18" onclick="setupPick(\'holes\',\'all\')">All 18</button>' +
+    '<button class="setup-choice" id="sc-all18" onclick="setupPick(\'holes\',\'all18\')">All 18</button>' +
     '</div></div>' +
 
     '<div style="margin-bottom:16px;">' +
@@ -1983,7 +1983,7 @@ function beginRound() {
   activeTee   = window._setupTee   || 'Blue';
   var hChoice = window._setupHoles || 'front';
   activeHoles = hChoice === 'back' ? [9,10,11,12,13,14,15,16,17]
-              : hChoice === 'all'  ? [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
+              : hChoice === 'all18'  ? [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
               :                      [0,1,2,3,4,5,6,7,8];
   var hcpVal = parseFloat(document.getElementById('sc-hcp-input').value);
   if (!isNaN(hcpVal) && hcpVal > 0) {
@@ -2432,14 +2432,18 @@ function openAppReg(eventTitle, eventMeta, isTeam) {
   // Adapt team fields
   var teamFields = document.getElementById('app-reg-team-fields');
   var partnerInput = document.getElementById('app-reg-partner');
+  var playersSelect = document.getElementById('app-reg-players');
   if (evType === 'single') {
     teamFields.style.display = 'none';
+    if (playersSelect) playersSelect.value = '1'; // prevent hidden "2" from leaking into submission
   } else if (evType === 'twosome') {
     teamFields.style.display = 'block';
     if (partnerInput) { partnerInput.placeholder = "Partner's full name"; partnerInput.previousElementSibling.textContent = 'Partner Name'; }
+    if (playersSelect) playersSelect.value = '2';
   } else {
     teamFields.style.display = 'block';
     if (partnerInput) { partnerInput.placeholder = 'Partner 1 (list others in notes)'; partnerInput.previousElementSibling.textContent = 'Partner Names'; }
+    if (playersSelect) playersSelect.value = '4';
   }
 
   // Show spots remaining — cached first (instant), then live-refresh from Sheet

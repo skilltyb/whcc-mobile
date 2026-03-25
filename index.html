@@ -1706,10 +1706,8 @@ var appEvents = JSON.parse(localStorage.getItem('wh_app_events') || 'null') || J
   DEFAULT_EVENTS.forEach(function(e) {
     if (!storedTitles[e.title]) { appEvents.push(JSON.parse(JSON.stringify(e))); added = true; }
   });
-  if (added) {
-    appEvents.sort(function(a, b) { return a.date.localeCompare(b.date); });
-    localStorage.setItem('wh_app_events', JSON.stringify(appEvents));
-  }
+  appEvents.sort(function(a, b) { return a.date.localeCompare(b.date); });
+  if (added) { localStorage.setItem('wh_app_events', JSON.stringify(appEvents)); }
 })();
 var currentUser = null;
 

@@ -2233,20 +2233,21 @@ var WHCC_SYNC = {
           if (!Array.isArray(rows)) { if (cb) cb(null, 'bad data'); return; }
           var regs = rows.map(function(row) {
             return {
-              id:        row['ID']              || '',
-              event:     row['Event']           || '',
-              eventMeta: row['Event Date/Time'] || '',
-              firstName: row['First Name']      || '',
-              lastName:  row['Last Name']       || '',
-              email:     row['Email']           || '',
-              phone:     row['Phone']           || '',
-              partner:   row['Partner/Team']    || '',
-              players:   row['Players']         || '1',
-              memberNum: row['Member #']        || '',
-              ghin:      row['GHIN']            || '',
-              notes:     row['Notes']           || '',
-              timestamp: row['Registered At']   || '',
-              source:    row['Source']          || ''
+              id:          row['ID']                                                  || '',
+              event:       row['Event']                                               || '',
+              eventMeta:   row['Event Date/Time'] || row['Event Date/Tiime']          || '',
+              firstName:   row['First Name']                                         || '',
+              lastName:    row['Last Name']                                          || '',
+              email:       row['Email']                                              || '',
+              phone:       row['Phone']                                              || '',
+              partner:     row['Partners'] || row['Partner/Team'] || row['Partner'] || row['partner'] || '',
+              players:     row['Players']                                            || '1',
+              memberNum:   row['Member #']                                           || '',
+              ghin:        row['GHIN Handicap'] || row['GHIN #'] || row['GHIN'] || row['ghin'] || '',
+              partnerGhin: row['Partner GHIN'] || row['partnerGhin'] || row['PartnerGhin'] || '',
+              notes:       row['Notes']                                              || '',
+              timestamp:   row['Registered At']                                      || '',
+              source:      row['Source']                                             || ''
             };
           }).filter(function(r) { return r.firstName || r.lastName; });
           localStorage.setItem('wh_registrations', JSON.stringify(regs));

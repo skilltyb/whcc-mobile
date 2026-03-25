@@ -2425,6 +2425,13 @@ function openAppReg(eventTitle, eventMeta, isTeam) {
   var evType = info.type || (isTeam ? 'twosome' : 'single');
   appCurrentRegEvent = { title: eventTitle, meta: eventMeta, type: evType, capacity: info.capacity, fee: info.fee };
 
+  // Clear non-prefilled fields before showing the form
+  ['app-reg-partner','app-reg-partner-ghin','app-reg-ghin','app-reg-notes'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  var errEl = document.getElementById('app-reg-error');
+  if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+
   document.getElementById('app-reg-title').textContent = eventTitle;
   var metaStr = (eventMeta||'') + (info.fee && info.fee!=='Member Event' ? ' · '+info.fee : '');
   document.getElementById('app-reg-meta').textContent = metaStr;

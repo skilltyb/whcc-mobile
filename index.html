@@ -2348,62 +2348,56 @@ function mTeeSheetSetRound(r) {
 }
 
 function mTeeSheetRender() {
-  var out = document.getElementById('m-ts-output');
+  var out   = document.getElementById('m-ts-output');
   var saved = document.getElementById('m-ts-saved');
   if (!out || !mTeeSheetData) return;
-
-  // Find matching round or latest
   var sheet = null;
   mTeeSheetData.forEach(function(d) { if (d.round === mTeeSheetRound) sheet = d; });
   if (!sheet) sheet = mTeeSheetData[mTeeSheetData.length - 1];
-  if (!sheet || !sheet.groups || !sheet.groups.length) {
-    out.innerHTML = '<div style="font-size:.8rem;color:rgba(245,240,232,.3);text-align:center;padding:30px 0;">No groups for this round yet.</div>';
-    return;
-  }
-
+  if (!sheet || !sheet.groups || !sheet.groups.length) { out.innerHTML = 'No groups for this round yet.'; return; }
   if (saved && sheet.savedAt) saved.textContent = 'Updated ' + new Date(sheet.savedAt).toLocaleString();
-
   var cfg = sheet.config || {};
-  var fmt = cfg.format || 'sequential';
-  var startTime = cfg.startTime || '08:00';
-  var interval  = parseInt(cfg.intervalMin) || 10;
-  var startHole = parseInt(cfg.startHole)   || 1;
-
-  var parts = startTime.split(':');
-  var baseMin = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-
+  var startHole = parseInt(cfg.startHole) || 1;
   var html = '';
   sheet.groups.forEach(function(g, idx) {
+    var players = (g.team && g.team.players) ? g.team.players : (g.players || []);
+    var groupId = (g.team && g.team.id) ? g.team.id : (g.id || idx + 1);
     var label, sub;
-    if (fmt === 'shotgun') {
-      var hole = ((startHole - 1 + idx) % 18) + 1;
-      label = 'Hole ' + hole;
-      sub   = 'Simultaneous start';
+    if (g.teeTime) {
+      label = g.teeTime;
+      sub = 'Hole ' + (g.hole || (((startHole - 1 + idx) % 18) + 1));
     } else {
-      var totalMin = baseMin + idx * interval;
-      var h = Math.floor(totalMin / 60) % 24;
-      var m = totalMin % 60;
-      var ampm = h >= 12 ? 'PM' : 'AM';
-      h = h % 12 || 12;
-      label = h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
-      sub   = 'Hole ' + (((startHole - 1 + idx) % 18) + 1);
+      var fmt = cfg.format || 'sequential';
+      if (fmt === 'shotgun') {
+        label = 'Hole ' + (((startHole - 1 + idx) % 18) + 1);
+        sub = 'Simultaneous start';
+      } else {
+        var parts = (cfg.startTime || '08:00').split(':');
+        var baseMin = parseInt(parts[0])*60 + parseInt(parts[1]);
+        var interval = parseInt(cfg.intervalMin) || 10;
+        var totalMin = baseMin + idx * interval;
+        var hh = Math.floor(totalMin/60)%24, mm = totalMin%60;
+        var ampm = hh >= 12 ? 'PM' : 'AM';
+        hh = hh%12||12;
+        label = hh + ':' + (mm<10?'0':'') + mm + ' ' + ampm;
+        sub = 'Hole ' + (((startHole - 1 + idx) % 18) + 1);
+      }
     }
-
     var score = g.scores && g.scores['r' + mTeeSheetRound];
     html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(184,151,106,.12);margin-bottom:8px;border-radius:2px;overflow:hidden;">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(184,151,106,.07);">';
-    html += '<div><div style="font-family:\'Cormorant Garamond\',serif;font-size:17px;color:#d4b483;">' + label + '</div>';
-    html += '<div style="font-size:.62rem;color:rgba(245,240,232,.35);">Group ' + g.id + ' · ' + sub + '</div></div>';
+    html += '<div><div style="font-family:Cormorant Garamond,serif;font-size:17px;color:#d4b483;">' + label + '</div>';
+    html += '<div style="font-size:.62rem;color:rgba(245,240,232,.35);">Group ' + groupId + ' &bull; ' + sub + '</div></div>';
     if (score !== null && score !== undefined) {
       html += '<div style="font-size:13px;font-weight:700;color:#f5f0e8;background:rgba(184,151,106,.15);padding:3px 8px;border-radius:2px;">' + score + '</div>';
     }
     html += '</div>';
-    (g.players || []).forEach(function(tp) {
+    players.forEach(function(tp) {
       var p = tp.player || tp;
-      var hcp = p.hcap !== undefined ? p.hcap : (tp.hcap || '');
+      var hcp = p.hcap !== undefined ? p.hcap : (tp.hcap !== undefined ? tp.hcap : '');
       html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;border-top:1px solid rgba(255,255,255,.04);">';
-      html += '<div style="font-size:.8rem;color:#f5f0e8;">' + (p.name || p) + '</div>';
-      if (hcp !== '') html += '<div style="font-size:.68rem;color:rgba(245,240,232,.35);">HCP ' + hcp + '</div>';
+      html += '<span style="font-size:.8rem;color:#f5f0e8;">' + (p.name || '—') + '</span>';
+      if (hcp !== '') html += '<span style="font-size:.68rem;color:rgba(245,240,232,.35);">HCP ' + hcp + '</span>';
       html += '</div>';
     });
     html += '</div>';

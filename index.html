@@ -824,7 +824,10 @@
       <div class="card" style="margin-bottom:12px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">🍽 Dining Reservations</div>
-          <button class="ts-btn checkin" onclick="openModal('modal-add-res')">+ Add</button>
+          <div style="display:flex;gap:6px;">
+            <button class="ts-btn" onclick="clearSeated()" style="font-size:.68rem;">Clear Seated</button>
+            <button class="ts-btn checkin" onclick="openModal('modal-add-res')">+ Add</button>
+          </div>
         </div>
         <div id="s-dining-list"><div class="ts-empty">No reservations yet</div></div>
         <div id="s-dining-count" style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:right;"></div>
@@ -2712,6 +2715,10 @@ function removeEventTeeSlot(id) {
 function openDiningRes() {
   var today = new Date();
   document.getElementById('md-date').value  = today.toISOString().split('T')[0];
+  // Default time: current time rounded to next 30 min
+  var h = today.getHours(), m = today.getMinutes();
+  if (m > 0) { m = m <= 30 ? 30 : 0; if (m === 0) h = (h + 1) % 24; }
+  document.getElementById('md-time').value  = (h < 10 ? '0' : '') + h + ':' + (m === 0 ? '00' : '30');
   document.getElementById('md-party').value = '';
   document.getElementById('md-notes').value = '';
   openModal('modal-dining');
@@ -3602,12 +3609,14 @@ function renderDiningLog() {
   }
   var totalGuests = list.reduce(function(s,r){ return s + r.party; }, 0);
   el.innerHTML = list.map(function(r){
-    return '<div class="dr-row">' +
+    return '<div class="dr-row" style="' + (r.seated ? 'opacity:.6;' : '') + '">' +
       '<div class="dr-time">' + r.timeDisplay + '</div>' +
       '<div class="dr-info">' +
         '<div class="dr-name">' + r.name + '</div>' +
         '<div class="dr-detail">Party of ' + r.party + (r.note ? ' &nbsp;·&nbsp; ' + r.note : '') + '</div>' +
       '</div>' +
+      '<span class="dr-badge ' + (r.seated ? 'seated' : 'waiting') + '">' + (r.seated ? '✓ Seated' : 'Waiting') + '</span>' +
+      (!r.seated ? '<button class="ts-btn checkin" onclick="seatReservation(\'' + r.id + '\')" style="font-size:.68rem;padding:3px 8px;">Seat</button>' : '') +
       '<button class="ts-btn" onclick="removeReservation(\'' + r.id + '\')">✕</button>' +
     '</div>';
   }).join('');

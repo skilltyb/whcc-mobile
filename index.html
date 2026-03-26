@@ -3927,7 +3927,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js?v=4', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=2', { updateViaCache: 'none' })
       .then(function(r) {
         r.update(); // immediately check for a newer worker
       })

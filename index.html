@@ -2320,6 +2320,12 @@ var WHCC_SYNC = {
       .then(function(d){ if (cb) cb(d, null); })
       .catch(function(e){ if (cb) cb(null, e); });
   },
+  fetchSpecials: function(cb) {
+    fetch(WHCC_SCRIPT_URL + '?action=get-specials')
+      .then(function(r){ return r.json(); })
+      .then(function(d){ if (cb) cb(d, null); })
+      .catch(function(e){ if (cb) cb(null, e); });
+  },
 };
 
 document.addEventListener('DOMContentLoaded', function() { WHCC_SYNC.fetchCounts(); });
@@ -2830,6 +2836,16 @@ function menuSave(data) {
   data._version = WH_MENU_VERSION;
   localStorage.setItem('wh_menus', JSON.stringify(data));
 }
+// Fetch live specials from server on load so the app always reflects what staff set
+(function(){
+  WHCC_SYNC.fetchSpecials(function(sp, err) {
+    if (err || !sp || (!sp.weeklySpecial && !sp.fridayNight)) return;
+    var data = menuLoad();
+    if (sp.weeklySpecial) data.weeklySpecial = sp.weeklySpecial;
+    if (sp.fridayNight)   data.fridayNight   = sp.fridayNight;
+    menuSave(data);
+  });
+})();
 
 function miHTML(item) {
   return '<div class="mi-row">' +

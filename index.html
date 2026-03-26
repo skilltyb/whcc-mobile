@@ -2348,62 +2348,63 @@ function mTeeSheetSetRound(r) {
 }
 
 function mTeeSheetRender() {
-  var out   = document.getElementById('m-ts-output');
+  var out = document.getElementById('m-ts-output');
   var saved = document.getElementById('m-ts-saved');
   if (!out || !mTeeSheetData) return;
   var sheet = null;
   mTeeSheetData.forEach(function(d) { if (d.round === mTeeSheetRound) sheet = d; });
   if (!sheet) sheet = mTeeSheetData[mTeeSheetData.length - 1];
-  if (!sheet || !sheet.groups || !sheet.groups.length) { out.innerHTML = 'No groups for this round yet.'; return; }
+  if (!sheet || !sheet.groups || !sheet.groups.length) {
+    out.innerHTML = '<p>No groups yet.</p>'; return;
+  }
   if (saved && sheet.savedAt) saved.textContent = 'Updated ' + new Date(sheet.savedAt).toLocaleString();
-  var cfg = sheet.config || {};
-  var startHole = parseInt(cfg.startHole) || 1;
+  var cfg = sheet.config ? sheet.config : {};
+  var startHole = parseInt(cfg.startHole) ? parseInt(cfg.startHole) : 1;
   var html = '';
   sheet.groups.forEach(function(g, idx) {
-    var players = (g.team && g.team.players) ? g.team.players : (g.players || []);
-    var groupId = (g.team && g.team.id) ? g.team.id : (g.id || idx + 1);
+    var players = (g.team && g.team.players) ? g.team.players : (g.players ? g.players : []);
+    var groupId = (g.team && g.team.id) ? g.team.id : (g.id ? g.id : idx + 1);
     var label, sub;
     if (g.teeTime) {
       label = g.teeTime;
-      sub = 'Hole ' + (g.hole || (((startHole - 1 + idx) % 18) + 1));
+      sub = 'Hole ' + (g.hole ? g.hole : (((startHole-1+idx)%18)+1));
     } else {
-      var fmt = cfg.format || 'sequential';
+      var fmt = cfg.format ? cfg.format : 'sequential';
       if (fmt === 'shotgun') {
-        label = 'Hole ' + (((startHole - 1 + idx) % 18) + 1);
-        sub = 'Simultaneous start';
+        label = 'Hole ' + (((startHole-1+idx)%18)+1); sub = 'Simultaneous start';
       } else {
-        var parts = (cfg.startTime || '08:00').split(':');
-        var baseMin = parseInt(parts[0])*60 + parseInt(parts[1]);
-        var interval = parseInt(cfg.intervalMin) || 10;
-        var totalMin = baseMin + idx * interval;
-        var hh = Math.floor(totalMin/60)%24, mm = totalMin%60;
+        var pts = (cfg.startTime ? cfg.startTime : '08:00').split(':');
+        var bm = parseInt(pts[0])*60 + parseInt(pts[1]);
+        var iv = parseInt(cfg.intervalMin) ? parseInt(cfg.intervalMin) : 10;
+        var tm = bm + idx*iv;
+        var hh = Math.floor(tm/60)%24, mm = tm%60;
         var ampm = hh >= 12 ? 'PM' : 'AM';
-        hh = hh%12||12;
-        label = hh + ':' + (mm<10?'0':'') + mm + ' ' + ampm;
-        sub = 'Hole ' + (((startHole - 1 + idx) % 18) + 1);
+        hh = hh%12; if (!hh) hh = 12;
+        label = hh + ':' + (mm < 10 ? '0' : '') + mm + ' ' + ampm;
+        sub = 'Hole ' + (((startHole-1+idx)%18)+1);
       }
     }
-    var score = g.scores && g.scores['r' + mTeeSheetRound];
-    html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(184,151,106,.12);margin-bottom:8px;border-radius:2px;overflow:hidden;">';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(184,151,106,.07);">';
-    html += '<div><div style="font-family:Cormorant Garamond,serif;font-size:17px;color:#d4b483;">' + label + '</div>';
-    html += '<div style="font-size:.62rem;color:rgba(245,240,232,.35);">Group ' + groupId + ' &bull; ' + sub + '</div></div>';
-    if (score !== null && score !== undefined) {
-      html += '<div style="font-size:13px;font-weight:700;color:#f5f0e8;background:rgba(184,151,106,.15);padding:3px 8px;border-radius:2px;">' + score + '</div>';
-    }
-    html += '</div>';
-    players.forEach(function(tp) {
-      var p = tp.player || tp;
+    var score = g.scores ? g.scores['r' + mTeeSheetRound] : null;
+    html += '<div style="background:#fff;border-radius:8px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.22);">';
+    html += '<div style="background:#1a2b1f;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">';
+    html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:20px;font-weight:700;color:#d4b483;line-height:1;">' + label + '</div>';
+    html += '<div style="text-align:right;"><div style="font-size:.7rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.06em;">' + sub + '</div>';
+    if (score != null) html += '<div style="font-size:12px;color:#d4b483;font-weight:700;">' + score + '</div>';
+    html += '</div></div>';
+    players.forEach(function(tp, pi) {
+      var p = tp.player ? tp.player : tp;
       var hcp = p.hcap !== undefined ? p.hcap : (tp.hcap !== undefined ? tp.hcap : '');
-      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;border-top:1px solid rgba(255,255,255,.04);">';
-      html += '<span style="font-size:.8rem;color:#f5f0e8;">' + (p.name || '—') + '</span>';
-      if (hcp !== '') html += '<span style="font-size:.68rem;color:rgba(245,240,232,.35);">HCP ' + hcp + '</span>';
+      var border = pi > 0 ? 'border-top:1px solid #eee;' : '';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;' + border + '">';
+      html += '<div style="font-size:.88rem;font-weight:600;color:#1a2b1f;">' + (p.name ? p.name : '-') + '</div>';
+      if (hcp !== '') html += '<span style="font-size:.7rem;font-weight:700;color:#2d5a2d;background:#e8f4e8;padding:2px 8px;border-radius:10px;">HCP ' + hcp + '</span>';
       html += '</div>';
     });
     html += '</div>';
   });
   out.innerHTML = html;
 }
+
 
 function openAppReg(eventTitle, eventMeta, isTeam) {
   var info = typeof getEventInfo==='function' ? getEventInfo(eventTitle) : {type: isTeam?'twosome':'single', capacity:72};
@@ -3913,7 +3914,7 @@ function openMemberTeeSheet(idx) {
         sel.selectedIndex = i; mTeeSheetLoad(); return;
       }
     }
-  }, 1500);
+  }, 3000);
 }
 </script>
 </body>

@@ -2235,6 +2235,8 @@ var WHCC_SYNC = {
         .then(function(rows) {
           if (!Array.isArray(rows)) { if (cb) cb(null, 'bad data'); return; }
           var regs = rows.map(function(row) {
+            var rawNotes  = row['Notes'] || '';
+            var notesAsHcp = (function(){ var n=parseFloat(rawNotes); return (!isNaN(n)&&n>=0&&n<=54&&String(n)===rawNotes.trim()) ? String(n) : ''; })();
             return {
               id:          row['ID']                                                  || '',
               event:       row['Event']                                               || '',
@@ -2246,9 +2248,9 @@ var WHCC_SYNC = {
               partner:     row['Partners'] || row['Partner/Team'] || row['Partner'] || row['partner'] || '',
               players:     row['Players']                                            || '1',
               memberNum:   row['Member #']                                           || '',
-              ghin:        row['GHIN Handicap'] || row['GHIN #'] || row['GHIN'] || row['ghin'] || '',
+              ghin:        row['GHIN Handicap'] || row['GHIN #'] || row['GHIN'] || row['ghin'] || notesAsHcp || '',
               partnerGhin: row['Partner GHIN'] || row['partnerGhin'] || row['PartnerGhin'] || '',
-              notes:       row['Notes']                                              || '',
+              notes:       notesAsHcp ? '' : rawNotes,
               timestamp:   row['Registered At']                                      || '',
               source:      row['Source']                                             || ''
             };

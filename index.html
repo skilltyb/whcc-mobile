@@ -1780,15 +1780,11 @@ function goTab(role, tab) {
 // MY UPCOMING
 // ════════════════════════════════════
 function renderMyUpcoming() {
-  var MONTHS = {JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
   var now = new Date(); now.setHours(0,0,0,0);
   var registered = appEvents
-    .filter(function(ev){ return ev.registered; })
+    .filter(function(ev){ return ev.registered && ev.date; })
     .map(function(ev){
-      var m = MONTHS[ev.month] !== undefined ? MONTHS[ev.month] : 0;
-      var date = new Date(now.getFullYear(), m, parseInt(ev.day));
-      if (date < now) date = new Date(now.getFullYear()+1, m, parseInt(ev.day));
-      return {ev:ev, date:date};
+      return {ev:ev, date:new Date(ev.date + 'T00:00:00')};
     })
     .filter(function(x){ return x.date >= now; })
     .sort(function(a,b){ return a.date - b.date; })

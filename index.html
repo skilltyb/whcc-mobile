@@ -603,6 +603,7 @@
 
       <!-- HOOVER'S SECTION -->
       <div id="dt-hoovers-section">
+        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Reserve a Table at Hoover's</button>
         <div style="background:var(--forest);border-radius:12px;padding:18px;margin-bottom:12px;text-align:center;">
           <div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:var(--cream);letter-spacing:.06em;">Hoover's</div>
           <div style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">at Westwood Hills</div>
@@ -642,12 +643,12 @@
           <div style="font-size:.76rem;color:rgba(245,240,232,.55);line-height:1.5;">14 oz. Tomahawk Pork Chop served on a bed of pommes potatoes with a side of bacon wrapped asparagus</div>
           <div style="font-size:.7rem;color:var(--gold);font-style:italic;margin-top:8px;">Pairs with Cabernet or Sauvignon Blanc</div>
         </div>
-        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Reserve a Table at Hoover's</button>
       </div>
 
       <!-- WESTWOOD GRILL SECTION -->
       <div id="dt-grill-section" style="display:none;">
         <div class="page-sub" style="margin-bottom:12px;">Westwood Grill — dine-in or order to-go</div>
+        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Request a Dining Reservation</button>
         <div class="card" style="display:flex;align-items:center;gap:13px;margin-bottom:12px;">
           <div style="font-size:1.7rem;">🕐</div>
           <div>
@@ -668,7 +669,6 @@
             <div class="card-body">Call <strong>(573) 785-5253</strong> — our full menu is available for take-out any time.</div>
           </div>
         </div>
-        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Request a Dining Reservation</button>
         <div id="app-menu-content"></div>
       </div>
     </div>
@@ -2310,8 +2310,16 @@ function mTeeSheetLoad() {
   // Auto-refresh every 60 seconds
   if (mTeeSheetTimer) clearInterval(mTeeSheetTimer);
   mTeeSheetTimer = setInterval(function() {
-    if (document.getElementById('m-tab-teesheet').style.display !== 'none') mTeeSheetLoad();
-  }, 60000);
+    var _tab = document.getElementById('m-tab-teesheet');
+    if (!_tab || !_tab.classList.contains('active')) return;
+    var _sel = document.getElementById('m-ts-event');
+    var _ev = _sel ? _sel.value : '';
+    if (!_ev) return;
+    mTeeSheetLoad();
+    setTimeout(function() {
+      if (_sel && _ev) { for (var _i=0;_i<_sel.options.length;_i++) { if (_sel.options[_i].value===_ev) { _sel.selectedIndex=_i; break; } } }
+    }, 800);
+  }, 300000);
 }
 
 function mTeeSheetBuildEventDropdown() {
@@ -2355,53 +2363,131 @@ function mTeeSheetRender() {
   mTeeSheetData.forEach(function(d) { if (d.round === mTeeSheetRound) sheet = d; });
   if (!sheet) sheet = mTeeSheetData[mTeeSheetData.length - 1];
   if (!sheet || !sheet.groups || !sheet.groups.length) {
-    out.innerHTML = '<p>No groups yet.</p>'; return;
+    out.innerHTML = '<p style="color:rgba(245,240,232,.4);text-align:center;padding:40px 0;">No groups for this round yet.</p>';
+    return;
   }
   if (saved && sheet.savedAt) saved.textContent = 'Updated ' + new Date(sheet.savedAt).toLocaleString();
   var cfg = sheet.config ? sheet.config : {};
   var startHole = parseInt(cfg.startHole) ? parseInt(cfg.startHole) : 1;
   var html = '';
+
+  // ── Detect format ──
+  // League: multiple groups share the same hole number
+  var holeCounts = {};
   sheet.groups.forEach(function(g, idx) {
-    var players = (g.team && g.team.players) ? g.team.players : (g.players ? g.players : []);
-    var groupId = (g.team && g.team.id) ? g.team.id : (g.id ? g.id : idx + 1);
-    var label, sub;
-    if (g.teeTime) {
-      label = g.teeTime;
-      sub = 'Hole ' + (g.hole ? g.hole : (((startHole-1+idx)%18)+1));
-    } else {
-      var fmt = cfg.format ? cfg.format : 'sequential';
-      if (fmt === 'shotgun') {
-        label = 'Hole ' + (((startHole-1+idx)%18)+1); sub = 'Simultaneous start';
-      } else {
-        var pts = (cfg.startTime ? cfg.startTime : '08:00').split(':');
-        var bm = parseInt(pts[0])*60 + parseInt(pts[1]);
-        var iv = parseInt(cfg.intervalMin) ? parseInt(cfg.intervalMin) : 10;
-        var tm = bm + idx*iv;
-        var hh = Math.floor(tm/60)%24, mm = tm%60;
-        var ampm = hh >= 12 ? 'PM' : 'AM';
-        hh = hh%12; if (!hh) hh = 12;
-        label = hh + ':' + (mm < 10 ? '0' : '') + mm + ' ' + ampm;
-        sub = 'Hole ' + (((startHole-1+idx)%18)+1);
-      }
-    }
-    var score = g.scores ? g.scores['r' + mTeeSheetRound] : null;
-    html += '<div style="background:#fff;border-radius:8px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.22);">';
-    html += '<div style="background:#1a2b1f;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">';
-    html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:20px;font-weight:700;color:#d4b483;line-height:1;">' + label + '</div>';
-    html += '<div style="text-align:right;"><div style="font-size:.7rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.06em;">' + sub + '</div>';
-    if (score != null) html += '<div style="font-size:12px;color:#d4b483;font-weight:700;">' + score + '</div>';
-    html += '</div></div>';
+    var h = g.hole ? g.hole : (((startHole - 1 + idx) % 18) + 1);
+    holeCounts[h] = (holeCounts[h] ? holeCounts[h] : 0) + 1;
+  });
+  var isLeague = false;
+  Object.keys(holeCounts).forEach(function(k) { if (holeCounts[k] > 1) isLeague = true; });
+  var fmt = cfg.format ? cfg.format : 'sequential';
+  var isShotgun = (!isLeague && fmt === 'shotgun');
+
+  // ── Helper: render player rows ──
+  function playerRows(players) {
+    var s = '';
     players.forEach(function(tp, pi) {
       var p = tp.player ? tp.player : tp;
       var hcp = p.hcap !== undefined ? p.hcap : (tp.hcap !== undefined ? tp.hcap : '');
-      var border = pi > 0 ? 'border-top:1px solid #eee;' : '';
-      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;' + border + '">';
-      html += '<div style="font-size:.88rem;font-weight:600;color:#1a2b1f;">' + (p.name ? p.name : '-') + '</div>';
-      if (hcp !== '') html += '<span style="font-size:.7rem;font-weight:700;color:#2d5a2d;background:#e8f4e8;padding:2px 8px;border-radius:10px;">HCP ' + hcp + '</span>';
+      var border = pi > 0 ? 'border-top:1px solid rgba(255,255,255,.07);' : '';
+      s += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;' + border + '">';
+      s += '<div style="font-size:.88rem;font-weight:600;color:#1a2b1f;">' + (p.name ? p.name : '—') + '</div>';
+      if (hcp !== '') s += '<span style="font-size:.68rem;font-weight:700;color:#2d5a2d;background:#e8f4e8;padding:2px 7px;border-radius:10px;">HCP&nbsp;' + hcp + '</span>';
+      s += '</div>';
+    });
+    return s;
+  }
+
+  // ── Helper: compute tee time label for sequential ──
+  function seqTime(idx) {
+    var defStart = isLeague ? '17:00' : (cfg.startTime ? cfg.startTime : '08:00');
+    var pts = defStart.split(':');
+    var bm = parseInt(pts[0]) * 60 + parseInt(pts[1]);
+    var iv = parseInt(cfg.intervalMin) ? parseInt(cfg.intervalMin) : 10;
+    var tm = bm + idx * iv;
+    var hh = Math.floor(tm / 60) % 24, mm = tm % 60;
+    var ampm = hh >= 12 ? 'PM' : 'AM';
+    hh = hh % 12; if (!hh) hh = 12;
+    return hh + ':' + (mm < 10 ? '0' : '') + mm + ' ' + ampm;
+  }
+
+  // ── LEAGUE FORMAT ──
+  if (isLeague) {
+    var nine = startHole <= 9 ? 'Front 9' : 'Back 9';
+    html += '<div style="font-size:.68rem;color:rgba(184,151,106,.7);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;padding:0 2px;">'
+      + nine + ' &nbsp;·&nbsp; 5:00 PM Start</div>';
+    // Group by hole
+    var byHole = {};
+    var holeOrder = [];
+    sheet.groups.forEach(function(g, idx) {
+      var h = g.hole ? g.hole : (((startHole - 1 + idx) % 18) + 1);
+      if (!byHole[h]) { byHole[h] = []; holeOrder.push(h); }
+      byHole[h].push({ g: g, idx: idx });
+    });
+    holeOrder.forEach(function(h) {
+      html += '<div style="background:#1e3323;border-radius:10px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.35);">';
+      html += '<div style="background:#152618;padding:8px 14px;display:flex;align-items:center;gap:10px;">';
+      html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.25rem;font-weight:700;color:#d4b483;">Hole ' + h + '</div>';
+      html += '</div>';
+      byHole[h].forEach(function(entry, gi) {
+        var g = entry.g, idx = entry.idx;
+        var players = (g.team && g.team.players) ? g.team.players : (g.players ? g.players : []);
+        var teeLabel = g.teeTime ? g.teeTime : seqTime(idx);
+        var score = g.scores ? g.scores['r' + mTeeSheetRound] : null;
+        var topBorder = gi > 0 ? 'border-top:1px solid rgba(255,255,255,.06);' : '';
+        html += '<div style="' + topBorder + '">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 14px 4px 14px;background:rgba(0,0,0,.15);">';
+        html += '<div style="font-size:.72rem;color:#d4b483;font-weight:700;">' + teeLabel + '</div>';
+        if (score != null) html += '<div style="font-size:.68rem;color:#d4b483;">' + score + '</div>';
+        html += '</div>';
+        players.forEach(function(tp, pi) {
+          var p = tp.player ? tp.player : tp;
+          var hcp = p.hcap !== undefined ? p.hcap : (tp.hcap !== undefined ? tp.hcap : '');
+          var border = 'border-top:1px solid rgba(255,255,255,.05);';
+          html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 14px;' + border + '">';
+          html += '<div style="font-size:.86rem;font-weight:600;color:#f5f0e8;">' + (p.name ? p.name : '—') + '</div>';
+          if (hcp !== '') html += '<span style="font-size:.65rem;font-weight:700;color:#8fbf8f;background:rgba(45,90,45,.4);padding:2px 7px;border-radius:10px;">HCP&nbsp;' + hcp + '</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+      });
       html += '</div>';
     });
-    html += '</div>';
-  });
+
+  // ── SHOTGUN FORMAT ──
+  } else if (isShotgun) {
+    sheet.groups.forEach(function(g, idx) {
+      var players = (g.team && g.team.players) ? g.team.players : (g.players ? g.players : []);
+      var hole = g.hole ? g.hole : (((startHole - 1 + idx) % 18) + 1);
+      var score = g.scores ? g.scores['r' + mTeeSheetRound] : null;
+      html += '<div style="background:#fff;border-radius:8px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.25);">';
+      html += '<div style="background:#1a2b1f;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">';
+      html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.2rem;font-weight:700;color:#d4b483;line-height:1;">Hole ' + hole + '</div>';
+      html += '<div style="text-align:right;"><div style="font-size:.65rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em;">Simultaneous start</div>';
+      if (score != null) html += '<div style="font-size:.72rem;color:#d4b483;font-weight:700;margin-top:2px;">' + score + '</div>';
+      html += '</div></div>';
+      html += playerRows(players);
+      html += '</div>';
+    });
+
+  // ── SEQUENTIAL FORMAT ──
+  } else {
+    sheet.groups.forEach(function(g, idx) {
+      var players = (g.team && g.team.players) ? g.team.players : (g.players ? g.players : []);
+      var teeLabel = g.teeTime ? g.teeTime : seqTime(idx);
+      var hole = g.hole ? g.hole : (((startHole - 1 + idx) % 18) + 1);
+      var score = g.scores ? g.scores['r' + mTeeSheetRound] : null;
+      html += '<div style="background:#fff;border-radius:8px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.25);">';
+      html += '<div style="background:#1a2b1f;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">';
+      html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.2rem;font-weight:700;color:#d4b483;line-height:1;">' + teeLabel + '</div>';
+      html += '<div style="text-align:right;"><div style="font-size:.65rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em;">Hole ' + hole + '</div>';
+      if (score != null) html += '<div style="font-size:.72rem;color:#d4b483;font-weight:700;margin-top:2px;">' + score + '</div>';
+      html += '</div></div>';
+      html += playerRows(players);
+      html += '</div>';
+    });
+  }
+
   out.innerHTML = html;
 }
 

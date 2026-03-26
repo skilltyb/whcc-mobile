@@ -2293,6 +2293,33 @@ var WHCC_SYNC = {
       .then(function(d){ if (cb) cb(d, null); })
       .catch(function(e){ if (cb) cb(null, e); });
   },
+
+  saveDiningReservation: function(res, cb) {
+    fetch(WHCC_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(Object.assign({ action: 'dining-reservation' }, res))
+    }).then(function(r){ return r.json(); })
+      .then(function(d){ if (cb) cb(d, null); })
+      .catch(function(e){ if (cb) cb(null, e); });
+  },
+
+  fetchDiningReservations: function(isoDate, cb) {
+    fetch(WHCC_SCRIPT_URL + '?action=get-dining&date=' + encodeURIComponent(isoDate))
+      .then(function(r){ return r.json(); })
+      .then(function(d){ if (cb) cb(d, null); })
+      .catch(function(e){ if (cb) cb(null, e); });
+  },
+
+  updateDiningStatus: function(id, status, cb) {
+    fetch(WHCC_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'update-dining', id: id, status: status })
+    }).then(function(r){ return r.json(); })
+      .then(function(d){ if (cb) cb(d, null); })
+      .catch(function(e){ if (cb) cb(null, e); });
+  },
 };
 
 document.addEventListener('DOMContentLoaded', function() { WHCC_SYNC.fetchCounts(); });
@@ -2731,10 +2758,35 @@ function openDiningRes() {
 function confirmDining() {
   var date  = document.getElementById('md-date').value;
   var time  = document.getElementById('md-time').value;
-  var party = document.getElementById('md-party').value;
+  var party = parseInt(document.getElementById('md-party').value) || 1;
+  var notes = document.getElementById('md-notes').value.trim();
   if (!date || !party) { showToast('Please fill in date and party size.'); return; }
+  var h = parseInt(time.split(':')[0]), m = (time.split(':')[1] || '00');
+  var ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+  var timeDisplay = h + ':' + m + ' ' + ampm;
+  var dateLabel = new Date(date + 'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  var res = {
+    id: Date.now().toString(),
+    date: date,                    // ISO format for server
+    time24: time,
+    timeDisplay: timeDisplay,
+    name: currentUser ? currentUser.name : 'Member',
+    party: party,
+    note: notes,
+    seated: false,
+    submitted: new Date().toISOString(),
+    source: 'member-app'
+  };
+  // Save to localStorage in the format diningLoad() expects (toDateString key)
+  try {
+    var stored = JSON.parse(localStorage.getItem('wh_dining_res') || '[]');
+    stored.push(Object.assign({}, res, { date: new Date(date + 'T12:00:00').toDateString() }));
+    localStorage.setItem('wh_dining_res', JSON.stringify(stored));
+  } catch(e) {}
+  // POST to server for cross-device visibility
+  WHCC_SYNC.saveDiningReservation(res, function(){});
   closeModal('modal-dining');
-  showToast('✅ Reservation requested for ' + party + ' on ' + date + ' at ' + time);
+  showToast('✅ Reservation requested — ' + party + ' on ' + dateLabel + ' at ' + timeDisplay);
 }
 
 function switchDiningView(view) {
@@ -3646,6 +3698,7 @@ function addReservation() {
 function seatReservation(id) {
   diningSave(diningLoad().map(function(r){ if(r.id===id) r.seated=true; return r; }));
   renderDiningLog();
+  WHCC_SYNC.updateDiningStatus(id, 'seated', function(){});
 }
 function removeReservation(id) {
   diningSave(diningLoad().filter(function(r){ return r.id !== id; }));
@@ -3739,6 +3792,29 @@ function initStaff() {
   initGrounds();
   renderTeeSheet();
   renderDiningLog();
+  // Fetch server dining reservations so member-submitted requests appear on any device
+  (function() {
+    var today = new Date().toISOString().split('T')[0];
+    WHCC_SYNC.fetchDiningReservations(today, function(serverRes, err) {
+      if (err || !Array.isArray(serverRes) || !serverRes.length) return;
+      var todayStr = new Date().toDateString();
+      try {
+        var local = JSON.parse(localStorage.getItem('wh_dining_res') || '[]');
+        var ids = {};
+        local.forEach(function(r){ if (r.id) ids[r.id] = true; });
+        var added = 0;
+        serverRes.forEach(function(r) {
+          if (!r.id || ids[r.id]) return;
+          local.push(Object.assign({}, r, { date: todayStr }));
+          added++;
+        });
+        if (added) {
+          localStorage.setItem('wh_dining_res', JSON.stringify(local));
+          renderDiningLog();
+        }
+      } catch(e) {}
+    });
+  })();
   renderPinSheetUpload();
   renderStaffMessages();
   renderLostFound();

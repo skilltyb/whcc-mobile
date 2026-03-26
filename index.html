@@ -647,14 +647,15 @@
 
       <!-- WESTWOOD GRILL SECTION -->
       <div id="dt-grill-section" style="display:none;">
-        <div class="page-sub" style="margin-bottom:12px;">Westwood Grill — dine-in or order to-go</div>
-        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Request a Dining Reservation</button>
-        <div class="card" style="display:flex;align-items:center;gap:13px;margin-bottom:12px;">
-          <div style="font-size:1.7rem;">🕐</div>
-          <div>
-            <div class="card-title">Grill Hours</div>
-            <div class="card-body">Tue – Sun: 11:00 AM – 8:00 PM · Closed Mon<br>Express Lunch: Tue – Fri, 11:30 AM – 1:00 PM</div>
+        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Reserve a Table at Westwood Grill</button>
+        <div style="background:var(--forest);border-radius:12px;padding:18px;margin-bottom:12px;text-align:center;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:var(--cream);letter-spacing:.06em;">Westwood Grill</div>
+          <div style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">at Westwood Hills</div>
+          <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap;">
+            <div style="text-align:center;"><div style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.5);margin-bottom:2px;">Tue – Sun</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">11 AM – 8 PM</div></div>
+            <div style="text-align:center;"><div style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.5);margin-bottom:2px;">Closed</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">Monday</div></div>
           </div>
+          <div style="font-size:.68rem;color:rgba(245,240,232,.4);margin-top:8px;font-style:italic;">Dine-in &amp; carry-out · Full menu available</div>
         </div>
         <div class="express-app">
           <div class="ex-badge">⚡ 15 Minute Guarantee</div>
@@ -662,12 +663,9 @@
           <div class="ex-detail">Tue – Fri &nbsp;·&nbsp; 11:30 AM – 1:00 PM</div>
           <div class="ex-grid" id="m-express-items"></div>
         </div>
-        <div class="card" style="display:flex;align-items:center;gap:13px;">
-          <div style="font-size:1.7rem;">📞</div>
-          <div>
-            <div class="card-title">Order To-Go</div>
-            <div class="card-body">Call <strong>(573) 785-5253</strong> — our full menu is available for take-out any time.</div>
-          </div>
+        <div class="card" style="margin-bottom:10px;">
+          <div class="card-title" style="margin-bottom:6px;">Order To-Go</div>
+          <div class="card-body">Call <strong>(573) 785-5253</strong> — our full menu is available for carry-out any time during Grill hours.</div>
         </div>
         <div id="app-menu-content"></div>
       </div>

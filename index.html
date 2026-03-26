@@ -434,7 +434,6 @@
   <div class="app-header">
     <div class="hdr-logo">W</div>
     <div class="hdr-title">Westwood Hills CC</div>
-    <span id="m-hdr-user" style="color:rgba(255,255,255,.75);font-size:.8rem;margin-right:10px;"></span>
     <button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;letter-spacing:.03em;">Sign Out</button>
   </div>
 
@@ -784,7 +783,6 @@
   <div class="app-header">
     <div class="hdr-logo">W</div>
     <div class="hdr-title">WHCC Staff</div>
-    <span id="s-hdr-user" style="color:rgba(255,255,255,.75);font-size:.8rem;margin-right:10px;"></span>
     <button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;letter-spacing:.03em;">Sign Out</button>
   </div>
 
@@ -824,10 +822,7 @@
       <div class="card" style="margin-bottom:12px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">🍽 Dining Reservations</div>
-          <div style="display:flex;gap:6px;">
-            <button class="ts-btn" onclick="clearSeated()" style="font-size:.68rem;">Clear Seated</button>
-            <button class="ts-btn checkin" onclick="openModal('modal-add-res')">+ Add</button>
-          </div>
+          <button class="ts-btn checkin" onclick="openModal('modal-add-res')">+ Add</button>
         </div>
         <div id="s-dining-list"><div class="ts-empty">No reservations yet</div></div>
         <div id="s-dining-count" style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:right;"></div>
@@ -1220,8 +1215,6 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title">Dining Reservation</div>
-    <input class="modal-input" id="md-name" type="text" placeholder="Your name">
-    <input class="modal-input" id="md-phone" type="tel" placeholder="Phone number">
     <input class="modal-input" id="md-date" type="date">
     <input class="modal-input" id="md-time" type="time" value="12:00">
     <input class="modal-input" id="md-party" type="number" placeholder="Party size" min="1" max="20">
@@ -1496,10 +1489,6 @@
           <input class="cond-input" id="app-reg-partner" type="text" placeholder="e.g. John Doe"/>
         </div>
         <div class="modal-field">
-          <label class="modal-label">Partner GHIN #</label>
-          <input class="cond-input" id="app-reg-partner-ghin" type="text" placeholder="Optional"/>
-        </div>
-        <div class="modal-field">
           <label class="modal-label">Players in Group</label>
           <select class="cond-input" id="app-reg-players">
             <option value="1">1 Player</option>
@@ -1566,13 +1555,12 @@ var MEMBER_DIRECTORY = [
 var DEFAULT_EVENTS = [
   {title:"St. Patty's Shootout", date:'2026-03-14', month:'MAR', day:'14', time:'10:30 AM – 2:30 PM', desc:'Fun format to kick off the season. All members welcome.', fee:'Member Event', capacity:60, registeredCount:22, registered:false},
   {title:"Ladies Opening Day", date:'2026-04-07', month:'APR', day:'7', time:'9:00 AM – 1:00 PM', desc:'Kick off the season with our ladies opening day event.', fee:'Member Event', capacity:40, registeredCount:18, registered:false},
-  {title:"Masters Dinner", date:'2026-04-08', month:'APR', day:'8', time:'6:30 – 9:30 PM', desc:'Annual Masters watch party & dinner. Great food, great company.', fee:'$45/person', capacity:50, registeredCount:31, registered:false},
-  {title:"Mules Invitational", date:'2026-04-13', month:'APR', day:'13', time:'9:00 AM – 2:00 PM', desc:'Supporting Poplar Bluff athletics. Open to invited teams.', fee:'$80/team', capacity:72, registeredCount:48, registered:false},
-  {title:"MGA Draft Day", date:'2026-04-17', month:'APR', day:'17', time:'6:00 – 10:00 PM', desc:"Men's Golf Association season draft night. Sign up for your league team.", fee:'Member Event', capacity:64, registeredCount:40, registered:false},
+  {title:"Men's Golf Master Dinner", date:'2026-04-08', month:'APR', day:'8', time:'6:30 – 9:30 PM', desc:'Annual Masters watch party & dinner. Great food, great company.', fee:'$45/person', capacity:50, registeredCount:31, registered:false},
+  {title:"Poplar Bluff Mules Invitational", date:'2026-04-13', month:'APR', day:'13', time:'9:00 AM – 2:00 PM', desc:'Supporting Poplar Bluff athletics. Open to invited teams.', fee:'$80/team', capacity:72, registeredCount:48, registered:false},
+  {title:"MGA Opening Day Draft", date:'2026-04-17', month:'APR', day:'17', time:'6:00 – 10:00 PM', desc:"Men's Golf Association season draft night. Sign up for your league team.", fee:'Member Event', capacity:64, registeredCount:40, registered:false},
   {title:"Men's Opening Day", date:'2026-04-18', month:'APR', day:'18', time:'9:30 AM – 2:00 PM', desc:'Registration deadline April 16 at 5:00 PM. All members welcome.', fee:'Member Event', capacity:72, registeredCount:55, registered:false},
   {title:"Ozark Invitational", date:'2026-04-25', month:'APR', day:'25', time:'2-Day · Apr 25–26', desc:"Westwood Hills' signature invitational event. 2-day tournament format.", fee:'$150/team', capacity:96, registeredCount:64, registered:false},
-  {title:"Friday Night Fights", date:'2026-05-01', month:'MAY', day:'1', time:'6:00 – 10:00 PM', desc:'Weekly competitive series kicks off. Runs through the season every Friday.', fee:'$10/round', capacity:48, registeredCount:20, registered:false},
-  {title:"Tuesday Ladies Night", date:'2026-05-05', month:'MAY', day:'5', time:'5:30 PM · Every Tuesday', desc:'Weekly ladies golf series. Runs every Tuesday May through September.', fee:'Member Event', capacity:36, registeredCount:0, registered:false},
+  {title:"Friday Night Fights Begins", date:'2026-05-01', month:'MAY', day:'1', time:'6:00 – 10:00 PM', desc:'Weekly competitive series kicks off. Runs through the season every Friday.', fee:'$10/round', capacity:48, registeredCount:20, registered:false},
   {title:"Hit & Giggle", date:'2026-05-06', month:'MAY', day:'6', time:'7:00 – 11:00 PM', desc:'Recurring social golf series. A great way to socialize on and off the course.', fee:'Member Event', capacity:40, registeredCount:15, registered:false},
   {title:"Men's League Opening Night", date:'2026-05-07', month:'MAY', day:'7', time:'5:00 – 9:00 PM', desc:'Weekly men\'s league begins. Every Thursday through the season. Sign up for your team.', fee:'League Fee', capacity:80, registeredCount:62, registered:false},
   {title:"Spring 2-Man Scramble", date:'2026-05-16', month:'MAY', day:'16', time:'8:00 AM Shotgun · May 16–17', desc:'2-day scramble event. Register your team of two for two rounds of competition.', fee:'$120/team', capacity:80, registeredCount:44, registered:false},
@@ -1584,22 +1572,22 @@ var DEFAULT_EVENTS = [
   {title:"Three Rivers College Outing", date:'2026-06-12', month:'JUN', day:'12', time:'9:30 AM – 2:00 PM', desc:'Supporting Three Rivers College. Community charity outing.', fee:'$75/player', capacity:72, registeredCount:36, registered:false},
   {title:"Steak Stag — SEMO Qualifier", date:'2026-06-18', month:'JUN', day:'18', time:'6:00 – 10:00 PM', desc:'SEMO Cup qualifying event. Steak dinner included. Top finishers earn SEMO Cup points.', fee:'$60/player', capacity:48, registeredCount:29, registered:false},
   {title:"Ladies Sweet Treat", date:'2026-08-11', month:'AUG', day:'11', time:'Full Day Event', desc:'4-player ladies scramble. A fun full-day event celebrating the ladies of Westwood Hills.', fee:'Member Event', capacity:48, registeredCount:12, registered:false},
-  {title:"Men's League — May 14", date:'2026-05-14', month:'MAY', day:'14', time:'5:00 PM', desc:"Week 1 of 16 — Men's League season. 14–20 players, handicap-based team draw.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — May 21", date:'2026-05-21', month:'MAY', day:'21', time:'5:00 PM', desc:"Week 2 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — May 28", date:'2026-05-28', month:'MAY', day:'28', time:'5:00 PM', desc:"Week 3 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jun 4",  date:'2026-06-04', month:'JUN', day:'4',  time:'5:00 PM', desc:"Week 4 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jun 11", date:'2026-06-11', month:'JUN', day:'11', time:'5:00 PM', desc:"Week 5 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jun 18", date:'2026-06-18', month:'JUN', day:'18', time:'5:00 PM', desc:"Week 6 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jun 25", date:'2026-06-25', month:'JUN', day:'25', time:'5:00 PM', desc:"Week 7 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jul 2",  date:'2026-07-02', month:'JUL', day:'2',  time:'5:00 PM', desc:"Week 8 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jul 9",  date:'2026-07-09', month:'JUL', day:'9',  time:'5:00 PM', desc:"Week 9 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jul 16", date:'2026-07-16', month:'JUL', day:'16', time:'5:00 PM', desc:"Week 10 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jul 23", date:'2026-07-23', month:'JUL', day:'23', time:'5:00 PM', desc:"Week 11 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jul 30", date:'2026-07-30', month:'JUL', day:'30', time:'5:00 PM', desc:"Week 12 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Aug 6",  date:'2026-08-06', month:'AUG', day:'6',  time:'5:00 PM', desc:"Week 13 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Aug 13", date:'2026-08-13', month:'AUG', day:'13', time:'5:00 PM', desc:"Week 14 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Aug 20", date:'2026-08-20', month:'AUG', day:'20', time:'5:00 PM', desc:"Week 15 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Aug 27", date:'2026-08-27', month:'AUG', day:'27', time:'5:00 PM', desc:"Week 16 of 16 — Men's League season finale.", fee:'Member Event', capacity:24, registeredCount:0, registered:false}
+  {title:"Men's League — May 9",  date:'2026-05-09', month:'MAY', day:'9',  time:'5:00 PM', desc:"Week 1 of 16 — Men's League season. 14–20 players, handicap-based team draw.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — May 16", date:'2026-05-16', month:'MAY', day:'16', time:'5:00 PM', desc:"Week 2 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — May 23", date:'2026-05-23', month:'MAY', day:'23', time:'5:00 PM', desc:"Week 3 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — May 30", date:'2026-05-30', month:'MAY', day:'30', time:'5:00 PM', desc:"Week 4 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jun 6",  date:'2026-06-06', month:'JUN', day:'6',  time:'5:00 PM', desc:"Week 5 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jun 13", date:'2026-06-13', month:'JUN', day:'13', time:'5:00 PM', desc:"Week 6 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jun 20", date:'2026-06-20', month:'JUN', day:'20', time:'5:00 PM', desc:"Week 7 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jun 27", date:'2026-06-27', month:'JUN', day:'27', time:'5:00 PM', desc:"Week 8 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jul 4",  date:'2026-07-04', month:'JUL', day:'4',  time:'5:00 PM', desc:"Week 9 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jul 11", date:'2026-07-11', month:'JUL', day:'11', time:'5:00 PM', desc:"Week 10 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jul 18", date:'2026-07-18', month:'JUL', day:'18', time:'5:00 PM', desc:"Week 11 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Jul 25", date:'2026-07-25', month:'JUL', day:'25', time:'5:00 PM', desc:"Week 12 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Aug 1",  date:'2026-08-01', month:'AUG', day:'1',  time:'5:00 PM', desc:"Week 13 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Aug 8",  date:'2026-08-08', month:'AUG', day:'8',  time:'5:00 PM', desc:"Week 14 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Aug 15", date:'2026-08-15', month:'AUG', day:'15', time:'5:00 PM', desc:"Week 15 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
+  {title:"Men's League — Aug 22", date:'2026-08-22', month:'AUG', day:'22', time:'5:00 PM', desc:"Week 16 of 16 — Men's League season finale.", fee:'Member Event', capacity:24, registeredCount:0, registered:false}
 ];
 
 var WH_MENU_VERSION = '3';
@@ -1714,8 +1702,10 @@ var appEvents = JSON.parse(localStorage.getItem('wh_app_events') || 'null') || J
   DEFAULT_EVENTS.forEach(function(e) {
     if (!storedTitles[e.title]) { appEvents.push(JSON.parse(JSON.stringify(e))); added = true; }
   });
-  appEvents.sort(function(a, b) { return a.date.localeCompare(b.date); });
-  if (added) { localStorage.setItem('wh_app_events', JSON.stringify(appEvents)); }
+  if (added) {
+    appEvents.sort(function(a, b) { return a.date.localeCompare(b.date); });
+    localStorage.setItem('wh_app_events', JSON.stringify(appEvents));
+  }
 })();
 var currentUser = null;
 
@@ -1780,11 +1770,15 @@ function goTab(role, tab) {
 // MY UPCOMING
 // ════════════════════════════════════
 function renderMyUpcoming() {
+  var MONTHS = {JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
   var now = new Date(); now.setHours(0,0,0,0);
   var registered = appEvents
-    .filter(function(ev){ return ev.registered && ev.date; })
+    .filter(function(ev){ return ev.registered; })
     .map(function(ev){
-      return {ev:ev, date:new Date(ev.date + 'T00:00:00')};
+      var m = MONTHS[ev.month] !== undefined ? MONTHS[ev.month] : 0;
+      var date = new Date(now.getFullYear(), m, parseInt(ev.day));
+      if (date < now) date = new Date(now.getFullYear()+1, m, parseInt(ev.day));
+      return {ev:ev, date:date};
     })
     .filter(function(x){ return x.date >= now; })
     .sort(function(a,b){ return a.date - b.date; })
@@ -1942,7 +1936,7 @@ function renderSetupForm() {
     '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
     '<button class="setup-choice active" id="sc-front" onclick="setupPick(\'holes\',\'front\')">Front 9</button>' +
     '<button class="setup-choice" id="sc-back"  onclick="setupPick(\'holes\',\'back\')">Back 9</button>' +
-    '<button class="setup-choice" id="sc-all18" onclick="setupPick(\'holes\',\'all18\')">All 18</button>' +
+    '<button class="setup-choice" id="sc-all18" onclick="setupPick(\'holes\',\'all\')">All 18</button>' +
     '</div></div>' +
 
     '<div style="margin-bottom:16px;">' +
@@ -1982,7 +1976,7 @@ function beginRound() {
   activeTee   = window._setupTee   || 'Blue';
   var hChoice = window._setupHoles || 'front';
   activeHoles = hChoice === 'back' ? [9,10,11,12,13,14,15,16,17]
-              : hChoice === 'all18'  ? [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
+              : hChoice === 'all'  ? [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
               :                      [0,1,2,3,4,5,6,7,8];
   var hcpVal = parseFloat(document.getElementById('sc-hcp-input').value);
   if (!isNaN(hcpVal) && hcpVal > 0) {
@@ -2159,10 +2153,9 @@ function renderRoundLog() {
 var WHCC_EVENTS = {
   "St. Patty's Shootout":           { type:'single',   capacity:60,  fee:'Member Event' },
   "Ladies Opening Day":              { type:'single',   capacity:40,  fee:'Member Event' },
-  "Masters Dinner":                  { type:'single',   capacity:50,  fee:'$45/person' },
-  "Mules Invitational":              { type:'foursome', capacity:18,  fee:'$80/team' },
-  "MGA Draft Day":                   { type:'single',   capacity:64,  fee:'Member Event' },
-  "Tuesday Ladies Night":            { type:'single',   capacity:36,  fee:'Member Event' },
+  "Men's Golf Master Dinner":        { type:'single',   capacity:50,  fee:'$45/person' },
+  "Poplar Bluff Mules Invitational": { type:'foursome', capacity:18,  fee:'$80/team' },
+  "MGA Opening Day Draft":           { type:'single',   capacity:64,  fee:'Member Event' },
   "Men's Opening Day":               { type:'single',   capacity:72,  fee:'Member Event' },
   "Ozark Invitational":              { type:'twosome',  capacity:48,  fee:'$150/team' },
   "Friday Night Fights":             { type:'single',   capacity:48,  fee:'$10/round' },
@@ -2186,7 +2179,7 @@ function getEventInfo(title) {
 // ═══════════════════════════════════════
 // APP EVENT REGISTRATION
 // ═══════════════════════════════════════
-var WHCC_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzS3VBkpJskGLhPU_2sOCQ5KCzLS0uEZd1mAucUhSipT8w78lCJE-JJ9FM-aM9NKEeP/exec';
+var WHCC_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWRVoY7tgV1Y8M7K1Bbrhp2DsQ8CfvYYe0trVh_tCZfQ6dIsAN8Xj63b1HPvsrxaaF/exec';
 var appCurrentRegEvent = null;
 
 // ════════════════════════════════════════════════════════
@@ -2231,24 +2224,21 @@ var WHCC_SYNC = {
         .then(function(rows) {
           if (!Array.isArray(rows)) { if (cb) cb(null, 'bad data'); return; }
           var regs = rows.map(function(row) {
-            var rawNotes  = row['Notes'] || '';
-            var notesAsHcp = (function(){ var n=parseFloat(rawNotes); return (!isNaN(n)&&n>=0&&n<=54&&String(n)===rawNotes.trim()) ? String(n) : ''; })();
             return {
-              id:          row['ID']                                                  || '',
-              event:       row['Event']                                               || '',
-              eventMeta:   row['Event Date/Time'] || row['Event Date/Tiime']          || '',
-              firstName:   row['First Name']                                         || '',
-              lastName:    row['Last Name']                                          || '',
-              email:       row['Email']                                              || '',
-              phone:       row['Phone']                                              || '',
-              partner:     row['Partners'] || row['Partner/Team'] || row['Partner'] || row['partner'] || '',
-              players:     row['Players']                                            || '1',
-              memberNum:   row['Member #']                                           || '',
-              ghin:        row['GHIN Handicap'] || row['GHIN #'] || row['GHIN'] || row['ghin'] || notesAsHcp || '',
-              partnerGhin: row['Partner GHIN'] || row['partnerGhin'] || row['PartnerGhin'] || '',
-              notes:       notesAsHcp ? '' : rawNotes,
-              timestamp:   row['Registered At']                                      || '',
-              source:      row['Source']                                             || ''
+              id:        row['ID']              || '',
+              event:     row['Event']           || '',
+              eventMeta: row['Event Date/Time'] || '',
+              firstName: row['First Name']      || '',
+              lastName:  row['Last Name']       || '',
+              email:     row['Email']           || '',
+              phone:     row['Phone']           || '',
+              partner:   row['Partner/Team']    || '',
+              players:   row['Players']         || '1',
+              memberNum: row['Member #']        || '',
+              ghin:      row['GHIN']            || '',
+              notes:     row['Notes']           || '',
+              timestamp: row['Registered At']   || '',
+              source:    row['Source']          || ''
             };
           }).filter(function(r) { return r.firstName || r.lastName; });
           localStorage.setItem('wh_registrations', JSON.stringify(regs));
@@ -2293,39 +2283,6 @@ var WHCC_SYNC = {
       .then(function(d){ if (cb) cb(d, null); })
       .catch(function(e){ if (cb) cb(null, e); });
   },
-
-  saveDiningReservation: function(res, cb) {
-    fetch(WHCC_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(Object.assign({ action: 'dining-reservation' }, res))
-    }).then(function(r){ return r.json(); })
-      .then(function(d){ if (cb) cb(d, null); })
-      .catch(function(e){ if (cb) cb(null, e); });
-  },
-
-  fetchDiningReservations: function(isoDate, cb) {
-    fetch(WHCC_SCRIPT_URL + '?action=get-dining&date=' + encodeURIComponent(isoDate))
-      .then(function(r){ return r.json(); })
-      .then(function(d){ if (cb) cb(d, null); })
-      .catch(function(e){ if (cb) cb(null, e); });
-  },
-
-  updateDiningStatus: function(id, status, cb) {
-    fetch(WHCC_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'update-dining', id: id, status: status })
-    }).then(function(r){ return r.json(); })
-      .then(function(d){ if (cb) cb(d, null); })
-      .catch(function(e){ if (cb) cb(null, e); });
-  },
-  fetchSpecials: function(cb) {
-    fetch(WHCC_SCRIPT_URL + '?action=get-specials')
-      .then(function(r){ return r.json(); })
-      .then(function(d){ if (cb) cb(d, null); })
-      .catch(function(e){ if (cb) cb(null, e); });
-  },
 };
 
 document.addEventListener('DOMContentLoaded', function() { WHCC_SYNC.fetchCounts(); });
@@ -2353,7 +2310,7 @@ function mTeeSheetLoad() {
   // Auto-refresh every 60 seconds
   if (mTeeSheetTimer) clearInterval(mTeeSheetTimer);
   mTeeSheetTimer = setInterval(function() {
-    if (document.getElementById('m-tab-teesheet').classList.contains('active')) mTeeSheetLoad();
+    if (document.getElementById('m-tab-teesheet').style.display !== 'none') mTeeSheetLoad();
   }, 60000);
 }
 
@@ -2459,13 +2416,6 @@ function openAppReg(eventTitle, eventMeta, isTeam) {
   var evType = info.type || (isTeam ? 'twosome' : 'single');
   appCurrentRegEvent = { title: eventTitle, meta: eventMeta, type: evType, capacity: info.capacity, fee: info.fee };
 
-  // Clear non-prefilled fields before showing the form
-  ['app-reg-partner','app-reg-partner-ghin','app-reg-ghin','app-reg-notes'].forEach(function(id){
-    var el = document.getElementById(id); if (el) el.value = '';
-  });
-  var errEl = document.getElementById('app-reg-error');
-  if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
-
   document.getElementById('app-reg-title').textContent = eventTitle;
   var metaStr = (eventMeta||'') + (info.fee && info.fee!=='Member Event' ? ' · '+info.fee : '');
   document.getElementById('app-reg-meta').textContent = metaStr;
@@ -2473,18 +2423,14 @@ function openAppReg(eventTitle, eventMeta, isTeam) {
   // Adapt team fields
   var teamFields = document.getElementById('app-reg-team-fields');
   var partnerInput = document.getElementById('app-reg-partner');
-  var playersSelect = document.getElementById('app-reg-players');
   if (evType === 'single') {
     teamFields.style.display = 'none';
-    if (playersSelect) playersSelect.value = '1'; // prevent hidden "2" from leaking into submission
   } else if (evType === 'twosome') {
     teamFields.style.display = 'block';
     if (partnerInput) { partnerInput.placeholder = "Partner's full name"; partnerInput.previousElementSibling.textContent = 'Partner Name'; }
-    if (playersSelect) playersSelect.value = '2';
   } else {
     teamFields.style.display = 'block';
     if (partnerInput) { partnerInput.placeholder = 'Partner 1 (list others in notes)'; partnerInput.previousElementSibling.textContent = 'Partner Names'; }
-    if (playersSelect) playersSelect.value = '4';
   }
 
   // Show spots remaining — cached first (instant), then live-refresh from Sheet
@@ -2528,9 +2474,7 @@ function submitAppReg() {
     firstName: fname, lastName: lname, email: email,
     phone: document.getElementById('app-reg-phone').value.trim(),
     partner: document.getElementById('app-reg-partner').value.trim(),
-    partnerGhin: document.getElementById('app-reg-partner-ghin') ? document.getElementById('app-reg-partner-ghin').value.trim() : '',
     players: document.getElementById('app-reg-players').value,
-    memberNum: currentUser ? (currentUser.memberNumber || '') : '',
     ghin: document.getElementById('app-reg-ghin') ? document.getElementById('app-reg-ghin').value.trim() : '',
     notes: document.getElementById('app-reg-notes').value.trim(),
     timestamp: new Date().toISOString(),
@@ -2570,7 +2514,8 @@ function eventCardHTML(ev, idx, isStaff) {
       '<button class="ev-del-btn" onclick="deleteEvent(' + idx + ')">Remove Event</button>'
     : (function() {
         var isTeam = /scramble|invitational|2-man|2 man|best ball|powder puff|sweet treat|ucan|three rivers|mules/i.test(ev.title + ' ' + (ev.desc||''));
-        return '<button class="ev-reg-btn' + (ev.registered ? ' registered' : '') + '" onclick="openAppReg(\'' + ev.title.replace(/'/g,"\\'") + '\',\'' + (ev.time||'').replace(/'/g,"\\'") + '\',' + isTeam + ')">' + (ev.registered ? '✓ Registered' : 'Register') + '</button>';
+        return '<button class="ev-reg-btn' + (ev.registered ? ' registered' : '') + '" onclick="openAppReg(\'' + ev.title.replace(/'/g,"\\'") + '\',\'' + (ev.time||'').replace(/'/g,"\\'") + '\',' + isTeam + ')">' + (ev.registered ? '✓ Registered' : 'Register') + '</button>'
+        + '<button class="ts-btn" style="font-size:.72rem;margin-top:6px;width:100%;" onclick="openMemberTeeSheet(' + idx + ')">Tee Sheet</button>';
       })();
   var metaRows = '';
   var feeHTML = ev.fee ? '<div class="ev-fee-row"><span class="ev-fee-lbl">Entry Fee</span><span class="ev-fee-val">' + ev.fee + '</span></div>' : '';
@@ -2590,19 +2535,13 @@ function eventCardHTML(ev, idx, isStaff) {
 
 function renderMemberEvents() {
   var el = document.getElementById('m-events-list');
-  if (!el) return;
-  var today = new Date().toISOString().split('T')[0];
-  var upcoming = appEvents.filter(function(ev){ return ev.date >= today; });
-  el.innerHTML = upcoming.length
-    ? upcoming.map(function(ev, i){ return eventCardHTML(ev, i, false); }).join('')
-    : '<div style="text-align:center;padding:32px 16px;color:var(--muted);font-size:.85rem;">No upcoming events scheduled.</div>';
+  if (el) el.innerHTML = appEvents.map(function(ev, i){ return eventCardHTML(ev, i, false); }).join('');
 }
 
 function renderHomeEvents() {
   var el = document.getElementById('m-home-events');
   if (!el) return;
-  var today = new Date().toISOString().split('T')[0];
-  el.innerHTML = appEvents.filter(function(ev){ return ev.date >= today; }).slice(0, 2).map(function(ev) {
+  el.innerHTML = appEvents.slice(0, 2).map(function(ev) {
     return '<div class="card" style="display:flex;align-items:center;gap:12px;">' +
       '<div class="ev-date-box" style="background:var(--forest);border-radius:8px;padding:7px 10px;text-align:center;">' +
         '<div class="edb-mo" style="color:rgba(255,255,255,.6);">' + ev.month + '</div>' +
@@ -2752,10 +2691,6 @@ function removeEventTeeSlot(id) {
 function openDiningRes() {
   var today = new Date();
   document.getElementById('md-date').value  = today.toISOString().split('T')[0];
-  // Default time: current time rounded to next 30 min
-  var h = today.getHours(), m = today.getMinutes();
-  if (m > 0) { m = m <= 30 ? 30 : 0; if (m === 0) h = (h + 1) % 24; }
-  document.getElementById('md-time').value  = (h < 10 ? '0' : '') + h + ':' + (m === 0 ? '00' : '30');
   document.getElementById('md-party').value = '';
   document.getElementById('md-notes').value = '';
   openModal('modal-dining');
@@ -2764,35 +2699,10 @@ function openDiningRes() {
 function confirmDining() {
   var date  = document.getElementById('md-date').value;
   var time  = document.getElementById('md-time').value;
-  var party = parseInt(document.getElementById('md-party').value) || 1;
-  var notes = document.getElementById('md-notes').value.trim();
+  var party = document.getElementById('md-party').value;
   if (!date || !party) { showToast('Please fill in date and party size.'); return; }
-  var h = parseInt(time.split(':')[0]), m = (time.split(':')[1] || '00');
-  var ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
-  var timeDisplay = h + ':' + m + ' ' + ampm;
-  var dateLabel = new Date(date + 'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-  var res = {
-    id: Date.now().toString(),
-    date: date,                    // ISO format for server
-    time24: time,
-    timeDisplay: timeDisplay,
-    name: currentUser ? currentUser.name : 'Member',
-    party: party,
-    note: notes,
-    seated: false,
-    submitted: new Date().toISOString(),
-    source: 'member-app'
-  };
-  // Save to localStorage in the format diningLoad() expects (toDateString key)
-  try {
-    var stored = JSON.parse(localStorage.getItem('wh_dining_res') || '[]');
-    stored.push(Object.assign({}, res, { date: new Date(date + 'T12:00:00').toDateString() }));
-    localStorage.setItem('wh_dining_res', JSON.stringify(stored));
-  } catch(e) {}
-  // POST to server for cross-device visibility
-  WHCC_SYNC.saveDiningReservation(res, function(){});
   closeModal('modal-dining');
-  showToast('✅ Reservation requested — ' + party + ' on ' + dateLabel + ' at ' + timeDisplay);
+  showToast('✅ Reservation requested for ' + party + ' on ' + date + ' at ' + time);
 }
 
 function switchDiningView(view) {
@@ -2836,16 +2746,6 @@ function menuSave(data) {
   data._version = WH_MENU_VERSION;
   localStorage.setItem('wh_menus', JSON.stringify(data));
 }
-// Fetch live specials from server on load so the app always reflects what staff set
-(function(){
-  WHCC_SYNC.fetchSpecials(function(sp, err) {
-    if (err || !sp || (!sp.weeklySpecial && !sp.fridayNight)) return;
-    var data = menuLoad();
-    if (sp.weeklySpecial) data.weeklySpecial = sp.weeklySpecial;
-    if (sp.fridayNight)   data.fridayNight   = sp.fridayNight;
-    menuSave(data);
-  });
-})();
 
 function miHTML(item) {
   return '<div class="mi-row">' +
@@ -3605,7 +3505,7 @@ function refreshGlance() {
   var dow  = now.getDay(); // 0=Sun
   var mon  = new Date(now); mon.setDate(now.getDate() - ((dow + 6) % 7)); mon.setHours(0,0,0,0);
   var sun  = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
-  var events = JSON.parse(localStorage.getItem('wh_app_events') || 'null') || DEFAULT_EVENTS;
+  var events = JSON.parse(localStorage.getItem('wh_events') || 'null') || DEFAULT_EVENTS;
   var evCount = events.filter(function(e){
     var d = new Date(e.date + 'T00:00:00');
     return d >= mon && d <= sun;
@@ -3681,14 +3581,12 @@ function renderDiningLog() {
   }
   var totalGuests = list.reduce(function(s,r){ return s + r.party; }, 0);
   el.innerHTML = list.map(function(r){
-    return '<div class="dr-row" style="' + (r.seated ? 'opacity:.6;' : '') + '">' +
+    return '<div class="dr-row">' +
       '<div class="dr-time">' + r.timeDisplay + '</div>' +
       '<div class="dr-info">' +
         '<div class="dr-name">' + r.name + '</div>' +
         '<div class="dr-detail">Party of ' + r.party + (r.note ? ' &nbsp;·&nbsp; ' + r.note : '') + '</div>' +
       '</div>' +
-      '<span class="dr-badge ' + (r.seated ? 'seated' : 'waiting') + '">' + (r.seated ? '✓ Seated' : 'Waiting') + '</span>' +
-      (!r.seated ? '<button class="ts-btn checkin" onclick="seatReservation(\'' + r.id + '\')" style="font-size:.68rem;padding:3px 8px;">Seat</button>' : '') +
       '<button class="ts-btn" onclick="removeReservation(\'' + r.id + '\')">✕</button>' +
     '</div>';
   }).join('');
@@ -3714,7 +3612,6 @@ function addReservation() {
 function seatReservation(id) {
   diningSave(diningLoad().map(function(r){ if(r.id===id) r.seated=true; return r; }));
   renderDiningLog();
-  WHCC_SYNC.updateDiningStatus(id, 'seated', function(){});
 }
 function removeReservation(id) {
   diningSave(diningLoad().filter(function(r){ return r.id !== id; }));
@@ -3729,6 +3626,11 @@ function clearSeated() {
 // ════════════════════════════════════
 // TEE SHEET
 // ════════════════════════════════════
+function teeSheetLoad() {
+  var today = new Date().toDateString();
+  var raw = JSON.parse(localStorage.getItem('wh_tee_sheet') || '[]');
+  return raw.filter(function(t){ return t.date === today; });
+}
 function teeSheetSave(list) {
   localStorage.setItem('wh_on_course', JSON.stringify(list));
   refreshGlance();
@@ -3808,29 +3710,6 @@ function initStaff() {
   initGrounds();
   renderTeeSheet();
   renderDiningLog();
-  // Fetch server dining reservations so member-submitted requests appear on any device
-  (function() {
-    var today = new Date().toISOString().split('T')[0];
-    WHCC_SYNC.fetchDiningReservations(today, function(serverRes, err) {
-      if (err || !Array.isArray(serverRes) || !serverRes.length) return;
-      var todayStr = new Date().toDateString();
-      try {
-        var local = JSON.parse(localStorage.getItem('wh_dining_res') || '[]');
-        var ids = {};
-        local.forEach(function(r){ if (r.id) ids[r.id] = true; });
-        var added = 0;
-        serverRes.forEach(function(r) {
-          if (!r.id || ids[r.id]) return;
-          local.push(Object.assign({}, r, { date: todayStr }));
-          added++;
-        });
-        if (added) {
-          localStorage.setItem('wh_dining_res', JSON.stringify(local));
-          renderDiningLog();
-        }
-      } catch(e) {}
-    });
-  })();
   renderPinSheetUpload();
   renderStaffMessages();
   renderLostFound();
@@ -4019,12 +3898,28 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js?v=2', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=4', { updateViaCache: 'none' })
       .then(function(r) {
         r.update(); // immediately check for a newer worker
       })
       .catch(function(e){ console.log('SW failed:', e); });
   });
+}
+
+
+function openMemberTeeSheet(idx) {
+  var ev = appEvents[idx];
+  goTab('member','teesheet');
+  mTeeSheetBuildEventDropdown();
+  setTimeout(function() {
+    var sel = document.getElementById('m-ts-event');
+    if (!sel) return;
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === ev.title) {
+        sel.selectedIndex = i; mTeeSheetLoad(); return;
+      }
+    }
+  }, 1500);
 }
 </script>
 </body>

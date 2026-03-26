@@ -2561,13 +2561,19 @@ function eventCardHTML(ev, idx, isStaff) {
 
 function renderMemberEvents() {
   var el = document.getElementById('m-events-list');
-  if (el) el.innerHTML = appEvents.map(function(ev, i){ return eventCardHTML(ev, i, false); }).join('');
+  if (!el) return;
+  var today = new Date().toISOString().split('T')[0];
+  var upcoming = appEvents.filter(function(ev){ return ev.date >= today; });
+  el.innerHTML = upcoming.length
+    ? upcoming.map(function(ev, i){ return eventCardHTML(ev, i, false); }).join('')
+    : '<div style="text-align:center;padding:32px 16px;color:var(--muted);font-size:.85rem;">No upcoming events scheduled.</div>';
 }
 
 function renderHomeEvents() {
   var el = document.getElementById('m-home-events');
   if (!el) return;
-  el.innerHTML = appEvents.slice(0, 2).map(function(ev) {
+  var today = new Date().toISOString().split('T')[0];
+  el.innerHTML = appEvents.filter(function(ev){ return ev.date >= today; }).slice(0, 2).map(function(ev) {
     return '<div class="card" style="display:flex;align-items:center;gap:12px;">' +
       '<div class="ev-date-box" style="background:var(--forest);border-radius:8px;padding:7px 10px;text-align:center;">' +
         '<div class="edb-mo" style="color:rgba(255,255,255,.6);">' + ev.month + '</div>' +

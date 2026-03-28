@@ -446,6 +446,8 @@
   <!-- HOME -->
   <div class="tab-content active" id="m-tab-home">
     <div class="page">
+      <!-- Staff notice banner — shown when staff pushes a notice -->
+      <div id="m-notice-banner" style="display:none;background:#b45309;color:#fff;padding:11px 16px;font-size:.82rem;font-weight:600;border-radius:6px;margin-bottom:10px;line-height:1.4;"></div>
       <div class="greeting-banner">
         <div class="greeting-name" id="m-greet-name">Welcome back!</div>
         <div class="greeting-detail" id="m-greet-detail">Westwood Hills Country Club</div>
@@ -3796,24 +3798,32 @@ function renderNoticeCard() {
   }
 }
 function pushMemberNotice() {
-  var input  = document.getElementById('notice-input');
-  var text   = input ? input.value.trim() : '';
+  var input = document.getElementById('notice-input');
+  var text  = input ? input.value.trim() : '';
   if (!text) return;
-  var data   = Object.assign({}, WH_COND_DEFAULTS, JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {});
+  var data  = Object.assign({}, WH_COND_DEFAULTS, JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {});
   data.notice = text;
   localStorage.setItem('wh_conditions', JSON.stringify(data));
   renderNoticeCard();
-  loadConditions();          // refresh member-side display
-  loadConditionsEditor();    // keep editor in sync
-  showToast('📣 Notice pushed to members!');
+  renderConditionsUI(data);
+  loadConditionsEditor();
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ action: 'save-conditions', data: data })
+  }).catch(function(){});
+  showToast('📣 Notice pushed to all members!');
 }
 function clearMemberNotice() {
-  var data   = Object.assign({}, WH_COND_DEFAULTS, JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {});
+  var data  = Object.assign({}, WH_COND_DEFAULTS, JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {});
   data.notice = '';
   localStorage.setItem('wh_conditions', JSON.stringify(data));
   renderNoticeCard();
-  loadConditions();
+  renderConditionsUI(data);
   loadConditionsEditor();
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ action: 'save-conditions', data: data })
+  }).catch(function(){});
   showToast('Notice cleared');
 }
 
@@ -3989,14 +3999,39 @@ var WH_COND_DEFAULTS = {courseOpens:'9:00 AM', cartRules:'Off Path — Anywhere 
 
 function loadConditions() {
   var data = JSON.parse(localStorage.getItem('wh_conditions') || 'null') || WH_COND_DEFAULTS;
+  renderConditionsUI(data);
+  // Fetch latest from Apps Script to keep all devices in sync
+  fetch(WHCC_SCRIPT_URL + '?action=get-conditions')
+    .then(function(r){ return r.json(); })
+    .then(function(fresh) {
+      if (fresh && typeof fresh === 'object' && fresh.courseOpens) {
+        localStorage.setItem('wh_conditions', JSON.stringify(fresh));
+        renderConditionsUI(fresh);
+        loadConditionsEditor();
+      }
+    }).catch(function(){});
+}
+function renderConditionsUI(data) {
   var el = document.getElementById('wx-conditions');
   if (!el) return;
   var html =
-    '<div class="wx-cond-row"><span class="wx-cond-lbl">Opens</span><span class="wx-cond-val">' + data.courseOpens + '</span></div>' +
-    '<div class="wx-cond-row"><span class="wx-cond-lbl">Carts</span><span class="wx-cond-val">' + data.cartRules + '</span></div>' +
-    '<div class="wx-cond-row"><span class="wx-cond-lbl">Range</span><span class="wx-cond-val">' + (data.range || 'Open') + '</span></div>';
+    '<div class="wx-cond-row"><span class="wx-cond-lbl">Opens</span><span class="wx-cond-val">' + (data.courseOpens||'—') + '</span></div>' +
+    '<div class="wx-cond-row"><span class="wx-cond-lbl">Carts</span><span class="wx-cond-val">' + (data.cartRules||'—') + '</span></div>' +
+    '<div class="wx-cond-row"><span class="wx-cond-lbl">Range</span><span class="wx-cond-val">' + (data.range||'Open') + '</span></div>';
   if (data.notice && data.notice.trim()) html += '<div class="wx-notice">⚠️ ' + data.notice + '</div>';
   el.innerHTML = html;
+  // Also show notice banner on home tab if active
+  renderMemberNoticeBanner(data.notice || '');
+}
+function renderMemberNoticeBanner(notice) {
+  var banner = document.getElementById('m-notice-banner');
+  if (!banner) return;
+  if (notice && notice.trim()) {
+    banner.textContent = '⚠️ ' + notice;
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
 }
 
 function loadConditionsEditor() {
@@ -4017,6 +4052,11 @@ function saveConditions() {
   };
   localStorage.setItem('wh_conditions', JSON.stringify(data));
   loadConditions();
+  // Sync to Apps Script so all members see the update
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ action: 'save-conditions', data: data })
+  }).catch(function(){});
   showToast('✅ Course conditions updated!');
 }
 

@@ -312,6 +312,12 @@
     .ex-item-name { font-size: .76rem; font-weight: 600; color: var(--white); }
     .ex-item-price { font-size: .82rem; color: rgba(255,255,255,.75); margin-top: 1px; }
 
+    /* ── LEAGUES ── */
+    .ml-date-tile{background:rgba(26,74,38,.08);border:1px solid rgba(26,74,38,.2);border-radius:6px;padding:10px 8px;text-align:center;font-size:.82rem;font-weight:600;color:var(--forest);cursor:pointer;transition:background .15s;}
+    .ml-date-tile:active{background:rgba(26,74,38,.2);}
+    .ml-date-tile.ml-final{border-color:var(--gold-dk,#b8976a);color:var(--gold-dk,#b8976a);}
+    .ml-wk{font-size:.62rem;font-weight:400;color:var(--muted);margin-top:3px;}
+
     /* ── EVENTS ── */
     .event-card { background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 12px; }
     .event-hdr { background: linear-gradient(135deg, var(--forest) 0%, var(--forest-light) 100%); padding: 13px 14px; display: flex; align-items: center; gap: 12px; }
@@ -678,6 +684,112 @@
       <div class="page-title">Events</div>
       <div class="page-sub">Upcoming club events &amp; tournaments</div>
       <div id="m-events-list"></div>
+
+      <!-- LEAGUE SCHEDULES -->
+      <div style="margin-top:24px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--forest);margin-bottom:4px;">League <em style="color:var(--gold-dk,#b8976a);">Schedules</em></div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:14px;letter-spacing:.04em;text-transform:uppercase;">2026 Season · May – August</div>
+
+        <!-- League selector tabs -->
+        <div style="display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;">
+          <button onclick="mLeagueShow('mens')" id="ml-tab-mens" style="flex-shrink:0;padding:6px 14px;background:var(--forest);color:#f5f0e8;border:none;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;">Men's League</button>
+          <button onclick="mLeagueShow('ladies')" id="ml-tab-ladies" style="flex-shrink:0;padding:6px 14px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;">Ladies Night</button>
+          <button onclick="mLeagueShow('hg')" id="ml-tab-hg" style="flex-shrink:0;padding:6px 14px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;">Hit &amp; Giggle</button>
+          <button onclick="mLeagueShow('fnf')" id="ml-tab-fnf" style="flex-shrink:0;padding:6px 14px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;">Friday Night Fights</button>
+        </div>
+
+        <!-- Men's League -->
+        <div id="ml-panel-mens">
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Every Saturday · 5:00 PM · May 9 – Aug 22 · 16 weeks</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+            <div onclick="mLeagueReg('Men\'s League','May 9','2026-05-09')" class="ml-date-tile">May 9<div class="ml-wk">Wk 1</div></div>
+            <div onclick="mLeagueReg('Men\'s League','May 16','2026-05-16')" class="ml-date-tile">May 16<div class="ml-wk">Wk 2</div></div>
+            <div onclick="mLeagueReg('Men\'s League','May 23','2026-05-23')" class="ml-date-tile">May 23<div class="ml-wk">Wk 3</div></div>
+            <div onclick="mLeagueReg('Men\'s League','May 30','2026-05-30')" class="ml-date-tile">May 30<div class="ml-wk">Wk 4</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Jun 6','2026-06-06')" class="ml-date-tile">Jun 6<div class="ml-wk">Wk 5</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Jun 13','2026-06-13')" class="ml-date-tile">Jun 13<div class="ml-wk">Wk 6</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Jun 20','2026-06-20')" class="ml-date-tile">Jun 20<div class="ml-wk">Wk 7</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Jun 27','2026-06-27')" class="ml-date-tile">Jun 27<div class="ml-wk">Wk 8</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Jul 4','2026-07-04')" class="ml-date-tile">Jul 4<div class="ml-wk">Wk 9</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Jul 11','2026-07-11')" class="ml-date-tile">Jul 11<div class="ml-wk">Wk 10</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Jul 18','2026-07-18')" class="ml-date-tile">Jul 18<div class="ml-wk">Wk 11</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Jul 25','2026-07-25')" class="ml-date-tile">Jul 25<div class="ml-wk">Wk 12</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Aug 1','2026-08-01')" class="ml-date-tile">Aug 1<div class="ml-wk">Wk 13</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Aug 8','2026-08-08')" class="ml-date-tile">Aug 8<div class="ml-wk">Wk 14</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Aug 15','2026-08-15')" class="ml-date-tile">Aug 15<div class="ml-wk">Wk 15</div></div>
+            <div onclick="mLeagueReg('Men\'s League','Aug 22','2026-08-22')" class="ml-date-tile ml-final">Aug 22<div class="ml-wk">Final</div></div>
+          </div>
+        </div>
+
+        <!-- Ladies Night -->
+        <div id="ml-panel-ladies" style="display:none;">
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Every Tuesday · 5:00 PM · May 5 – Aug 18 · 16 weeks</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+            <div onclick="mLeagueReg('Ladies Night','May 5','2026-05-05')" class="ml-date-tile">May 5<div class="ml-wk">Wk 1</div></div>
+            <div onclick="mLeagueReg('Ladies Night','May 12','2026-05-12')" class="ml-date-tile">May 12<div class="ml-wk">Wk 2</div></div>
+            <div onclick="mLeagueReg('Ladies Night','May 19','2026-05-19')" class="ml-date-tile">May 19<div class="ml-wk">Wk 3</div></div>
+            <div onclick="mLeagueReg('Ladies Night','May 26','2026-05-26')" class="ml-date-tile">May 26<div class="ml-wk">Wk 4</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Jun 2','2026-06-02')" class="ml-date-tile">Jun 2<div class="ml-wk">Wk 5</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Jun 9','2026-06-09')" class="ml-date-tile">Jun 9<div class="ml-wk">Wk 6</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Jun 16','2026-06-16')" class="ml-date-tile">Jun 16<div class="ml-wk">Wk 7</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Jun 23','2026-06-23')" class="ml-date-tile">Jun 23<div class="ml-wk">Wk 8</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Jun 30','2026-06-30')" class="ml-date-tile">Jun 30<div class="ml-wk">Wk 9</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Jul 7','2026-07-07')" class="ml-date-tile">Jul 7<div class="ml-wk">Wk 10</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Jul 14','2026-07-14')" class="ml-date-tile">Jul 14<div class="ml-wk">Wk 11</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Jul 21','2026-07-21')" class="ml-date-tile">Jul 21<div class="ml-wk">Wk 12</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Jul 28','2026-07-28')" class="ml-date-tile">Jul 28<div class="ml-wk">Wk 13</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Aug 4','2026-08-04')" class="ml-date-tile">Aug 4<div class="ml-wk">Wk 14</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Aug 11','2026-08-11')" class="ml-date-tile">Aug 11<div class="ml-wk">Wk 15</div></div>
+            <div onclick="mLeagueReg('Ladies Night','Aug 18','2026-08-18')" class="ml-date-tile ml-final">Aug 18<div class="ml-wk">Final</div></div>
+          </div>
+        </div>
+
+        <!-- Hit & Giggle -->
+        <div id="ml-panel-hg" style="display:none;">
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Every Wednesday · 5:00 PM · May 6 – Aug 19 · 16 weeks</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+            <div onclick="mLeagueReg('Hit &amp; Giggle','May 6','2026-05-06')" class="ml-date-tile">May 6<div class="ml-wk">Wk 1</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','May 13','2026-05-13')" class="ml-date-tile">May 13<div class="ml-wk">Wk 2</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','May 20','2026-05-20')" class="ml-date-tile">May 20<div class="ml-wk">Wk 3</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','May 27','2026-05-27')" class="ml-date-tile">May 27<div class="ml-wk">Wk 4</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Jun 3','2026-06-03')" class="ml-date-tile">Jun 3<div class="ml-wk">Wk 5</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Jun 10','2026-06-10')" class="ml-date-tile">Jun 10<div class="ml-wk">Wk 6</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Jun 17','2026-06-17')" class="ml-date-tile">Jun 17<div class="ml-wk">Wk 7</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Jun 24','2026-06-24')" class="ml-date-tile">Jun 24<div class="ml-wk">Wk 8</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Jul 1','2026-07-01')" class="ml-date-tile">Jul 1<div class="ml-wk">Wk 9</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Jul 8','2026-07-08')" class="ml-date-tile">Jul 8<div class="ml-wk">Wk 10</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Jul 15','2026-07-15')" class="ml-date-tile">Jul 15<div class="ml-wk">Wk 11</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Jul 22','2026-07-22')" class="ml-date-tile">Jul 22<div class="ml-wk">Wk 12</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Jul 29','2026-07-29')" class="ml-date-tile">Jul 29<div class="ml-wk">Wk 13</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Aug 5','2026-08-05')" class="ml-date-tile">Aug 5<div class="ml-wk">Wk 14</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Aug 12','2026-08-12')" class="ml-date-tile">Aug 12<div class="ml-wk">Wk 15</div></div>
+            <div onclick="mLeagueReg('Hit &amp; Giggle','Aug 19','2026-08-19')" class="ml-date-tile ml-final">Aug 19<div class="ml-wk">Final</div></div>
+          </div>
+        </div>
+
+        <!-- Friday Night Fights -->
+        <div id="ml-panel-fnf" style="display:none;">
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Every Friday · 5:00 PM · May 8 – Aug 21 · 16 weeks</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+            <div onclick="mLeagueReg('Friday Night Fights','May 8','2026-05-08')" class="ml-date-tile">May 8<div class="ml-wk">Wk 1</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','May 15','2026-05-15')" class="ml-date-tile">May 15<div class="ml-wk">Wk 2</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','May 22','2026-05-22')" class="ml-date-tile">May 22<div class="ml-wk">Wk 3</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','May 29','2026-05-29')" class="ml-date-tile">May 29<div class="ml-wk">Wk 4</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Jun 5','2026-06-05')" class="ml-date-tile">Jun 5<div class="ml-wk">Wk 5</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Jun 12','2026-06-12')" class="ml-date-tile">Jun 12<div class="ml-wk">Wk 6</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Jun 19','2026-06-19')" class="ml-date-tile">Jun 19<div class="ml-wk">Wk 7</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Jun 26','2026-06-26')" class="ml-date-tile">Jun 26<div class="ml-wk">Wk 8</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Jul 3','2026-07-03')" class="ml-date-tile">Jul 3<div class="ml-wk">Wk 9</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Jul 10','2026-07-10')" class="ml-date-tile">Jul 10<div class="ml-wk">Wk 10</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Jul 17','2026-07-17')" class="ml-date-tile">Jul 17<div class="ml-wk">Wk 11</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Jul 24','2026-07-24')" class="ml-date-tile">Jul 24<div class="ml-wk">Wk 12</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Jul 31','2026-07-31')" class="ml-date-tile">Jul 31<div class="ml-wk">Wk 13</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Aug 7','2026-08-07')" class="ml-date-tile">Aug 7<div class="ml-wk">Wk 14</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Aug 14','2026-08-14')" class="ml-date-tile">Aug 14<div class="ml-wk">Wk 15</div></div>
+            <div onclick="mLeagueReg('Friday Night Fights','Aug 21','2026-08-21')" class="ml-date-tile ml-final">Aug 21<div class="ml-wk">Final</div></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -4004,6 +4116,38 @@ function openMemberTeeSheet(idx) {
       }
     }
   }, 3000);
+}
+
+// ── LEAGUE SCHEDULES ─────────────────────────────────────────────────────────
+function mLeagueShow(which) {
+  ['mens','ladies','hg','fnf'].forEach(function(id) {
+    var panel = document.getElementById('ml-panel-' + id);
+    var tab   = document.getElementById('ml-tab-' + id);
+    if (!panel || !tab) return;
+    var active = id === which;
+    panel.style.display = active ? 'block' : 'none';
+    tab.style.background = active ? 'var(--forest)' : 'rgba(26,74,38,.12)';
+    tab.style.color      = active ? '#f5f0e8'        : 'var(--muted)';
+    tab.style.border     = active ? 'none'           : '1px solid rgba(26,74,38,.2)';
+  });
+}
+
+function mLeagueReg(leagueName, dateLabel, isoDate) {
+  var today = new Date().toISOString().slice(0,10);
+  if (isoDate < today) {
+    showToast(leagueName + ' · ' + dateLabel + ' has passed');
+    return;
+  }
+  // Pre-fill the dining reservation modal with league info
+  var dateEl  = document.getElementById('md-date');
+  var timeEl  = document.getElementById('md-time');
+  var partyEl = document.getElementById('md-party');
+  var noteEl  = document.getElementById('md-notes');
+  if (dateEl)  dateEl.value  = isoDate;
+  if (timeEl)  timeEl.value  = '17:00';
+  if (partyEl) partyEl.value = '1';
+  if (noteEl)  noteEl.value  = 'Sign-up: ' + leagueName + ' — ' + dateLabel + ' at 5:00 PM';
+  openModal('modal-dining');
 }
 </script>
 </body>

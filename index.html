@@ -527,7 +527,6 @@
         <div class="info-row"><div class="ir-label" style="color:#777;font-weight:700;">⚪ White</div><div class="ir-val">5,450 yds · 68.7 / 117</div></div>
         <div class="info-row" style="border:none;"><div class="ir-label" style="color:#c33232;font-weight:700;">🔴 Red</div><div class="ir-val">4,735 yds · 67.3 / 116</div></div>
       </div>
-      <button class="ev-reg-btn" style="margin-bottom:4px;" onclick="openTeeRequest()">⛳ Request a Tee Time</button>
       <div class="sc-sec-hdr" style="margin-top:14px;">Front Nine</div>
       <div style="overflow-x:auto;">
         <table class="sc-table">
@@ -801,8 +800,6 @@
     <div style="padding:16px;background:#111a14;">
       <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#f5f0e8;margin-bottom:4px;">Today's <em style="color:#d4b483;">Tee Sheet</em></div>
       <div style="font-size:.72rem;color:rgba(245,240,232,.45);margin-bottom:12px;">Current groupings and tee times · Auto-refreshes every 60s</div>
-      <button onclick="openTeeRequest()" style="width:100%;padding:12px;background:var(--forest);color:#f5f0e8;border:none;border-radius:6px;font-size:.84rem;font-weight:600;cursor:pointer;margin-bottom:14px;letter-spacing:.02em;">⛳ Request a Tee Time</button>
-
       <!-- Event selector -->
       <div style="display:flex;gap:6px;margin-bottom:10px;">
         <select id="m-ts-event" onchange="mTeeSheetLoad()" style="flex:1;background:#1e3a20;border:1px solid rgba(184,151,106,.4);color:#f5f0e8;padding:8px 10px;font-size:12px;border-radius:2px;">
@@ -1371,29 +1368,6 @@
   </div>
 </div>
 
-<!-- Request Tee Time modal -->
-<div class="modal-overlay" id="modal-tee-request" onclick="if(event.target===this)closeModal('modal-tee-request')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Request a Tee Time</div>
-    <label class="login-label">Date</label>
-    <input class="modal-input" id="tr-date" type="date">
-    <label class="login-label">Preferred Time</label>
-    <input class="modal-input" id="tr-time" type="time" value="08:00">
-    <label class="login-label">Number of Players</label>
-    <select class="modal-input" id="tr-players">
-      <option value="1">1 Player</option>
-      <option value="2" selected>2 Players</option>
-      <option value="3">3 Players</option>
-      <option value="4">4 Players</option>
-    </select>
-    <label class="login-label">Note <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.85em;">(optional)</span></label>
-    <input class="modal-input" id="tr-note" type="text" placeholder="e.g. Cart needed, anniversary round">
-    <div class="modal-row">
-      <button class="modal-btn secondary" onclick="closeModal('modal-tee-request')">Cancel</button>
-      <button class="modal-btn primary" onclick="submitTeeRequest()">Request</button>
-    </div>
-  </div>
 </div>
 
 <div class="modal-overlay" id="modal-add-tee" onclick="if(event.target===this)closeModal('modal-add-tee')">
@@ -2913,43 +2887,6 @@ function removeEventTeeSlot(id) {
 // ════════════════════════════════════
 // DINING RESERVATION
 // ════════════════════════════════════
-function openTeeRequest() {
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('tr-date').value    = today;
-  document.getElementById('tr-time').value    = '08:00';
-  document.getElementById('tr-players').value = '2';
-  document.getElementById('tr-note').value    = '';
-  openModal('modal-tee-request');
-}
-function submitTeeRequest() {
-  var date    = document.getElementById('tr-date').value;
-  var time    = document.getElementById('tr-time').value;
-  var players = document.getElementById('tr-players').value;
-  var note    = document.getElementById('tr-note').value.trim();
-  if (!date || !time) { showToast('Please select a date and time.'); return; }
-  var timeDisplay = (function(t) {
-    if (!t) return '';
-    var parts = t.split(':'); var h = parseInt(parts[0]); var m = parts[1];
-    return (h % 12 || 12) + ':' + m + ' ' + (h < 12 ? 'AM' : 'PM');
-  })(time);
-  var body = JSON.stringify({
-    action: 'tee-reservation',
-    date: date,
-    time: time,
-    timeDisplay: timeDisplay,
-    players: parseInt(players),
-    name: currentUser ? (currentUser.name || '') : '',
-    memberNumber: currentUser ? (currentUser.memberNumber || '') : '',
-    note: note,
-    submitted: new Date().toISOString()
-  });
-  closeModal('modal-tee-request');
-  showToast('Requesting tee time…');
-  fetch(WHCC_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body })
-    .then(function(r) { return r.json(); })
-    .then(function() { showToast('✅ Tee time requested for ' + date + ' at ' + timeDisplay + ' — we\'ll confirm by phone'); })
-    .catch(function() { showToast('✅ Request received for ' + date + ' at ' + timeDisplay + ' — we\'ll confirm by phone'); });
-}
 
 function openDiningRes() {
   var today = new Date();

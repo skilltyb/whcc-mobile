@@ -1457,14 +1457,16 @@
     <label class="login-label">Date</label>
     <input class="modal-input" id="pp-date" type="date">
     <label class="login-label">Preferred Time</label>
-    <select class="modal-input" id="pp-time">
+    <select class="modal-input" id="pp-time" onchange="ppTimeChange()">
       <option value="">Select a time…</option>
+      <option value="specific">Specific Time…</option>
       <option>Early Morning (Before 9 AM)</option>
       <option>Morning (9 AM – Noon)</option>
       <option>Afternoon (Noon – 3 PM)</option>
       <option>Late Afternoon (After 3 PM)</option>
       <option>Flexible</option>
     </select>
+    <input class="modal-input" id="pp-specific-time" type="time" style="display:none;margin-top:8px;" value="08:00">
     <label class="login-label">Holes</label>
     <select class="modal-input" id="pp-holes">
       <option value="">Select…</option>
@@ -1947,11 +1949,24 @@ function renderPartners() {
   }).join('');
 }
 
+function ppTimeChange() {
+  var sel = document.getElementById('pp-time');
+  var ti  = document.getElementById('pp-specific-time');
+  if (ti) ti.style.display = sel.value === 'specific' ? 'block' : 'none';
+}
+
+function fmt12(t) {
+  if (!t) return '';
+  var parts = t.split(':'); var h = parseInt(parts[0]); var m = parts[1];
+  return (h % 12 || 12) + ':' + m + ' ' + (h < 12 ? 'AM' : 'PM');
+}
+
 function submitPartnerPost() {
   var date  = document.getElementById('pp-date').value;
-  var time  = document.getElementById('pp-time').value;
+  var sel   = document.getElementById('pp-time').value;
   var holes = document.getElementById('pp-holes').value;
   var note  = document.getElementById('pp-note').value.trim();
+  var time  = sel === 'specific' ? fmt12(document.getElementById('pp-specific-time').value) : sel;
   if (!date || !time || !holes) { showToast('Please fill in date, time, and holes'); return; }
   var posts = JSON.parse(localStorage.getItem('wh_partners') || '[]');
   var parts = currentUser.name.split(' ');

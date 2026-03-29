@@ -162,9 +162,6 @@
     .login-divider { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; color: var(--muted); font-size: .78rem; }
     .login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
     .login-error { color: var(--danger); font-size: .78rem; text-align: center; margin-top: -10px; margin-bottom: 14px; min-height: 18px; }
-    .demo-btns { display: flex; gap: 8px; }
-    .demo-btn { flex: 1; padding: 10px 8px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: none; font-size: .78rem; font-weight: 600; cursor: pointer; color: var(--forest); transition: background .2s, border-color .2s; }
-    .demo-btn:hover { background: var(--cream); border-color: var(--forest); }
 
     /* ── APP HEADER ── */
     .app-header { height: var(--hdr-h); background: var(--forest); display: flex; align-items: center; padding: 0 18px; flex-shrink: 0; }
@@ -426,10 +423,6 @@
     <button class="login-btn" onclick="doLogin()">Sign In</button>
     <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-bottom:12px;cursor:pointer;" onclick="showToast('Contact the Pro Shop at (573) 785-5253 to reset your PIN.')">Forgot your PIN?</p>
     <div class="login-divider">quick demo access</div>
-    <div class="demo-btns">
-      <button class="demo-btn" onclick="demoLogin('member')">👤 Member Demo</button>
-      <button class="demo-btn" onclick="demoLogin('staff')">🏌️ Staff Demo</button>
-    </div>
   </div>
 </div>
 
@@ -1695,27 +1688,14 @@ var CLUB_PHONE     = '(573) 785-5253';
 var CLUB_PHONE_TEL = '+15737855253';
 var CLUB_ADDRESS   = '1 Birdie Ln, Poplar Bluff, MO';
 
-var DEMO_ACCOUNTS = {
-  'member@wh.cc': { pin:'1234', role:'member', name:'Jamie Wilson', memberNumber:'1047', memberSince:'2019', membership:'Full Membership', handicap:'12.4', rounds:14 },
-  'staff@wh.cc':  { pin:'5678', role:'staff',  name:'Alex Rivera',  title:'Golf Operations' }
-};
+// APP_ACCOUNTS: fallback local credentials used when Apps Script validation is unavailable.
+// Replace these with real staff credentials before going live and communicate securely.
+// For full security, implement the validate-login action in the deployed Apps Script.
+var APP_ACCOUNTS = {};
 
+// MEMBER_DIRECTORY: populated via Apps Script sync. Add real member records here
+// or load them dynamically from the Members sheet via WHCC_SYNC.
 var MEMBER_DIRECTORY = [
-  { name:'Jamie Wilson',    number:'1047', membership:'Full Membership',   handicap:'12.4', since:'2019', phone:'(573) 555-0101', email:'jwilson@email.com' },
-  { name:'Robert Harmon',   number:'0832', membership:'Full Membership',   handicap:'8.1',  since:'2012', phone:'(573) 555-0142', email:'rharmon@email.com' },
-  { name:'Carol Jennings',  number:'1124', membership:'Social Membership', handicap:'22.7', since:'2021', phone:'(573) 555-0193', email:'cjennings@email.com' },
-  { name:'Mike Patterson',  number:'0561', membership:'Full Membership',   handicap:'5.3',  since:'2008', phone:'(573) 555-0204', email:'mpatterson@email.com' },
-  { name:'Susan Caldwell',  number:'1298', membership:'Ladies Membership', handicap:'18.2', since:'2020', phone:'(573) 555-0237', email:'scalfwell@email.com' },
-  { name:'Tom Bradley',     number:'0714', membership:'Full Membership',   handicap:'14.6', since:'2015', phone:'(573) 555-0288', email:'tbradley@email.com' },
-  { name:'Linda Foster',    number:'1356', membership:'Ladies Membership', handicap:'26.3', since:'2022', phone:'(573) 555-0319', email:'lfoster@email.com' },
-  { name:'Gary Hutchins',   number:'0489', membership:'Full Membership',   handicap:'3.8',  since:'2005', phone:'(573) 555-0355', email:'ghutchins@email.com' },
-  { name:'Patricia Owens',  number:'1433', membership:'Social Membership', handicap:'N/A',  since:'2023', phone:'(573) 555-0372', email:'powens@email.com' },
-  { name:'Dennis Kramer',   number:'0967', membership:'Full Membership',   handicap:'11.0', since:'2017', phone:'(573) 555-0398', email:'dkramer@email.com' },
-  { name:'Nancy Strickland',number:'1502', membership:'Ladies Membership', handicap:'20.1', since:'2021', phone:'(573) 555-0411', email:'nstrickland@email.com' },
-  { name:'Bill Norris',     number:'0342', membership:'Full Membership',   handicap:'7.5',  since:'2003', phone:'(573) 555-0447', email:'bnorris@email.com' },
-  { name:'Diane Marsh',     number:'1589', membership:'Social Membership', handicap:'N/A',  since:'2024', phone:'(573) 555-0463', email:'dmarsh@email.com' },
-  { name:'Chris Langford',  number:'1011', membership:'Full Membership',   handicap:'15.9', since:'2018', phone:'(573) 555-0479', email:'clangford@email.com' },
-  { name:'Rebecca Dunne',   number:'1645', membership:'Ladies Membership', handicap:'31.2', since:'2023', phone:'(573) 555-0502', email:'rdunne@email.com' },
 ];
 
 var DEFAULT_EVENTS = [
@@ -1884,14 +1864,26 @@ function doLogin() {
   var err   = document.getElementById('li-error');
   err.textContent = '';
   if (!email || !pin) { err.textContent = 'Please enter your email and PIN.'; return; }
-  var acct = DEMO_ACCOUNTS[email];
-  if (!acct || acct.pin !== pin) { err.textContent = 'Invalid email or PIN. Try a demo button below.'; return; }
-  loginAs(acct, email);
-}
-
-function demoLogin(role) {
-  var email = role === 'member' ? 'member@wh.cc' : 'staff@wh.cc';
-  loginAs(DEMO_ACCOUNTS[email], email);
+  err.textContent = 'Verifying…';
+  // Try Apps Script validation first (requires validate-login action in deployed script)
+  fetch(WHCC_SCRIPT_URL + '?action=validate-login&email=' + encodeURIComponent(email) + '&pin=' + encodeURIComponent(pin))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data.ok && data.account) {
+        err.textContent = '';
+        loginAs(data.account, email);
+      } else {
+        var acct = APP_ACCOUNTS[email];
+        if (acct && acct.pin === pin) { err.textContent = ''; loginAs(acct, email); }
+        else { err.textContent = 'Invalid email or PIN. Contact the Pro Shop for access.'; }
+      }
+    })
+    .catch(function() {
+      // Network unavailable — check local accounts only
+      var acct = APP_ACCOUNTS[email];
+      if (acct && acct.pin === pin) { err.textContent = ''; loginAs(acct, email); }
+      else { err.textContent = 'Invalid email or PIN. Contact the Pro Shop for access.'; }
+    });
 }
 
 function loginAs(acct, email) {
@@ -4230,7 +4222,7 @@ if ('serviceWorker' in navigator) {
       .then(function(r) {
         r.update(); // immediately check for a newer worker
       })
-      .catch(function(e){ console.log('SW failed:', e); });
+      .catch(function() {});
   });
 }
 

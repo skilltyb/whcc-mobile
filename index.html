@@ -159,8 +159,6 @@
     .login-input:focus { border-color: var(--forest); }
     .login-btn { width: 100%; padding: 14px; background: var(--forest); color: var(--white); border: none; border-radius: var(--radius-sm); font-size: .95rem; font-weight: 600; cursor: pointer; margin-bottom: 14px; transition: background .2s; }
     .login-btn:hover { background: var(--forest-light); }
-    .login-divider { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; color: var(--muted); font-size: .78rem; }
-    .login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
     .login-error { color: var(--danger); font-size: .78rem; text-align: center; margin-top: -10px; margin-bottom: 14px; min-height: 18px; }
 
     /* ── APP HEADER ── */
@@ -421,8 +419,7 @@
     <input class="login-input" id="li-pin" type="password" placeholder="4-digit PIN" maxlength="4" pattern="[0-9]*" inputmode="numeric">
     <div class="login-error" id="li-error"></div>
     <button class="login-btn" onclick="doLogin()">Sign In</button>
-    <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-bottom:12px;cursor:pointer;" onclick="showToast('Contact the Pro Shop at (573) 785-5253 to reset your PIN.')">Forgot your PIN?</p>
-    <div class="login-divider">quick demo access</div>
+    <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:4px;cursor:pointer;" onclick="showToast('Contact the Pro Shop at (573) 785-5253 to reset your PIN.')">Forgot your PIN?</p>
   </div>
 </div>
 

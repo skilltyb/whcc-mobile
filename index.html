@@ -420,6 +420,47 @@
     <div class="login-error" id="li-error"></div>
     <button class="login-btn" onclick="doLogin()">Sign In</button>
     <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:4px;cursor:pointer;" onclick="showToast('Contact the Pro Shop at (573) 785-5253 to reset your PIN.')">Forgot your PIN?</p>
+    <p style="text-align:center;font-size:.78rem;font-weight:600;color:var(--gold);margin-top:10px;cursor:pointer;" onclick="showSetup()">First time here? Set up your PIN →</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     MEMBER SETUP SCREEN
+════════════════════════════════════ -->
+<div class="screen hidden" id="screen-setup">
+  <div class="login-logo">W</div>
+  <div class="login-title">Westwood Hills CC</div>
+  <div class="login-sub" id="setup-sub">Member Verification</div>
+  <div class="login-card">
+
+    <!-- Step 1: Verify identity -->
+    <div id="setup-s1">
+      <label class="login-label" for="su-email">Email Address</label>
+      <input class="login-input" id="su-email" type="email" placeholder="you@example.com" autocomplete="email">
+      <label class="login-label" for="su-memnum">Member Number</label>
+      <input class="login-input" id="su-memnum" type="text" placeholder="e.g. A0000682-000" autocomplete="off">
+      <label class="login-label" for="su-last">Last Name</label>
+      <input class="login-input" id="su-last" type="text" placeholder="Your last name">
+      <div class="login-error" id="su-error"></div>
+      <button class="login-btn" id="su-verify-btn" onclick="verifyMember()">Verify Membership</button>
+      <p style="text-align:center;font-size:.75rem;color:var(--muted);cursor:pointer;" onclick="showScreen('screen-login')">← Back to Sign In</p>
+    </div>
+
+    <!-- Step 2: Create PIN -->
+    <div id="setup-s2" style="display:none;">
+      <div style="text-align:center;margin-bottom:18px;">
+        <div id="su-welcome" style="font-size:1.05rem;font-weight:700;color:var(--forest);margin-bottom:4px;"></div>
+        <div style="font-size:.78rem;color:var(--muted);">Choose a 4-digit PIN for your account</div>
+      </div>
+      <label class="login-label" for="su-pin">New PIN</label>
+      <input class="login-input" id="su-pin" type="password" placeholder="4 digits" maxlength="4" pattern="[0-9]*" inputmode="numeric">
+      <label class="login-label" for="su-pin2">Confirm PIN</label>
+      <input class="login-input" id="su-pin2" type="password" placeholder="Re-enter PIN" maxlength="4" pattern="[0-9]*" inputmode="numeric">
+      <div class="login-error" id="su-error2"></div>
+      <button class="login-btn" id="su-create-btn" onclick="completeSetup()">Create PIN &amp; Sign In</button>
+      <p style="text-align:center;font-size:.75rem;color:var(--muted);cursor:pointer;" onclick="setupBack()">← Back</p>
+    </div>
+
   </div>
 </div>
 
@@ -4419,6 +4460,86 @@ function syncAllRegs() {
     }
     showToast('✅ Synced ' + (regs ? regs.length : 0) + ' registrations.');
   });
+}
+
+// ── FIRST-TIME PIN SETUP ──────────────────────────────────────────────────────
+var _setupData = null;
+
+function showSetup() {
+  ['su-email','su-memnum','su-last','su-pin','su-pin2'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('su-error').textContent  = '';
+  document.getElementById('su-error2').textContent = '';
+  document.getElementById('setup-s1').style.display = 'block';
+  document.getElementById('setup-s2').style.display = 'none';
+  document.getElementById('setup-sub').textContent  = 'Member Verification';
+  showScreen('screen-setup');
+}
+
+function setupBack() {
+  document.getElementById('setup-s1').style.display = 'block';
+  document.getElementById('setup-s2').style.display = 'none';
+  document.getElementById('setup-sub').textContent  = 'Member Verification';
+}
+
+function verifyMember() {
+  var email  = document.getElementById('su-email').value.trim().toLowerCase();
+  var memNum = document.getElementById('su-memnum').value.trim();
+  var last   = document.getElementById('su-last').value.trim();
+  var errEl  = document.getElementById('su-error');
+  var btn    = document.getElementById('su-verify-btn');
+  errEl.textContent = '';
+  if (!email || !memNum || !last) { errEl.textContent = 'All three fields are required.'; return; }
+  btn.textContent = 'Verifying…'; btn.disabled = true;
+  fetch(WHCC_SCRIPT_URL + '?action=verify-member&memberNum=' + encodeURIComponent(memNum) + '&last=' + encodeURIComponent(last))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btn.textContent = 'Verify Membership'; btn.disabled = false;
+      if (!data.ok) { errEl.textContent = data.error || 'Not found. Check your member number or contact the Pro Shop.'; return; }
+      _setupData = { email: email, memberNum: memNum, name: data.name, membership: data.membership, handicap: data.handicap };
+      document.getElementById('su-welcome').textContent = 'Welcome, ' + data.name + '!';
+      document.getElementById('setup-sub').textContent  = 'Create Your PIN';
+      document.getElementById('setup-s1').style.display = 'none';
+      document.getElementById('setup-s2').style.display = 'block';
+    })
+    .catch(function() {
+      btn.textContent = 'Verify Membership'; btn.disabled = false;
+      errEl.textContent = 'Connection error — check your signal and try again.';
+    });
+}
+
+function completeSetup() {
+  var pin   = document.getElementById('su-pin').value.trim();
+  var pin2  = document.getElementById('su-pin2').value.trim();
+  var errEl = document.getElementById('su-error2');
+  var btn   = document.getElementById('su-create-btn');
+  errEl.textContent = '';
+  if (!/^\d{4}$/.test(pin)) { errEl.textContent = 'PIN must be exactly 4 digits.'; return; }
+  if (pin !== pin2)          { errEl.textContent = 'PINs do not match. Try again.'; return; }
+  btn.textContent = 'Setting up…'; btn.disabled = true;
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'create-pin', email: _setupData.email, memberNum: _setupData.memberNum, pin: pin })
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btn.textContent = 'Create PIN & Sign In'; btn.disabled = false;
+      if (!data.ok) { errEl.textContent = data.error || 'Something went wrong. Contact the Pro Shop.'; return; }
+      loginAs({
+        role:         'member',
+        name:         _setupData.name,
+        memberNumber: _setupData.memberNum,
+        membership:   _setupData.membership,
+        handicap:     _setupData.handicap
+      }, _setupData.email);
+      showToast('Welcome to Westwood Hills, ' + _setupData.name.split(' ')[0] + '! 🏌️');
+    })
+    .catch(function() {
+      btn.textContent = 'Create PIN & Sign In'; btn.disabled = false;
+      errEl.textContent = 'Connection error — check your signal and try again.';
+    });
 }
 
 // ── LEAGUE SCHEDULES ─────────────────────────────────────────────────────────

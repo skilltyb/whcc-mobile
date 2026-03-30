@@ -465,12 +465,39 @@
 </div>
 
 <!-- ════════════════════════════════════
+     ROLE PICKER
+════════════════════════════════════ -->
+<div class="screen hidden" id="screen-role-picker">
+  <div class="login-logo">W</div>
+  <div class="login-title">Westwood Hills CC</div>
+  <div class="login-sub" id="picker-sub">Welcome back</div>
+  <div style="width:100%;max-width:360px;display:flex;flex-direction:column;gap:12px;padding:0 24px;">
+    <button onclick="enterPortalAs('member')" style="background:var(--white);border:none;border-radius:var(--radius);padding:22px 20px;text-align:left;cursor:pointer;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:16px;">
+      <div style="width:44px;height:44px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">🏌️</div>
+      <div>
+        <div style="font-weight:700;font-size:.95rem;color:var(--dark);margin-bottom:3px;">Member App</div>
+        <div style="font-size:.75rem;color:var(--muted);">Events, tee sheets, dining &amp; more</div>
+      </div>
+    </button>
+    <button onclick="enterPortalAs('staff')" style="background:var(--forest);border:none;border-radius:var(--radius);padding:22px 20px;text-align:left;cursor:pointer;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:16px;">
+      <div style="width:44px;height:44px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">👔</div>
+      <div>
+        <div style="font-weight:700;font-size:.95rem;color:var(--white);margin-bottom:3px;">Staff Portal</div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.6);">Dashboard, operations &amp; management</div>
+      </div>
+    </button>
+    <p style="text-align:center;font-size:.75rem;color:rgba(255,255,255,.4);margin-top:6px;cursor:pointer;" onclick="doLogout()">Sign Out</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
      MEMBER APP
 ════════════════════════════════════ -->
 <div class="screen app-screen hidden" id="screen-member">
   <div class="app-header">
     <div class="hdr-logo">W</div>
     <div class="hdr-title">Westwood Hills CC</div><span id="m-hdr-user" style="color:rgba(255,255,255,.7);font-size:.75rem;margin-right:4px;"></span>
+    <button id="m-switch-btn" onclick="switchView('staff')" style="display:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;margin-right:6px;letter-spacing:.03em;">Staff →</button>
     <button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;letter-spacing:.03em;">Sign Out</button>
   </div>
 
@@ -925,6 +952,7 @@
   <div class="app-header">
     <div class="hdr-logo">W</div>
     <div class="hdr-title">WHCC Staff</div>
+    <button id="s-switch-btn" onclick="switchView('member')" style="display:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;margin-right:6px;letter-spacing:.03em;">← Member</button>
     <button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;letter-spacing:.03em;">Sign Out</button>
   </div>
 
@@ -1927,8 +1955,25 @@ function doLogin() {
 function loginAs(acct, email) {
   currentUser = Object.assign({email: email}, acct);
   localStorage.setItem('wh_current_user', JSON.stringify(currentUser));
-  if (acct.role === 'member') { initMember(); showScreen('screen-member'); }
-  else                         { initStaff();  showScreen('screen-staff');  }
+  if (acct.role === 'both') {
+    var sub = document.getElementById('picker-sub');
+    if (sub) sub.textContent = 'Welcome, ' + (acct.name ? acct.name.split(' ')[0] : 'back') + '!';
+    showScreen('screen-role-picker');
+  } else if (acct.role === 'member') {
+    initMember(); showScreen('screen-member');
+  } else {
+    initStaff(); showScreen('screen-staff');
+  }
+}
+
+function enterPortalAs(role) {
+  if (role === 'member') { initMember(); showScreen('screen-member'); }
+  else                   { initStaff();  showScreen('screen-staff');  }
+}
+
+function switchView(to) {
+  if (to === 'member') { initMember(); showScreen('screen-member'); }
+  else                 { initStaff();  showScreen('screen-staff');  }
 }
 
 function doLogout() {
@@ -2069,6 +2114,8 @@ function deletePartnerPost(posted) {
 function initMember() {
   var u = currentUser;
   var first = u.name.split(' ')[0];
+  var mSwBtn = document.getElementById('m-switch-btn');
+  if (mSwBtn) mSwBtn.style.display = (u.role === 'both') ? 'inline-block' : 'none';
   var extraRounds = parseInt(localStorage.getItem('wh_extra_rounds_' + u.email) || '0');
   document.getElementById('m-hdr-user').textContent = first;
   document.getElementById('m-greet-name').textContent = greet() + ', ' + first + '!';
@@ -4014,6 +4061,8 @@ function removeTeeTime(id) {
 function initStaff() {
   var u     = currentUser;
   var first = u.name.split(' ')[0];
+  var sSwBtn = document.getElementById('s-switch-btn');
+  if (sSwBtn) sSwBtn.style.display = (u.role === 'both') ? 'inline-block' : 'none';
   var now   = new Date();
   var dateStr = now.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
 
@@ -4240,8 +4289,12 @@ document.getElementById('li-pin').addEventListener('keydown',   function(e){ if 
       var u = JSON.parse(saved);
       if (u && u.email && u.role) {
         currentUser = u;
-        if (u.role === 'member') { initMember(); showScreen('screen-member'); }
-        else                      { initStaff();  showScreen('screen-staff');  }
+        if (u.role === 'both') {
+          var sub = document.getElementById('picker-sub');
+          if (sub) sub.textContent = 'Welcome, ' + (u.name ? u.name.split(' ')[0] : 'back') + '!';
+          showScreen('screen-role-picker');
+        } else if (u.role === 'member') { initMember(); showScreen('screen-member'); }
+        else                            { initStaff();  showScreen('screen-staff');  }
       }
     }
   } catch(e) {}

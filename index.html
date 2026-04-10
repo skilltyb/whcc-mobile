@@ -2075,6 +2075,7 @@ function switchView(to) {
 
 function doLogout() {
   currentUser = null;
+  if (window._regSyncInterval) { clearInterval(window._regSyncInterval); window._regSyncInterval = null; }
   localStorage.removeItem('wh_current_user');
   showScreen('screen-login');
   document.getElementById('li-email').value = '';
@@ -2330,6 +2331,12 @@ function _initMemberUI() {
   var ppd = document.getElementById('pp-date');
   if (ppd) ppd.valueAsDate = new Date();
   goTab('member','home');
+
+  // Initial sync + start polling every 3 minutes so deletions/edits
+  // made in Google Sheets or the staff portal propagate automatically
+  syncRegistrationsFromSheets();
+  if (window._regSyncInterval) clearInterval(window._regSyncInterval);
+  window._regSyncInterval = setInterval(syncRegistrationsFromSheets, 3 * 60 * 1000);
 }
 
 function greet() {
@@ -2359,6 +2366,51 @@ function syncTeeSheetCounts() {
     localStorage.setItem('wh_counts', JSON.stringify(counts));
     renderMemberEvents();
     renderHomeEvents();
+  });
+}
+
+// Pull all registrations from Sheets and reconcile locally.
+// This ensures deletions or edits made in Sheets or the staff portal
+// propagate to the mobile app automatically every 3 minutes.
+function syncRegistrationsFromSheets() {
+  if (!currentUser || !currentUser.email) return;
+  var myEmail = (currentUser.email || '').toLowerCase().trim();
+  WHCC_SYNC.fetchAll(function(regs, err) {
+    if (err || !regs) return;
+
+    // Store full list in localStorage
+    try { localStorage.setItem('wh_registrations', JSON.stringify(regs)); } catch(e) {}
+
+    // Build set of events this user is registered for per Sheets
+    var myEvents = {};
+    regs.forEach(function(r) {
+      if ((r.email || '').toLowerCase().trim() === myEmail && r.event) {
+        myEvents[r.event] = true;
+      }
+    });
+
+    // Reconcile appEvents.registered flags — deletions in Sheets flip registered→false
+    var changed = false;
+    appEvents.forEach(function(ev) {
+      var was = ev.registered;
+      ev.registered = !!myEvents[ev.title];
+      if (was !== ev.registered) changed = true;
+    });
+    if (changed) {
+      try { localStorage.setItem('wh_app_events', JSON.stringify(appEvents)); } catch(e) {}
+      renderMemberEvents();
+      renderHomeEvents();
+    }
+
+    // Merge Sheets counts into wh_counts (never reduce tee-sheet-sourced counts)
+    var counts = {};
+    try { counts = JSON.parse(localStorage.getItem('wh_counts') || '{}'); } catch(e) {}
+    var sheetCounts = {};
+    regs.forEach(function(r) { if (r.event) sheetCounts[r.event] = (sheetCounts[r.event] || 0) + 1; });
+    Object.keys(sheetCounts).forEach(function(ev) {
+      if (sheetCounts[ev] > (counts[ev] || 0)) counts[ev] = sheetCounts[ev];
+    });
+    localStorage.setItem('wh_counts', JSON.stringify(counts));
   });
 }
 

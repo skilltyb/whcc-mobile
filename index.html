@@ -1084,25 +1084,40 @@
           <input class="cond-input" id="cond-opens" type="text" placeholder="e.g. 9:00 AM">
         </div>
         <div class="cond-field">
-          <label class="cond-label" for="cond-carts">Cart Rules</label>
+          <label class="cond-label" for="cond-carts">Cart Path Rules</label>
           <select class="cond-select" id="cond-carts">
-            <option>Off Path — Anywhere on Course</option>
-            <option>Cart Path Only</option>
-            <option>Fairways Closed — Path Only</option>
-            <option>No Carts Today</option>
+            <option value="Off Path">Off Path (full course)</option>
+            <option value="Cart Path Only">Cart Path Only</option>
+            <option value="90° Rule">90° Rule</option>
+            <option value="No Carts Today">No Carts Today</option>
+            <option value="No Carts">No Carts</option>
           </select>
         </div>
         <div class="cond-field">
-          <label class="cond-label" for="cond-range">Driving Range</label>
-          <select class="cond-select" id="cond-range">
-            <option>Open</option>
-            <option>Open — Mats Only</option>
-            <option>Closed</option>
+          <label class="cond-label" for="cond-range-status">Driving Range Status</label>
+          <select class="cond-select" id="cond-range-status">
+            <option value="Open — Mats Only">Open — Mats Only</option>
+            <option value="Open — Grass Tees">Open — Grass Tees</option>
+            <option value="Open — Grass &amp; Mats">Open — Grass &amp; Mats</option>
+            <option value="Closed">Closed</option>
+            <option value="Closed — Tournament">Closed — Tournament</option>
           </select>
         </div>
+        <div class="cond-field">
+          <label class="cond-label" for="cond-range-hours">Range Hours</label>
+          <input class="cond-input" id="cond-range-hours" type="text" placeholder="e.g. 8:30 AM – 5:00 PM">
+        </div>
+        <div class="cond-field">
+          <label class="cond-label" for="cond-putting">Putting Green</label>
+          <input class="cond-input" id="cond-putting" type="text" placeholder="e.g. 9:00 AM – Dusk">
+        </div>
+        <div class="cond-field">
+          <label class="cond-label" for="cond-proshop">Pro Shop Hours</label>
+          <input class="cond-input" id="cond-proshop" type="text" placeholder="e.g. 8:30 AM – 6:00 PM">
+        </div>
         <div class="cond-field" style="margin-bottom:14px;">
-          <label class="cond-label" for="cond-notice">Notice / Alert <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
-          <textarea class="cond-textarea" id="cond-notice" placeholder="e.g. Frost delay in effect…"></textarea>
+          <label class="cond-label" for="cond-notice">Special Notice <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <textarea class="cond-textarea" id="cond-notice" placeholder="e.g. Frost delay until 10 AM, Cart path only holes 3-5, etc."></textarea>
         </div>
         <button class="ev-reg-btn" style="width:100%;margin:0;" onclick="saveConditions()">Save Conditions</button>
       </div>
@@ -4868,7 +4883,7 @@ function _initStaffUI() {
 // ════════════════════════════════════
 // WEATHER + CONDITIONS
 // ════════════════════════════════════
-var WH_COND_DEFAULTS = {courseOpens:'9:00 AM', cartRules:'Off Path — Anywhere on Course', range:'Open', notice:''};
+var WH_COND_DEFAULTS = {courseOpens:'9:00 AM', cartRules:'Off Path', rangeStatus:'Open — Mats Only', rangeHours:'', puttingGreen:'', proShop:'', notice:''};
 
 function loadConditions() {
   var data = JSON.parse(localStorage.getItem('wh_conditions') || 'null') || WH_COND_DEFAULTS;
@@ -4910,18 +4925,24 @@ function renderMemberNoticeBanner(notice) {
 function loadConditionsEditor() {
   var data = JSON.parse(localStorage.getItem('wh_conditions') || 'null') || WH_COND_DEFAULTS;
   var e;
-  e = document.getElementById('cond-opens'); if(e) e.value = data.courseOpens || '9:00 AM';
-  e = document.getElementById('cond-carts'); if(e) e.value = data.cartRules  || 'Off Path — Anywhere on Course';
-  e = document.getElementById('cond-range'); if(e) e.value = data.range      || 'Open';
-  e = document.getElementById('cond-notice'); if(e) e.value = data.notice    || '';
+  e = document.getElementById('cond-opens');        if(e) e.value = data.courseOpens  || '9:00 AM';
+  e = document.getElementById('cond-carts');        if(e) e.value = data.cartRules    || 'Off Path';
+  e = document.getElementById('cond-range-status'); if(e) e.value = data.rangeStatus  || 'Open — Mats Only';
+  e = document.getElementById('cond-range-hours');  if(e) e.value = data.rangeHours   || '';
+  e = document.getElementById('cond-putting');      if(e) e.value = data.puttingGreen || '';
+  e = document.getElementById('cond-proshop');      if(e) e.value = data.proShop      || '';
+  e = document.getElementById('cond-notice');       if(e) e.value = data.notice       || '';
 }
 
 function saveConditions() {
   var data = {
-    courseOpens: document.getElementById('cond-opens').value.trim()  || '9:00 AM',
-    cartRules:   document.getElementById('cond-carts').value,
-    range:       document.getElementById('cond-range').value,
-    notice:      document.getElementById('cond-notice').value.trim()
+    courseOpens:  document.getElementById('cond-opens').value.trim()        || '9:00 AM',
+    cartRules:    document.getElementById('cond-carts').value,
+    rangeStatus:  document.getElementById('cond-range-status').value,
+    rangeHours:   document.getElementById('cond-range-hours').value.trim(),
+    puttingGreen: document.getElementById('cond-putting').value.trim(),
+    proShop:      document.getElementById('cond-proshop').value.trim(),
+    notice:       document.getElementById('cond-notice').value.trim()
   };
   localStorage.setItem('wh_conditions', JSON.stringify(data));
   loadConditions();

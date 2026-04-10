@@ -717,9 +717,12 @@
 
         <!-- Full sheet for selected event -->
         <div id="m-ts-sheet-wrap" style="display:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <button onclick="mTeeSheetHideSheet()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:6px 14px;color:rgba(245,240,232,.75);font-size:.75rem;font-weight:600;cursor:pointer;letter-spacing:.02em;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              Back
+            </button>
             <div id="m-ts-sheet-title" style="font-size:.82rem;font-weight:700;color:rgba(245,240,232,.8);"></div>
-            <button onclick="mTeeSheetHideSheet()" style="background:none;border:none;color:rgba(184,151,106,.6);font-size:.75rem;cursor:pointer;">← Back</button>
           </div>
           <!-- Round selector -->
           <div style="display:flex;gap:6px;margin-bottom:12px;" id="m-ts-round-row">
@@ -731,6 +734,10 @@
             <span id="m-ts-saved" style="font-size:.6rem;color:rgba(245,240,232,.25);align-self:center;margin-left:4px;"></span>
           </div>
           <div id="m-ts-output"></div>
+          <button onclick="mTeeSheetHideSheet()" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px;color:rgba(245,240,232,.65);font-size:.8rem;font-weight:600;cursor:pointer;letter-spacing:.02em;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to My Events
+          </button>
         </div>
 
         <!-- Hidden event select (used internally) -->

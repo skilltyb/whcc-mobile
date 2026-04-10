@@ -592,7 +592,7 @@
     <!-- Golf sub-nav -->
     <div style="background:var(--white);border-bottom:1px solid var(--border);padding:0 16px;display:flex;">
       <button id="golf-sub-course" onclick="golfSection('course')" style="flex:1;padding:11px 0;border:none;border-bottom:2.5px solid var(--gold);background:none;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--forest);">Course</button>
-      <button id="golf-sub-teesheet" onclick="golfSection('teesheet')" style="flex:1;padding:11px 0;border:none;border-bottom:2.5px solid transparent;background:none;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--muted);">Tee Sheet</button>
+      <button id="golf-sub-events" onclick="golfSection('events')" style="flex:1;padding:11px 0;border:none;border-bottom:2.5px solid transparent;background:none;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--muted);">Events</button>
     </div>
     <!-- Course section -->
     <div id="golf-sec-course" class="page">
@@ -707,7 +707,7 @@
       <div id="score-entry-section" style="display:none;margin-bottom:20px;"></div>
     </div>
     <!-- Tee Sheet section -->
-    <div id="golf-sec-teesheet" style="display:none;background:#111a14;min-height:100%;">
+    <div id="golf-sec-events" style="display:none;background:#111a14;min-height:100%;">
       <div style="padding:16px;background:#111a14;">
         <button onclick="goTab('member','club');clubSection('events');" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:6px 14px;color:rgba(245,240,232,.75);font-size:.75rem;font-weight:600;cursor:pointer;letter-spacing:.02em;margin-bottom:14px;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
@@ -2104,7 +2104,7 @@ function goTab(role, tab) {
 }
 
 function golfSection(s) {
-  var sections = ['course','teesheet'];
+  var sections = ['course','events'];
   sections.forEach(function(sec) {
     var el = document.getElementById('golf-sec-' + sec);
     var btn = document.getElementById('golf-sub-' + sec);
@@ -2114,7 +2114,7 @@ function golfSection(s) {
       btn.style.color = sec === s ? 'var(--forest)' : 'var(--muted)';
     }
   });
-  if (s === 'teesheet') mTeeSheetBuildEventDropdown();
+  if (s === 'events') mTeeSheetBuildEventDropdown();
 }
 
 function clubSection(s) {
@@ -2849,7 +2849,7 @@ function mTeeSheetLoad() {
   if (mTeeSheetTimer) clearInterval(mTeeSheetTimer);
   mTeeSheetTimer = setInterval(function() {
     var _tab = document.getElementById('m-tab-golf');
-    var _tsec = document.getElementById('golf-sec-teesheet');
+    var _tsec = document.getElementById('golf-sec-events');
     if (!_tab || !_tab.classList.contains('active') || !_tsec || _tsec.style.display === 'none') return;
     var _sel = document.getElementById('m-ts-event');
     var _ev = _sel ? _sel.value : '';
@@ -4928,7 +4928,7 @@ if ('serviceWorker' in navigator) {
 function openMemberTeeSheet(idx) {
   var ev = appEvents[idx];
   goTab('member','golf');
-  golfSection('teesheet');
+  golfSection('events');
   mTeeSheetBuildEventDropdown();
   setTimeout(function() {
     var sel = document.getElementById('m-ts-event');

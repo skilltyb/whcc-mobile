@@ -2322,6 +2322,7 @@ function _initMemberUI() {
   loadConditions();
   renderMyUpcoming();
   renderPartners();
+  syncTeeSheetCounts();
 
   renderPoolChip();
   renderHoleAlerts();
@@ -2334,6 +2335,31 @@ function _initMemberUI() {
 function greet() {
   var h = new Date().getHours();
   return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
+
+// Pull tee sheet player counts and merge into wh_counts so event cards
+// always reflect the actual number of players on the sheet, not just
+// registration-form submissions.
+function syncTeeSheetCounts() {
+  WHCC_SYNC.loadTeeSheets(null, function(data, err) {
+    if (err || !data || !data.length) return;
+    var counts = {};
+    try { counts = JSON.parse(localStorage.getItem('wh_counts') || '{}'); } catch(e) {}
+    data.forEach(function(ts) {
+      if (!ts.event) return;
+      var total = 0;
+      if (ts.groups && ts.groups.length) {
+        ts.groups.forEach(function(g) { total += (g.players || []).length; });
+      }
+      // Use tee sheet count if it's higher than the form-submission count
+      if (total > (counts[ts.event] || 0)) {
+        counts[ts.event] = total;
+      }
+    });
+    localStorage.setItem('wh_counts', JSON.stringify(counts));
+    renderMemberEvents();
+    renderHomeEvents();
+  });
 }
 
 function logRound() {

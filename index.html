@@ -2867,79 +2867,103 @@ function mTeeSheetBuildEventDropdown() {
 
   // Get member's registered upcoming events
   var today = new Date().toISOString().slice(0, 10);
-  var registered = appEvents.filter(function(ev) { return ev.registered && ev.date >= today; });
+  myEventsEl.innerHTML = '<div style="font-size:.75rem;color:rgba(245,240,232,.3);text-align:center;padding:24px 0;">Loading…</div>';
 
-  myEventsEl.innerHTML = '';
+  // Build lookup of appEvents by title for date/time info
+  var eventsByTitle = {};
+  appEvents.forEach(function(ev) { eventsByTitle[ev.title] = ev; });
 
-  if (!registered.length) {
-    myEventsEl.innerHTML =
-      '<div style="text-align:center;padding:40px 16px;">' +
-        '<div style="font-size:1.6rem;margin-bottom:10px;">📋</div>' +
-        '<div style="font-size:.85rem;color:rgba(245,240,232,.5);margin-bottom:6px;">No upcoming registrations</div>' +
-        '<div style="font-size:.72rem;color:rgba(245,240,232,.3);">Register for events to see your tee times here</div>' +
-      '</div>';
-    return;
-  }
-
-  // Load tee sheets and cross-reference
+  // Drive the list from tee sheets — show all posted sheets regardless of registration
   WHCC_SYNC.loadTeeSheets(null, function(data, err) {
-    var sheetsByEvent = {};
-    if (data && data.length) {
-      data.forEach(function(ts) { if (ts.event) sheetsByEvent[ts.event] = ts; });
+    if (err || !data || !data.length) {
+      myEventsEl.innerHTML =
+        '<div style="text-align:center;padding:40px 16px;">' +
+          '<div style="font-size:1.6rem;margin-bottom:10px;">📋</div>' +
+          '<div style="font-size:.85rem;color:rgba(245,240,232,.5);margin-bottom:6px;">No tee sheets posted yet</div>' +
+          '<div style="font-size:.72rem;color:rgba(245,240,232,.3);">Check back closer to your event date</div>' +
+        '</div>';
+      return;
     }
 
-    registered.forEach(function(ev) {
-      var sheet = sheetsByEvent[ev.title];
-      var memberName = currentUser ? (currentUser.name || '').toLowerCase() : '';
+    // Deduplicate: one entry per event name, upcoming only
+    var sheetsByEvent = {};
+    data.forEach(function(ts) { if (ts.event) sheetsByEvent[ts.event] = ts; });
 
-      // Find member's tee time in the sheet
+    var upcomingNames = Object.keys(sheetsByEvent).filter(function(name) {
+      var ev = eventsByTitle[name];
+      return !ev || ev.date >= today;
+    });
+
+    if (!upcomingNames.length) {
+      myEventsEl.innerHTML =
+        '<div style="text-align:center;padding:40px 16px;">' +
+          '<div style="font-size:1.6rem;margin-bottom:10px;">📋</div>' +
+          '<div style="font-size:.85rem;color:rgba(245,240,232,.5);">No upcoming tee sheets</div>' +
+        '</div>';
+      return;
+    }
+
+    myEventsEl.innerHTML = '';
+    var memberName = currentUser ? (currentUser.name || '').toLowerCase() : '';
+
+    upcomingNames.forEach(function(evName) {
+      var sheet = sheetsByEvent[evName];
+      var ev    = eventsByTitle[evName];
+
+      // Count total players on this sheet
+      var totalPlayers = 0;
+      if (sheet && sheet.groups) {
+        sheet.groups.forEach(function(g) { totalPlayers += (g.players || []).length; });
+      }
+
+      // Find this member's tee time if they appear on the sheet
       var myTime = '';
-      var myGroup = null;
       if (sheet && sheet.groups && memberName) {
         sheet.groups.forEach(function(g, gi) {
           (g.players || []).forEach(function(p) {
             var pname = (p.player ? p.player.name : p.name || '').toLowerCase();
-            if (pname && memberName && pname.indexOf(memberName.split(' ')[0]) !== -1) {
-              myGroup = gi;
-              if (g.teeTime) myTime = g.teeTime;
-              else if (sheet.config) {
-                var defStart = sheet.config.startTime || '08:00';
-                var pts = defStart.split(':');
-                var bm = parseInt(pts[0]) * 60 + parseInt(pts[1]);
-                var iv = parseInt(sheet.config.intervalMin) || 10;
-                var tm = bm + gi * iv;
-                var hh = Math.floor(tm / 60) % 24, mm = tm % 60;
-                var ampm = hh >= 12 ? 'PM' : 'AM';
+            if (pname && pname.indexOf(memberName.split(' ')[0]) !== -1) {
+              if (g.teeTime) { myTime = g.teeTime; return; }
+              if (sheet.config) {
+                var pts = (sheet.config.startTime || '08:00').split(':');
+                var bm  = parseInt(pts[0]) * 60 + parseInt(pts[1]);
+                var iv  = parseInt(sheet.config.intervalMin) || 10;
+                var tm  = bm + gi * iv;
+                var hh  = Math.floor(tm / 60) % 24, mm = tm % 60;
+                var ap  = hh >= 12 ? 'PM' : 'AM';
                 hh = hh % 12; if (!hh) hh = 12;
-                myTime = hh + ':' + (mm < 10 ? '0' : '') + mm + ' ' + ampm;
+                myTime = hh + ':' + (mm < 10 ? '0' : '') + mm + ' ' + ap;
               }
             }
           });
         });
       }
 
+      var dateStr = '';
+      if (ev) {
+        var dateObj = new Date(ev.date + 'T12:00:00');
+        dateStr = dateObj.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' }) + ' · ' + ev.time;
+      }
+
       var card = document.createElement('div');
       card.style.cssText = 'background:rgba(255,255,255,.04);border:1px solid rgba(184,151,106,.2);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;';
-      card.onclick = function() { mTeeSheetShowForEvent(ev.title); };
-
-      var dateObj = new Date(ev.date + 'T12:00:00');
-      var dateStr = dateObj.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+      card.onclick = (function(name){ return function(){ mTeeSheetShowForEvent(name); }; })(evName);
 
       card.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
-          '<div style="font-size:.92rem;font-weight:700;color:#f5f0e8;">' + ev.title + '</div>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:' + (dateStr ? '4' : '0') + 'px;">' +
+          '<div style="font-size:.92rem;font-weight:700;color:#f5f0e8;">' + evName + '</div>' +
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(184,151,106,.6)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>' +
         '</div>' +
-        '<div style="font-size:.72rem;color:rgba(245,240,232,.5);margin-bottom:' + (myTime ? '8' : '0') + 'px;">' + dateStr + ' · ' + ev.time + '</div>' +
-        (myTime
-          ? '<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(184,151,106,.15);border:1px solid rgba(184,151,106,.3);border-radius:20px;padding:4px 12px;">' +
-              '<span style="font-size:.7rem;color:rgba(184,151,106,.8);">⛳ Your tee time</span>' +
-              '<span style="font-size:.82rem;font-weight:700;color:#d4b483;">' + myTime + '</span>' +
-            '</div>'
-          : (sheet
-              ? '<div style="font-size:.7rem;color:rgba(245,240,232,.3);">Tee sheet posted — tap to view</div>'
-              : '<div style="font-size:.7rem;color:rgba(245,240,232,.25);">Tee sheet not yet posted</div>')
-        );
+        (dateStr ? '<div style="font-size:.72rem;color:rgba(245,240,232,.5);margin-bottom:8px;">' + dateStr + '</div>' : '') +
+        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
+          (myTime
+            ? '<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(184,151,106,.15);border:1px solid rgba(184,151,106,.3);border-radius:20px;padding:4px 12px;">' +
+                '<span style="font-size:.7rem;color:rgba(184,151,106,.8);">⛳ Your tee time</span>' +
+                '<span style="font-size:.82rem;font-weight:700;color:#d4b483;">' + myTime + '</span>' +
+              '</div>'
+            : '<div style="font-size:.7rem;color:rgba(245,240,232,.3);">Tap to view full sheet</div>') +
+          (totalPlayers ? '<div style="font-size:.68rem;color:rgba(245,240,232,.25);margin-left:auto;">' + totalPlayers + ' registered</div>' : '') +
+        '</div>';
 
       myEventsEl.appendChild(card);
     });

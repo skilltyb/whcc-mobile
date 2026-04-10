@@ -2213,11 +2213,12 @@ function mRenderLiveScoring(cfg) {
 function renderMyUpcoming() {
   var now = new Date(); now.setHours(0,0,0,0);
   var today = now.toISOString().slice(0,10);
+  var myEmail = currentUser ? (currentUser.email || '').toLowerCase().trim() : '';
+  var myName  = currentUser ? (currentUser.name  || '').toLowerCase().trim() : '';
 
-  // Build set of registered event titles from both appEvents flags AND wh_registrations
+  // ── Registered events ──────────────────────────────────────
   var registeredTitles = {};
   appEvents.forEach(function(ev) { if (ev.registered) registeredTitles[ev.title] = true; });
-  var myEmail = currentUser ? (currentUser.email || '').toLowerCase().trim() : '';
   try {
     var storedRegs = JSON.parse(localStorage.getItem('wh_registrations') || '[]');
     storedRegs.forEach(function(r) {
@@ -2225,27 +2226,57 @@ function renderMyUpcoming() {
     });
   } catch(e) {}
 
-  var registered = appEvents
+  var items = appEvents
     .filter(function(ev){ return registeredTitles[ev.title] && ev.date >= today; })
-    .map(function(ev){ return { ev:ev, date: new Date(ev.date + 'T12:00:00') }; })
-    .sort(function(a,b){ return a.date - b.date; });
+    .map(function(ev){
+      var d = new Date(ev.date + 'T12:00:00');
+      return { date: d, type: 'event',
+        title: ev.title, subtitle: ev.time,
+        month: ev.month, day: ev.day };
+    });
+
+  // ── Dining reservations ─────────────────────────────────────
+  try {
+    var diRes = JSON.parse(localStorage.getItem('wh_dining_res') || '[]');
+    diRes.forEach(function(r) {
+      if (!r.isoDate || r.isoDate < today) return;
+      // Match by email or name (older records may only have name)
+      var resEmail = (r.email || '').toLowerCase().trim();
+      var resName  = (r.name  || '').toLowerCase().trim();
+      if ((myEmail && resEmail && resEmail === myEmail) ||
+          (myName  && resName  && resName  === myName)) {
+        var d = new Date(r.isoDate + 'T12:00:00');
+        var mo = d.toLocaleDateString('en-US',{month:'short'}).toUpperCase();
+        var dy = d.getDate();
+        var venueLabel = r.venue === 'hoovers' ? "Hoover's" : 'Westwood Grill';
+        items.push({ date: d, type: 'dining',
+          title: 'Dining — ' + venueLabel,
+          subtitle: r.timeDisplay + (r.party ? ' · Party of ' + r.party : ''),
+          month: mo, day: dy });
+      }
+    });
+  } catch(e) {}
+
+  // ── Sort by date ────────────────────────────────────────────
+  items.sort(function(a,b){ return a.date - b.date; });
 
   var card = document.getElementById('m-upcoming-card');
   var list = document.getElementById('m-upcoming-list');
   if (!card || !list) return;
-  if (!registered.length) { card.style.display='none'; return; }
+  if (!items.length) { card.style.display='none'; return; }
   card.style.display = 'block';
-  list.innerHTML = registered.map(function(x){
-    var ev = x.ev;
+  list.innerHTML = items.map(function(x){
     var days = Math.round((x.date - now) / 86400000);
     var when = days===0 ? 'Today' : days===1 ? 'Tomorrow' : 'In '+days+' days';
+    var boxColor = x.type === 'dining' ? 'var(--forest)' : 'var(--gold)';
+    var boxText  = x.type === 'dining' ? '#d4b483'       : 'var(--forest)';
     return '<div class="upcoming-ev">' +
-      '<div class="ev-date-box" style="background:var(--gold);border-radius:7px;padding:5px 9px;text-align:center;color:var(--forest);flex-shrink:0;">' +
-        '<div class="edb-mo">'+ev.month+'</div><div class="edb-day">'+ev.day+'</div>' +
+      '<div class="ev-date-box" style="background:'+boxColor+';border-radius:7px;padding:5px 9px;text-align:center;color:'+boxText+';flex-shrink:0;">' +
+        '<div class="edb-mo">'+x.month+'</div><div class="edb-day">'+x.day+'</div>' +
       '</div>' +
       '<div style="flex:1;min-width:0;">' +
-        '<div style="font-size:.84rem;font-weight:600;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+ev.title+'</div>' +
-        '<div style="font-size:.72rem;color:var(--muted);margin-top:1px;">'+ev.time+'</div>' +
+        '<div style="font-size:.84rem;font-weight:600;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+x.title+'</div>' +
+        '<div style="font-size:.72rem;color:var(--muted);margin-top:1px;">'+x.subtitle+'</div>' +
       '</div>' +
       '<div class="upcoming-when">'+when+'</div>' +
     '</div>';
@@ -3781,6 +3812,7 @@ function confirmDining() {
   };
   all.push(res);
   localStorage.setItem('wh_dining_res', JSON.stringify(all));
+  renderMyUpcoming();
 
   // Push to Ops Data (mobile staff portal)
   fetch(WHCC_SCRIPT_URL, {

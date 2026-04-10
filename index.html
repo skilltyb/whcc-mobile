@@ -1720,7 +1720,8 @@
     <div class="modal-handle"></div>
     <div class="modal-title" id="ets-title">Event Tee Sheet</div>
     <div id="ets-list" style="margin-bottom:12px;"></div>
-    <div style="border-top:1px solid var(--border);padding-top:12px;">
+    <!-- Add form — hidden by default -->
+    <div id="ets-add-form" style="display:none;border-top:1px solid var(--border);padding-top:12px;">
       <div class="modal-field">
         <label class="modal-label">Tee Time</label>
         <input class="cond-input" id="ets-time" type="time" style="margin-bottom:8px;">
@@ -1730,9 +1731,13 @@
         <input class="cond-input" id="ets-name" type="text" placeholder="e.g. Smith, Jones & Williams">
       </div>
       <div class="modal-actions" style="margin-top:8px;">
-        <button class="modal-btn secondary" onclick="closeModal('modal-event-teesheet')">Done</button>
+        <button class="modal-btn secondary" onclick="document.getElementById('ets-add-form').style.display='none'">Cancel</button>
         <button class="modal-btn primary" onclick="addEventTeeSlot()">Add Slot</button>
       </div>
+    </div>
+    <div id="ets-footer" style="display:flex;gap:8px;margin-top:4px;">
+      <button class="modal-btn secondary" style="flex:1;" onclick="closeModal('modal-event-teesheet')">Done</button>
+      <button class="modal-btn primary" style="flex:1;" onclick="document.getElementById('ets-add-form').style.display='block';document.getElementById('ets-name').focus();">＋ Add Tee Time</button>
     </div>
   </div>
 </div>
@@ -3720,6 +3725,7 @@ function openEventTeeSheet(idx) {
   var now = new Date(); var h = now.getHours(); var m = String(now.getMinutes()).padStart(2,'0');
   document.getElementById('ets-time').value = String(h).padStart(2,'0') + ':' + m;
   document.getElementById('ets-name').value = '';
+  document.getElementById('ets-add-form').style.display = 'none';
   renderEventTeeSheet(idx);
   openModal('modal-event-teesheet');
 }
@@ -3751,6 +3757,7 @@ function addEventTeeSlot() {
   slots.push({ id: Date.now().toString(), time: time, name: name });
   localStorage.setItem(key, JSON.stringify(slots));
   document.getElementById('ets-name').value = '';
+  document.getElementById('ets-add-form').style.display = 'none';
   renderEventTeeSheet(currentEtsIdx);
   showToast('Slot added');
 }

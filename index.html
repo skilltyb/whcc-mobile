@@ -1458,6 +1458,24 @@
   </div>
 </div>
 
+<!-- League registration -->
+<div class="modal-overlay" id="modal-league-reg">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="lr-title">League Sign-Up</div>
+    <div id="lr-info" style="font-size:.78rem;color:var(--gold);background:rgba(184,151,106,.1);border-left:3px solid var(--gold);border-radius:6px;padding:8px 12px;margin-bottom:14px;"></div>
+    <input class="modal-input" id="lr-first" type="text" placeholder="First Name">
+    <input class="modal-input" id="lr-last"  type="text" placeholder="Last Name">
+    <input class="modal-input" id="lr-email" type="email" placeholder="Email">
+    <input class="modal-input" id="lr-phone" type="tel" placeholder="Phone (optional)">
+    <div id="lr-error" style="display:none;color:#c0392b;font-size:.75rem;margin-bottom:8px;padding:8px 12px;background:rgba(192,57,43,.08);border-radius:6px;"></div>
+    <div class="modal-row">
+      <button class="modal-btn secondary" onclick="closeModal('modal-league-reg')">Cancel</button>
+      <button class="modal-btn primary" onclick="submitLeagueReg()">Sign Up</button>
+    </div>
+  </div>
+</div>
+
 <!-- Dining reservation -->
 <div class="modal-overlay" id="modal-dining">
   <div class="modal-sheet">
@@ -2772,6 +2790,17 @@ var WHCC_SYNC = {
         if (cb) cb(all);
       })
       .catch(function() { if (cb) cb(); });
+  },
+
+  saveLeagueReg: function(data, cb) {
+    fetch(WHCC_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'save-league-reg', data: data })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { if (cb) cb(d, null); })
+    .catch(function(e) { if (cb) cb(null, e); });
   },
 
   refresh: function(cb) {
@@ -5266,7 +5295,7 @@ function mLeagueRenderUpcoming(id) {
   var sub = '<div style="font-size:.68rem;color:var(--muted);margin-bottom:8px;">' + data.sub + '</div>';
   var chips = upcoming.map(function(d, i) {
     var isNext = i === 0;
-    return '<div onclick="mLeagueReg(\'' + data.name.replace(/'/g,"\\'") + '\',\'' + d[0] + '\',\'' + d[1] + '\')" style="'
+    return '<div onclick="mLeagueReg(\'' + id + '\',\'' + data.name.replace(/'/g,"\\'") + '\',\'' + d[0] + '\',\'' + d[1] + '\')" style="'
       + 'flex:1;text-align:center;padding:9px 4px;border-radius:8px;cursor:pointer;'
       + 'background:' + (isNext ? 'var(--forest)' : 'rgba(26,74,38,.08)') + ';'
       + 'border:1px solid ' + (isNext ? 'var(--forest)' : 'rgba(26,74,38,.2)') + ';'
@@ -5297,22 +5326,60 @@ function mLeagueInitAll() {
   ['mens','ladies','hg','fnf'].forEach(mLeagueRenderUpcoming);
 }
 
-function mLeagueReg(leagueName, dateLabel, isoDate) {
+var _lrLeague = '', _lrDate = '', _lrIso = '', _lrLeagueId = '';
+
+function mLeagueReg(leagueId, leagueName, dateLabel, isoDate) {
   var today = new Date().toISOString().slice(0,10);
-  if (isoDate < today) {
-    showToast(leagueName + ' · ' + dateLabel + ' has passed');
-    return;
-  }
-  // Pre-fill the dining reservation modal with league info
-  var dateEl  = document.getElementById('md-date');
-  var timeEl  = document.getElementById('md-time');
-  var partyEl = document.getElementById('md-party');
-  var noteEl  = document.getElementById('md-notes');
-  if (dateEl)  dateEl.value  = isoDate;
-  if (timeEl)  timeEl.value  = '17:00';
-  if (partyEl) partyEl.value = '1';
-  if (noteEl)  noteEl.value  = 'Sign-up: ' + leagueName + ' — ' + dateLabel + ' at 5:00 PM';
-  openModal('modal-dining');
+  if (isoDate < today) { showToast(leagueName + ' · ' + dateLabel + ' has passed'); return; }
+  _lrLeague = leagueName;
+  _lrDate   = dateLabel;
+  _lrIso    = isoDate;
+  _lrLeagueId = leagueId;
+  document.getElementById('lr-title').textContent = 'Sign Up · ' + leagueName;
+  document.getElementById('lr-info').textContent  = dateLabel + ' · ' + (ML_DATA[leagueId] ? ML_DATA[leagueId].sub : '');
+  document.getElementById('lr-first').value = '';
+  document.getElementById('lr-last').value  = '';
+  document.getElementById('lr-email').value = '';
+  document.getElementById('lr-phone').value = '';
+  document.getElementById('lr-error').style.display = 'none';
+  openModal('modal-league-reg');
+}
+
+function submitLeagueReg() {
+  var first = (document.getElementById('lr-first').value || '').trim();
+  var last  = (document.getElementById('lr-last').value  || '').trim();
+  var email = (document.getElementById('lr-email').value || '').trim();
+  var phone = (document.getElementById('lr-phone').value || '').trim();
+  var errEl = document.getElementById('lr-error');
+  errEl.style.display = 'none';
+  if (!first || !last)  { errEl.textContent = 'Please enter your first and last name.'; errEl.style.display = 'block'; return; }
+  if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email address.'; errEl.style.display = 'block'; return; }
+
+  var btn = document.querySelector('#modal-league-reg .modal-btn.primary');
+  if (btn) { btn.textContent = 'Signing up…'; btn.disabled = true; }
+
+  var payload = {
+    league:    _lrLeague,
+    leagueId:  _lrLeagueId,
+    date:      _lrDate,
+    isoDate:   _lrIso,
+    firstName: first,
+    lastName:  last,
+    email:     email,
+    phone:     phone,
+    submitted: new Date().toISOString()
+  };
+
+  WHCC_SYNC.saveLeagueReg(payload, function(res, err) {
+    if (btn) { btn.textContent = 'Sign Up'; btn.disabled = false; }
+    if (err) {
+      errEl.textContent = 'Could not connect — please try again.';
+      errEl.style.display = 'block';
+      return;
+    }
+    closeModal('modal-league-reg');
+    showToast('You\'re signed up for ' + _lrLeague + ' · ' + _lrDate + '!');
+  });
 }
 </script>
 </body>

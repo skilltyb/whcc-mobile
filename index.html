@@ -1120,6 +1120,16 @@
           <textarea class="cond-textarea" id="cond-notice" placeholder="e.g. Frost delay until 10 AM, Cart path only holes 3-5, etc."></textarea>
         </div>
         <button class="ev-reg-btn" style="width:100%;margin:0;" onclick="saveConditions()">Save Conditions</button>
+        <div style="margin-top:12px;">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Quick Presets</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="ts-btn" onclick="condPreset('normal')" style="font-size:.7rem;padding:6px 10px;">Normal Day</button>
+            <button class="ts-btn" onclick="condPreset('frost')" style="font-size:.7rem;padding:6px 10px;">Frost Delay</button>
+            <button class="ts-btn" onclick="condPreset('cartpath')" style="font-size:.7rem;padding:6px 10px;">Cart Path Only</button>
+            <button class="ts-btn" onclick="condPreset('tournament')" style="font-size:.7rem;padding:6px 10px;">Tournament Day</button>
+            <button class="ts-btn" onclick="condPreset('closed')" style="font-size:.7rem;padding:6px 10px;background:#7a2020;color:#fff;">Course Closed</button>
+          </div>
+        </div>
       </div>
 
       <!-- MEMBER LOOKUP -->
@@ -4952,6 +4962,25 @@ function saveConditions() {
     body: JSON.stringify({ action: 'save-conditions', data: data })
   }).catch(function(){});
   showToast('✅ Course conditions updated!');
+}
+
+function condPreset(type) {
+  var sets = {
+    normal:     { courseOpens:'9:00 AM',               cartRules:'Off Path',        rangeStatus:'Open — Mats Only',     rangeHours:'8:30 AM – 5:00 PM', puttingGreen:'9:00 AM – Dusk',  proShop:'8:30 AM – 6:00 PM', notice:'' },
+    frost:      { courseOpens:'10:00 AM (Frost Delay)', cartRules:'Cart Path Only',  rangeStatus:'Open — Mats Only',     rangeHours:'9:30 AM – 5:00 PM', puttingGreen:'10:00 AM – Dusk', proShop:'9:00 AM – 6:00 PM', notice:'Frost delay in effect. Course will open when conditions allow.' },
+    cartpath:   { courseOpens:'9:00 AM',               cartRules:'Cart Path Only',  rangeStatus:'Open — Mats Only',     rangeHours:'8:30 AM – 5:00 PM', puttingGreen:'9:00 AM – Dusk',  proShop:'8:30 AM – 6:00 PM', notice:'Cart path only due to wet conditions.' },
+    tournament: { courseOpens:'8:00 AM (Tournament)',  cartRules:'Off Path',        rangeStatus:'Closed — Tournament',  rangeHours:'Closed for tournament', puttingGreen:'7:00 AM – Dusk', proShop:'7:30 AM – 7:00 PM', notice:'Tournament in progress. Course closed to general play.' },
+    closed:     { courseOpens:'Closed Today',          cartRules:'No Carts',        rangeStatus:'Closed',               rangeHours:'Closed',            puttingGreen:'Closed',           proShop:'Closed',            notice:'Course closed today due to weather/maintenance.' }
+  };
+  var d = sets[type]; if (!d) return;
+  var e;
+  e = document.getElementById('cond-opens');        if(e) e.value = d.courseOpens;
+  e = document.getElementById('cond-carts');        if(e) e.value = d.cartRules;
+  e = document.getElementById('cond-range-status'); if(e) e.value = d.rangeStatus;
+  e = document.getElementById('cond-range-hours');  if(e) e.value = d.rangeHours;
+  e = document.getElementById('cond-putting');      if(e) e.value = d.puttingGreen;
+  e = document.getElementById('cond-proshop');      if(e) e.value = d.proShop;
+  e = document.getElementById('cond-notice');       if(e) e.value = d.notice;
 }
 
 function degToCardinal(d) {

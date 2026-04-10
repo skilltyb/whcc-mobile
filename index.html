@@ -2794,13 +2794,20 @@ var WHCC_SYNC = {
 
   fetchAll: function(cb) {
     try {
-      fetch(WHCC_SCRIPT_URL + '?action=all')
+      fetch(WHCC_SCRIPT_URL + '?action=get-regs')
         .then(function(r) {
           if (!r.ok) throw new Error('HTTP ' + r.status);
           return r.json();
         })
         .then(function(rows) {
           if (!Array.isArray(rows)) { if (cb) cb(null, 'bad data'); return; }
+          // Sanity check: registration rows must have an Event column.
+          // If the sheet returns Member records (no Event key), bail out
+          // to avoid overwriting valid local registrations with garbage.
+          if (rows.length > 0 && !('Event' in rows[0])) {
+            if (cb) cb(null, 'wrong sheet');
+            return;
+          }
           var regs = rows.map(function(row) {
             return {
               id:        row['ID']              || '',

@@ -2369,6 +2369,21 @@ function syncTeeSheetCounts() {
       }
     });
     localStorage.setItem('wh_counts', JSON.stringify(counts));
+    // Cache tee sheet player lists for the Regs view
+    var tsPlayers = {};
+    data.forEach(function(ts) {
+      if (!ts.event) return;
+      if (!tsPlayers[ts.event]) tsPlayers[ts.event] = [];
+      if (ts.groups) {
+        ts.groups.forEach(function(g) {
+          (g.players || []).forEach(function(p) {
+            var name = p.player ? p.player.name : (p.name || '');
+            if (name && tsPlayers[ts.event].indexOf(name) === -1) tsPlayers[ts.event].push(name);
+          });
+        });
+      }
+    });
+    try { localStorage.setItem('wh_teesheet_players', JSON.stringify(tsPlayers)); } catch(e) {}
     renderMemberEvents();
     renderHomeEvents();
   });
@@ -5183,13 +5198,37 @@ function removeScore(id) {
 }
 
 // ── EVENT REGISTRATIONS ───────────────────────────────────────────────────────
+// Normalize event title for loose matching (trim + collapse spaces + lowercase)
+function _normTitle(s) { return String(s || '').trim().replace(/\s+/g,' ').toLowerCase(); }
+
 function renderRegsEventList() {
   var el = document.getElementById('s-regs-event-list');
   if (!el) return;
-  var allRegs = JSON.parse(localStorage.getItem('wh_registrations') || '[]');
+  var allRegs   = JSON.parse(localStorage.getItem('wh_registrations')   || '[]');
+  var tsPlayers = JSON.parse(localStorage.getItem('wh_teesheet_players') || '{}');
+
   if (!appEvents.length) { el.innerHTML = '<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:12px 0;">No events yet</div>'; return; }
+
   el.innerHTML = appEvents.map(function(ev, i) {
-    var count = allRegs.filter(function(r){ return r.event === ev.title; }).length;
+    var norm = _normTitle(ev.title);
+    // Form registrations (fuzzy match)
+    var formCount = allRegs.filter(function(r){ return _normTitle(r.event) === norm; }).length;
+    // Tee sheet players (fuzzy match across all sheet entries)
+    var tsNames = [];
+    Object.keys(tsPlayers).forEach(function(k) {
+      if (_normTitle(k) === norm) tsNames = tsNames.concat(tsPlayers[k]);
+    });
+    // Combined unique count
+    var count = formCount;
+    tsNames.forEach(function(n) {
+      // Add tee-sheet name only if not already counted via form
+      var alreadyCounted = allRegs.some(function(r) {
+        return _normTitle(r.event) === norm &&
+          (_normTitle(r.firstName + ' ' + r.lastName) === _normTitle(n) ||
+           _normTitle(n).indexOf(_normTitle(r.firstName)) !== -1);
+      });
+      if (!alreadyCounted) count++;
+    });
     var cap = parseInt(ev.capacity) || 0;
     var capText = cap ? count + ' / ' + cap : count + ' registered';
     return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--white);border-radius:var(--radius-sm);margin-bottom:8px;box-shadow:var(--shadow);">' +
@@ -5212,32 +5251,69 @@ function openEventRegs(idx) {
 function renderEventRegs(eventTitle) {
   var el = document.getElementById('er-list');
   if (!el) return;
-  var allRegs = JSON.parse(localStorage.getItem('wh_registrations') || '[]');
-  var regs = allRegs.filter(function(r){ return r.event === eventTitle; });
-  if (!regs.length) {
+  var norm      = _normTitle(eventTitle);
+  var allRegs   = JSON.parse(localStorage.getItem('wh_registrations')   || '[]');
+  var tsPlayers = JSON.parse(localStorage.getItem('wh_teesheet_players') || '{}');
+
+  // Form registrations — fuzzy match on event title
+  var regs = allRegs.filter(function(r){ return _normTitle(r.event) === norm; });
+
+  // Tee sheet players for this event — fuzzy match
+  var tsNames = [];
+  Object.keys(tsPlayers).forEach(function(k) {
+    if (_normTitle(k) === norm) tsNames = tsNames.concat(tsPlayers[k]);
+  });
+
+  // Remove tee-sheet names already represented by a form registration
+  var regNorms = regs.map(function(r){ return _normTitle(r.firstName + ' ' + r.lastName); });
+  var extraTsNames = tsNames.filter(function(n) {
+    var nn = _normTitle(n);
+    return !regNorms.some(function(rn){ return rn && (rn === nn || nn.indexOf(rn.split(' ')[0]) !== -1); });
+  });
+
+  if (!regs.length && !extraTsNames.length) {
     el.innerHTML = '<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:16px 0;">No registrations yet.<br>Tap ↻ Sync to load from sheet.</div>';
     return;
   }
-  el.innerHTML = regs.map(function(r) {
-    var name = [r.firstName, r.lastName].filter(Boolean).join(' ') || 'Unknown';
-    var ts = r.timestamp ? new Date(r.timestamp).toLocaleDateString() : '';
-    return '<div style="background:var(--cream);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
-        '<div>' +
-          '<div style="font-size:.85rem;font-weight:700;color:var(--dark);">' + name + (r.memberNum ? ' <span style="font-size:.7rem;color:var(--muted);">#' + r.memberNum + '</span>' : '') + '</div>' +
-          (r.partner ? '<div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Partner: ' + r.partner + '</div>' : '') +
-          '<div style="font-size:.72rem;color:var(--muted);margin-top:3px;">' +
-            (r.players > 1 ? r.players + ' players · ' : '') +
-            (r.email ? r.email : '') +
-            (r.phone ? ' · ' + r.phone : '') +
+
+  var html = '';
+
+  // Tee sheet section
+  if (extraTsNames.length) {
+    html += '<div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">From Tee Sheet</div>';
+    html += extraTsNames.map(function(name) {
+      return '<div style="background:var(--cream);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">' +
+        '<div style="font-size:.85rem;font-weight:600;color:var(--dark);">⛳ ' + name + '</div>' +
+        '<span style="font-size:.68rem;color:var(--muted);background:rgba(26,74,38,.08);padding:2px 8px;border-radius:20px;">Tee Sheet</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Form registrations section
+  if (regs.length) {
+    if (extraTsNames.length) html += '<div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px;">Form Registrations</div>';
+    html += regs.map(function(r) {
+      var name = [r.firstName, r.lastName].filter(Boolean).join(' ') || 'Unknown';
+      var ts = r.timestamp ? new Date(r.timestamp).toLocaleDateString() : '';
+      return '<div style="background:var(--cream);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+          '<div>' +
+            '<div style="font-size:.85rem;font-weight:700;color:var(--dark);">' + name + (r.memberNum ? ' <span style="font-size:.7rem;color:var(--muted);">#' + r.memberNum + '</span>' : '') + '</div>' +
+            (r.partner ? '<div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Partner: ' + r.partner + '</div>' : '') +
+            '<div style="font-size:.72rem;color:var(--muted);margin-top:3px;">' +
+              (r.players > 1 ? r.players + ' players · ' : '') +
+              (r.email || '') + (r.phone ? ' · ' + r.phone : '') +
+            '</div>' +
+            (r.notes ? '<div style="font-size:.74rem;color:var(--dark);margin-top:4px;font-style:italic;">' + r.notes + '</div>' : '') +
+            (ts ? '<div style="font-size:.66rem;color:var(--muted);margin-top:4px;">Registered ' + ts + '</div>' : '') +
           '</div>' +
-          (r.notes ? '<div style="font-size:.74rem;color:var(--dark);margin-top:4px;font-style:italic;">' + r.notes + '</div>' : '') +
-          (ts ? '<div style="font-size:.66rem;color:var(--muted);margin-top:4px;">Registered ' + ts + '</div>' : '') +
+          '<button onclick="deleteRegAndRefresh(\'' + r.id + '\',\'' + eventTitle.replace(/'/g,"\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--muted);padding:2px 4px;">✕</button>' +
         '</div>' +
-        '<button onclick="deleteRegAndRefresh(\'' + r.id + '\',\'' + eventTitle.replace(/'/g,"\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--muted);padding:2px 4px;">✕</button>' +
-      '</div>' +
-    '</div>';
-  }).join('');
+      '</div>';
+    }).join('');
+  }
+
+  el.innerHTML = html;
 }
 
 function deleteRegAndRefresh(id, eventTitle) {
@@ -5252,19 +5328,29 @@ function deleteRegAndRefresh(id, eventTitle) {
 function syncAllRegs() {
   var btn = document.getElementById('er-sync-btn') || document.getElementById('regs-sync-btn');
   if (btn) btn.textContent = '↻ Syncing…';
-  WHCC_SYNC.fetchAll(function(regs, err) {
+  // Sync both form registrations AND tee sheet players simultaneously
+  var done = 0;
+  function finish() {
+    if (++done < 2) return;
     if (btn) btn.textContent = '↻ Sync';
-    if (err) { showToast('Sync failed — check connection.'); return; }
     renderRegsEventList();
     renderStaffEvents();
-    // If regs modal is open, re-render it
     var erTitle = document.getElementById('er-title');
     if (erTitle && document.getElementById('modal-event-regs').style.display !== 'none') {
-      var title = erTitle.textContent.replace('👥 ', '');
-      renderEventRegs(title);
+      renderEventRegs(erTitle.textContent.replace('👥 ', ''));
     }
-    showToast('✅ Synced ' + (regs ? regs.length : 0) + ' registrations.');
+    var regs = JSON.parse(localStorage.getItem('wh_registrations') || '[]');
+    var ts   = JSON.parse(localStorage.getItem('wh_teesheet_players') || '{}');
+    var tsTotal = Object.values(ts).reduce(function(s,a){ return s + a.length; }, 0);
+    showToast('✅ Synced ' + regs.length + ' form regs · ' + tsTotal + ' tee sheet players');
+  }
+  WHCC_SYNC.fetchAll(function(regs, err) {
+    if (err) { if (btn) btn.textContent = '↻ Sync'; showToast('Sync failed — check connection.'); return; }
+    finish();
   });
+  syncTeeSheetCounts(); // refreshes wh_teesheet_players
+  // syncTeeSheetCounts is async but has no callback — use a short delay
+  setTimeout(finish, 3000);
 }
 
 // ── FIRST-TIME PIN SETUP ──────────────────────────────────────────────────────

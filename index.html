@@ -2394,11 +2394,22 @@ function syncRegistrationsFromSheets() {
       }
     });
 
-    // Reconcile appEvents.registered flags — deletions in Sheets flip registered→false
+    // Reconcile appEvents.registered flags:
+    // - Always ADD registrations found in Sheets
+    // - Only REMOVE a registration if Sheets returned data for this user (at least 1 entry)
+    //   AND that specific event is no longer in Sheets (true deletion, not a failed fetch)
+    var userHasSheetData = Object.keys(myEvents).length > 0;
     var changed = false;
     appEvents.forEach(function(ev) {
       var was = ev.registered;
-      ev.registered = !!myEvents[ev.title];
+      if (myEvents[ev.title]) {
+        // Sheets confirms this registration — ensure it's set
+        ev.registered = true;
+      } else if (userHasSheetData && was) {
+        // Sheets returned data for this user but this event is gone — it was deleted
+        ev.registered = false;
+      }
+      // If Sheets returned nothing for this user, leave local state untouched
       if (was !== ev.registered) changed = true;
     });
     if (changed) {

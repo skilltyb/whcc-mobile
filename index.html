@@ -995,6 +995,7 @@
         <div class="info-row" style="border:none;padding:6px 0 0"><div class="ir-label">Pro Shop</div><div class="ir-val">Tue – Sun, 8 AM – 6 PM · Closed Mon</div></div>
       </div>
       <a href="https://www.goibsvision.com/WebRes/Club/westwoodhillscc/LogIn" target="_blank" style="display:block;width:100%;padding:14px;background:var(--forest);color:var(--white);border-radius:var(--radius-sm);font-size:.84rem;font-weight:600;text-align:center;text-decoration:none;box-sizing:border-box;margin-bottom:8px;">💳 Pay My Bill</a>
+      <button id="btn-install-app" onclick="triggerInstall()" style="display:none;width:100%;padding:14px;background:var(--sand);color:var(--forest);border:none;border-radius:var(--radius-sm);font-size:.84rem;font-weight:600;cursor:pointer;margin-bottom:8px;">📲 Add to Home Screen</button>
       <button class="logout-btn" onclick="doLogout()">Sign Out</button>
     </div>
   </div>
@@ -1510,6 +1511,23 @@
       <button class="modal-btn secondary" onclick="closeModal('modal-league-reg')">Cancel</button>
       <button class="modal-btn primary" onclick="submitLeagueReg()">Sign Up</button>
     </div>
+  </div>
+</div>
+
+<!-- iOS install instructions -->
+<div class="modal-overlay" id="modal-ios-install" style="display:none;">
+  <div class="modal-box" style="text-align:center;">
+    <div class="modal-title">Add to Home Screen</div>
+    <div style="font-size:2rem;margin:12px 0;">📲</div>
+    <p style="font-size:.84rem;color:var(--dark);line-height:1.6;margin-bottom:8px;">
+      To install the app on your iPhone:
+    </p>
+    <ol style="text-align:left;font-size:.82rem;color:var(--dark);line-height:2;padding-left:20px;margin-bottom:16px;">
+      <li>Tap the <strong>Share</strong> button <span style="font-size:1rem;">⬆️</span> at the bottom of Safari</li>
+      <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+      <li>Tap <strong>Add</strong> in the top right</li>
+    </ol>
+    <button class="modal-btn primary" onclick="closeModal('modal-ios-install')">Got it</button>
   </div>
 </div>
 
@@ -2997,6 +3015,40 @@ var WHCC_SYNC = {
 };
 
 document.addEventListener('DOMContentLoaded', function() { WHCC_SYNC.fetchCounts(); });
+
+// ── PWA INSTALL ──────────────────────────────────────────────
+var _installPrompt = null;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  _installPrompt = e;
+  // Show the install button in Account tab
+  var btn = document.getElementById('btn-install-app');
+  if (btn) btn.style.display = 'block';
+});
+
+window.addEventListener('appinstalled', function() {
+  _installPrompt = null;
+  var btn = document.getElementById('btn-install-app');
+  if (btn) btn.style.display = 'none';
+});
+
+function triggerInstall() {
+  if (_installPrompt) {
+    // Android / Chrome — use native prompt
+    _installPrompt.prompt();
+    _installPrompt.userChoice.then(function(result) {
+      if (result.outcome === 'accepted') {
+        _installPrompt = null;
+        var btn = document.getElementById('btn-install-app');
+        if (btn) btn.style.display = 'none';
+      }
+    });
+  } else {
+    // iOS Safari — show manual instructions
+    openModal('modal-ios-install');
+  }
+}
 
 // ── MOBILE TEE SHEET ──────────────────────────────────────────────────────────
 var mTeeSheetData = null;

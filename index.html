@@ -382,6 +382,21 @@
     .smi-price { font-size: .76rem; color: var(--muted); }
     .smi-edit { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 5px 11px; font-size: .72rem; font-weight: 600; cursor: pointer; color: var(--forest); }
 
+    /* ── SKELETON SHIMMER ── */
+    .skel{background:linear-gradient(90deg,#e8e8e8 25%,#f0f0f0 50%,#e8e8e8 75%);background-size:200% 100%;animation:skel-shine 1.4s infinite;border-radius:6px;display:inline-block;}
+    @keyframes skel-shine{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .skel-line{height:14px;margin-bottom:6px;width:100%;}
+    .skel-line.short{width:55%;}
+
+    /* ── PULL TO REFRESH ── */
+    .ptr-indicator{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--forest);color:#f5f0e8;font-size:.78rem;font-weight:600;padding:0;height:0;overflow:hidden;transition:height .2s,padding .2s;}
+    .ptr-indicator.ptr-visible{height:44px;padding:0 0 env(safe-area-inset-top);}
+    .ptr-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:ptr-spin .7s linear infinite;}
+    @keyframes ptr-spin{to{transform:rotate(360deg)}}
+
+    /* ── LIVE SCORING ── */
+    @keyframes ls-pulse { 0%,100%{opacity:1;box-shadow:0 0 6px #4CAF50} 50%{opacity:.4;box-shadow:0 0 2px #4CAF50} }
+
     /* ── TOAST ── */
     .toast { position: fixed; bottom: calc(var(--tab-h) + var(--safe-b) + 20px); left: 50%; transform: translateX(-50%) translateY(16px); background: var(--dark); color: var(--white); padding: 11px 22px; border-radius: 30px; font-size: .84rem; font-weight: 500; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; white-space: nowrap; z-index: 999; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -493,6 +508,12 @@
 <!-- ════════════════════════════════════
      MEMBER APP
 ════════════════════════════════════ -->
+<!-- Pull-to-refresh indicator -->
+<div class="ptr-indicator" id="ptr-indicator">
+  <div class="ptr-spinner"></div>
+  <span>Refreshing…</span>
+</div>
+
 <div class="screen app-screen hidden" id="screen-member">
   <div class="app-header">
     <div class="hdr-logo">W</div>
@@ -506,10 +527,14 @@
     <div class="page">
       <!-- Staff notice banner — shown when staff pushes a notice -->
       <div id="m-notice-banner" style="display:none;background:#b45309;color:#fff;padding:11px 16px;font-size:.82rem;font-weight:600;border-radius:6px;margin-bottom:10px;line-height:1.4;"></div>
-      <div class="greeting-banner">
-        <div class="greeting-name" id="m-greet-name">Welcome back!</div>
-        <div class="greeting-detail" id="m-greet-detail">Westwood Hills Country Club</div>
-        <div class="greeting-badge" id="m-greet-badge">Member</div>
+      <div class="greeting-banner" id="m-hero-banner" style="position:relative;overflow:hidden;min-height:110px;">
+        <div id="m-hero-bg" style="position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1s ease;z-index:0;"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(13,26,17,.75) 0%,rgba(26,74,38,.6) 100%);z-index:1;"></div>
+        <div style="position:relative;z-index:2;">
+          <div class="greeting-name" id="m-greet-name">Welcome back!</div>
+          <div class="greeting-detail" id="m-greet-detail">Westwood Hills Country Club</div>
+          <div class="greeting-badge" id="m-greet-badge">Member</div>
+        </div>
       </div>
       <!-- WEATHER + CONDITIONS WIDGET -->
       <div class="wx-card" id="wx-widget">
@@ -536,15 +561,16 @@
       </div>
 
       <div class="quick-grid">
-        <button class="quick-action" onclick="goTab('member','course')"><div class="qa-icon">⛳</div><div class="qa-label">View Scorecard</div></button>
-        <button class="quick-action" onclick="openDiningRes()"><div class="qa-icon">🍽</div><div class="qa-label">Dining Reservation</div></button>
-        <button class="quick-action" onclick="goTab('member','events')"><div class="qa-icon">📅</div><div class="qa-label">Club Events</div></button>
-        <button class="quick-action" onclick="window.location.href='tel:+15737855253'"><div class="qa-icon">📞</div><div class="qa-label">Call Pro Shop</div></button>
+        <button class="quick-action" onclick="goTab('member','golf')"><div class="qa-icon">⛳</div><div class="qa-label">Course & Golf</div></button>
+        <button class="quick-action" onclick="openDiningRes('grille')"><div class="qa-icon">🍽</div><div class="qa-label">Dining Reservation</div></button>
+        <button class="quick-action" onclick="goTab('member','club')"><div class="qa-icon">📅</div><div class="qa-label">Club Events</div></button>
+        <button class="quick-action" onclick="goTab('member','club');clubSection('pool');"><div class="qa-icon">🏊</div><div class="qa-label">Pool Info</div></button>
       </div>
-      <!-- AMENITIES STATUS -->
-      <div id="m-pool-chip" style="display:none;background:var(--white);border-radius:var(--radius);padding:11px 14px;box-shadow:var(--shadow);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+      <!-- POOL STATUS CHIP -->
+      <div id="m-pool-chip" onclick="goTab('member','club');clubSection('pool');" style="display:none;background:var(--white);border-radius:var(--radius);padding:11px 14px;box-shadow:var(--shadow);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
         <span class="pool-chip-status" style="font-size:.82rem;font-weight:700;"></span>
         <span class="pool-chip-note" style="font-size:.74rem;color:var(--muted);display:none;"></span>
+        <span style="font-size:.72rem;color:var(--muted);margin-left:auto;">View →</span>
       </div>
       <!-- MY UPCOMING -->
       <div class="card" id="m-upcoming-card" style="display:none;margin-bottom:14px;">
@@ -556,16 +582,50 @@
       <div class="sec-hdr"><h3>🤝 Find a Game</h3><a onclick="openModal('modal-partner-post')">+ Post</a></div>
       <div id="m-partner-list" style="margin-bottom:8px;"></div>
 
-      <div class="sec-hdr"><h3>Upcoming Events</h3><a onclick="goTab('member','events')">All events →</a></div>
-      <div id="m-home-events"></div>
+      <div class="sec-hdr"><h3>Upcoming Events</h3><a onclick="goTab('member','club')">All events →</a></div>
+      <div id="m-home-events"><div class="skel skel-line" style="height:58px;margin-bottom:8px;border-radius:10px;"></div><div class="skel skel-line" style="height:58px;border-radius:10px;"></div></div>
     </div>
   </div>
 
-  <!-- COURSE / SCORECARD -->
-  <div class="tab-content" id="m-tab-course">
-    <div class="page">
+  <!-- GOLF TAB -->
+  <div class="tab-content" id="m-tab-golf">
+    <!-- Golf sub-nav -->
+    <div style="background:var(--white);border-bottom:1px solid var(--border);padding:0 16px;display:flex;">
+      <button id="golf-sub-course" onclick="golfSection('course')" style="flex:1;padding:11px 0;border:none;border-bottom:2.5px solid var(--gold);background:none;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--forest);">Course</button>
+      <button id="golf-sub-teesheet" onclick="golfSection('teesheet')" style="flex:1;padding:11px 0;border:none;border-bottom:2.5px solid transparent;background:none;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--muted);">Tee Sheet</button>
+    </div>
+    <!-- Course section -->
+    <div id="golf-sec-course" class="page">
       <div class="page-title">Scorecard</div>
       <div class="page-sub">Westwood Hills CC — Par 71 · Est. 1936</div>
+
+      <!-- COURSE WEATHER STRIP -->
+      <div id="course-wx-strip" style="background:linear-gradient(135deg,var(--forest) 0%,#1e4d2b 100%);border-radius:10px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="cwx-icon" style="font-size:1.6rem;line-height:1;">⛅</span>
+          <div>
+            <div id="cwx-temp" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:#f5f0e8;line-height:1.1;"><span style="font-size:.72rem;color:rgba(245,240,232,.5);">Loading…</span></div>
+            <div id="cwx-desc" style="font-size:.7rem;color:rgba(245,240,232,.6);margin-top:1px;"></div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div id="cwx-verdict" style="font-size:.72rem;font-weight:700;color:#4CAF50;"></div>
+          <div id="cwx-wind" style="font-size:.68rem;color:rgba(245,240,232,.5);margin-top:2px;"></div>
+        </div>
+      </div>
+
+      <!-- PRO SHOP HOURS -->
+      <div style="background:var(--white);border-radius:10px;padding:12px 14px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.2rem;">🏪</span>
+          <div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--dark);">Pro Shop</div>
+            <div style="font-size:.7rem;color:var(--muted);">Mon–Fri 7AM–6PM · Sat–Sun 6AM–7PM</div>
+          </div>
+        </div>
+        <a href="tel:+15737855253" style="text-decoration:none;padding:6px 12px;background:var(--forest);color:#fff;border-radius:20px;font-size:.72rem;font-weight:600;">Call</a>
+      </div>
+
       <!-- HOLE ALERTS -->
       <div id="m-hole-alerts" style="display:none;background:var(--white);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:12px;"></div>
       <div class="card" style="margin-bottom:12px;background:linear-gradient(140deg,var(--forest) 0%,#2e4d35 60%,var(--forest-light) 100%);color:var(--white);">
@@ -634,15 +694,6 @@
         </div>
       </div>
 
-      <!-- PIN SHEET -->
-      <div style="margin-top:14px;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);">
-        <div style="background:var(--forest);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:var(--white);">📋 Today's Pin Sheet</div>
-          <div style="font-size:.7rem;color:rgba(255,255,255,.55);" id="pin-sheet-date"></div>
-        </div>
-        <img id="pin-sheet-img" src="https://skilltyb.github.io/whcc-website/images/pinsheet.jpg" alt="Today's Pin Sheet" style="width:100%;display:block;">
-      </div>
-
       <!-- KEEP SCORE -->
       <div class="card" id="score-start-card" style="margin-top:14px;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
@@ -654,6 +705,37 @@
         </div>
       </div>
       <div id="score-entry-section" style="display:none;margin-bottom:20px;"></div>
+    </div>
+    <!-- Tee Sheet section -->
+    <div id="golf-sec-teesheet" style="display:none;background:#111a14;min-height:100%;">
+      <div style="padding:16px;background:#111a14;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#f5f0e8;margin-bottom:2px;">My <em style="color:#d4b483;">Tee Sheet</em></div>
+        <div style="font-size:.72rem;color:rgba(245,240,232,.45);margin-bottom:14px;">Your upcoming events &amp; tee times</div>
+
+        <!-- My upcoming registered events -->
+        <div id="m-ts-my-events" style="margin-bottom:16px;"></div>
+
+        <!-- Full sheet for selected event -->
+        <div id="m-ts-sheet-wrap" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div id="m-ts-sheet-title" style="font-size:.82rem;font-weight:700;color:rgba(245,240,232,.8);"></div>
+            <button onclick="mTeeSheetHideSheet()" style="background:none;border:none;color:rgba(184,151,106,.6);font-size:.75rem;cursor:pointer;">← Back</button>
+          </div>
+          <!-- Round selector -->
+          <div style="display:flex;gap:6px;margin-bottom:12px;" id="m-ts-round-row">
+            <span style="font-size:.7rem;color:rgba(245,240,232,.4);align-self:center;">Round:</span>
+            <button onclick="mTeeSheetSetRound(1)" id="m-ts-r1" style="padding:4px 10px;font-size:.68rem;background:rgba(184,151,106,.2);border:1px solid rgba(184,151,106,.4);color:#d4b483;border-radius:2px;cursor:pointer;">1</button>
+            <button onclick="mTeeSheetSetRound(2)" id="m-ts-r2" style="padding:4px 10px;font-size:.68rem;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(245,240,232,.4);border-radius:2px;cursor:pointer;">2</button>
+            <button onclick="mTeeSheetSetRound(3)" id="m-ts-r3" style="padding:4px 10px;font-size:.68rem;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(245,240,232,.4);border-radius:2px;cursor:pointer;">3</button>
+            <button onclick="mTeeSheetSetRound(4)" id="m-ts-r4" style="padding:4px 10px;font-size:.68rem;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(245,240,232,.4);border-radius:2px;cursor:pointer;">4</button>
+            <span id="m-ts-saved" style="font-size:.6rem;color:rgba(245,240,232,.25);align-self:center;margin-left:4px;"></span>
+          </div>
+          <div id="m-ts-output"></div>
+        </div>
+
+        <!-- Hidden event select (used internally) -->
+        <select id="m-ts-event" onchange="mTeeSheetLoad()" style="display:none;"></select>
+      </div>
     </div>
   </div>
 
@@ -669,7 +751,7 @@
 
       <!-- HOOVER'S SECTION -->
       <div id="dt-hoovers-section">
-        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Reserve a Table at Hoover's</button>
+        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes('hoovers')">Reserve a Table at Hoover's</button>
         <div style="background:var(--forest);border-radius:12px;padding:18px;margin-bottom:12px;text-align:center;">
           <div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:var(--cream);letter-spacing:.06em;">Hoover's</div>
           <div style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">at Westwood Hills</div>
@@ -713,7 +795,7 @@
 
       <!-- WESTWOOD GRILL SECTION -->
       <div id="dt-grill-section" style="display:none;">
-        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes()">Reserve a Table at Westwood Grill</button>
+        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes('grille')">Reserve a Table at Westwood Grill</button>
         <div style="background:var(--forest);border-radius:12px;padding:18px;margin-bottom:12px;text-align:center;">
           <div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:var(--cream);letter-spacing:.06em;">Westwood Grill</div>
           <div style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">at Westwood Hills</div>
@@ -738,145 +820,133 @@
     </div>
   </div>
 
-  <!-- EVENTS -->
-  <div class="tab-content" id="m-tab-events">
-    <div class="page">
+  <!-- CLUB TAB -->
+  <div class="tab-content" id="m-tab-club">
+    <!-- Club sub-nav -->
+    <div style="background:var(--white);border-bottom:1px solid var(--border);padding:0 16px;display:flex;">
+      <button id="club-sub-events" onclick="clubSection('events')" style="flex:1;padding:11px 0;border:none;border-bottom:2.5px solid var(--gold);background:none;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--forest);">Events</button>
+      <button id="club-sub-pool" onclick="clubSection('pool')" style="flex:1;padding:11px 0;border:none;border-bottom:2.5px solid transparent;background:none;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--muted);">Pool</button>
+    </div>
+    <!-- Events section -->
+    <div id="club-sec-events" class="page">
       <div class="page-title">Events</div>
       <div class="page-sub">Upcoming club events &amp; tournaments</div>
-      <div id="m-events-list"></div>
+
+      <!-- LIVE SCORING BANNER -->
+      <div id="m-ls-active" style="display:none;background:linear-gradient(135deg,var(--forest) 0%,#1e4d2b 100%);border-radius:12px;padding:16px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.15);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#4CAF50;box-shadow:0 0 6px #4CAF50;animation:ls-pulse 1.4s infinite;flex-shrink:0;"></span>
+          <span style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4CAF50;">Live Tournament</span>
+        </div>
+        <div id="m-ls-name" style="font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:#f5f0e8;margin-bottom:2px;"></div>
+        <div id="m-ls-date" style="font-size:.72rem;color:rgba(245,240,232,.55);margin-bottom:14px;"></div>
+        <div id="m-ls-links" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+      </div>
+      <div id="m-ls-inactive" style="display:none;background:rgba(26,74,38,.07);border:1px solid rgba(26,74,38,.15);border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:1.3rem;">🏆</span>
+        <div>
+          <div style="font-size:.8rem;font-weight:600;color:var(--forest);">No tournament in progress</div>
+          <div style="font-size:.72rem;color:var(--muted);">Live scoring appears here during active events</div>
+        </div>
+      </div>
 
       <!-- LEAGUE SCHEDULES -->
-      <div style="margin-top:24px;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--forest);margin-bottom:4px;">League <em style="color:var(--gold-dk,#b8976a);">Schedules</em></div>
-        <div style="font-size:.72rem;color:var(--muted);margin-bottom:14px;letter-spacing:.04em;text-transform:uppercase;">2026 Season · May – August</div>
+      <div style="margin-bottom:20px;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--forest);">League <em style="color:var(--gold-dk,#b8976a);">Schedules</em></div>
+          <div style="font-size:.68rem;color:var(--muted);">Next 3 dates</div>
+        </div>
 
         <!-- League selector tabs -->
-        <div style="display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;">
-          <button onclick="mLeagueShow('mens')" id="ml-tab-mens" style="flex-shrink:0;padding:6px 14px;background:var(--forest);color:#f5f0e8;border:none;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;">Men's League</button>
-          <button onclick="mLeagueShow('ladies')" id="ml-tab-ladies" style="flex-shrink:0;padding:6px 14px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;">Ladies Night</button>
-          <button onclick="mLeagueShow('hg')" id="ml-tab-hg" style="flex-shrink:0;padding:6px 14px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;">Hit &amp; Giggle</button>
-          <button onclick="mLeagueShow('fnf')" id="ml-tab-fnf" style="flex-shrink:0;padding:6px 14px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;">Friday Night Fights</button>
+        <div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;">
+          <button onclick="mLeagueShow('mens')" id="ml-tab-mens" style="flex-shrink:0;padding:5px 12px;background:var(--forest);color:#f5f0e8;border:none;border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;">Men's</button>
+          <button onclick="mLeagueShow('ladies')" id="ml-tab-ladies" style="flex-shrink:0;padding:5px 12px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;">Ladies</button>
+          <button onclick="mLeagueShow('hg')" id="ml-tab-hg" style="flex-shrink:0;padding:5px 12px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;">Hit &amp; Giggle</button>
+          <button onclick="mLeagueShow('fnf')" id="ml-tab-fnf" style="flex-shrink:0;padding:5px 12px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;">Fri Night</button>
         </div>
 
-        <!-- Men's League -->
-        <div id="ml-panel-mens">
-          <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Every Saturday · 5:00 PM · May 9 – Aug 22 · 16 weeks</div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
-            <div onclick="mLeagueReg('Men\'s League','May 9','2026-05-09')" class="ml-date-tile">May 9<div class="ml-wk">Wk 1</div></div>
-            <div onclick="mLeagueReg('Men\'s League','May 16','2026-05-16')" class="ml-date-tile">May 16<div class="ml-wk">Wk 2</div></div>
-            <div onclick="mLeagueReg('Men\'s League','May 23','2026-05-23')" class="ml-date-tile">May 23<div class="ml-wk">Wk 3</div></div>
-            <div onclick="mLeagueReg('Men\'s League','May 30','2026-05-30')" class="ml-date-tile">May 30<div class="ml-wk">Wk 4</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Jun 6','2026-06-06')" class="ml-date-tile">Jun 6<div class="ml-wk">Wk 5</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Jun 13','2026-06-13')" class="ml-date-tile">Jun 13<div class="ml-wk">Wk 6</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Jun 20','2026-06-20')" class="ml-date-tile">Jun 20<div class="ml-wk">Wk 7</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Jun 27','2026-06-27')" class="ml-date-tile">Jun 27<div class="ml-wk">Wk 8</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Jul 4','2026-07-04')" class="ml-date-tile">Jul 4<div class="ml-wk">Wk 9</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Jul 11','2026-07-11')" class="ml-date-tile">Jul 11<div class="ml-wk">Wk 10</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Jul 18','2026-07-18')" class="ml-date-tile">Jul 18<div class="ml-wk">Wk 11</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Jul 25','2026-07-25')" class="ml-date-tile">Jul 25<div class="ml-wk">Wk 12</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Aug 1','2026-08-01')" class="ml-date-tile">Aug 1<div class="ml-wk">Wk 13</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Aug 8','2026-08-08')" class="ml-date-tile">Aug 8<div class="ml-wk">Wk 14</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Aug 15','2026-08-15')" class="ml-date-tile">Aug 15<div class="ml-wk">Wk 15</div></div>
-            <div onclick="mLeagueReg('Men\'s League','Aug 22','2026-08-22')" class="ml-date-tile ml-final">Aug 22<div class="ml-wk">Final</div></div>
-          </div>
-        </div>
-
-        <!-- Ladies Night -->
-        <div id="ml-panel-ladies" style="display:none;">
-          <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Every Tuesday · 5:00 PM · May 5 – Aug 18 · 16 weeks</div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
-            <div onclick="mLeagueReg('Ladies Night','May 5','2026-05-05')" class="ml-date-tile">May 5<div class="ml-wk">Wk 1</div></div>
-            <div onclick="mLeagueReg('Ladies Night','May 12','2026-05-12')" class="ml-date-tile">May 12<div class="ml-wk">Wk 2</div></div>
-            <div onclick="mLeagueReg('Ladies Night','May 19','2026-05-19')" class="ml-date-tile">May 19<div class="ml-wk">Wk 3</div></div>
-            <div onclick="mLeagueReg('Ladies Night','May 26','2026-05-26')" class="ml-date-tile">May 26<div class="ml-wk">Wk 4</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Jun 2','2026-06-02')" class="ml-date-tile">Jun 2<div class="ml-wk">Wk 5</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Jun 9','2026-06-09')" class="ml-date-tile">Jun 9<div class="ml-wk">Wk 6</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Jun 16','2026-06-16')" class="ml-date-tile">Jun 16<div class="ml-wk">Wk 7</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Jun 23','2026-06-23')" class="ml-date-tile">Jun 23<div class="ml-wk">Wk 8</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Jun 30','2026-06-30')" class="ml-date-tile">Jun 30<div class="ml-wk">Wk 9</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Jul 7','2026-07-07')" class="ml-date-tile">Jul 7<div class="ml-wk">Wk 10</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Jul 14','2026-07-14')" class="ml-date-tile">Jul 14<div class="ml-wk">Wk 11</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Jul 21','2026-07-21')" class="ml-date-tile">Jul 21<div class="ml-wk">Wk 12</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Jul 28','2026-07-28')" class="ml-date-tile">Jul 28<div class="ml-wk">Wk 13</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Aug 4','2026-08-04')" class="ml-date-tile">Aug 4<div class="ml-wk">Wk 14</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Aug 11','2026-08-11')" class="ml-date-tile">Aug 11<div class="ml-wk">Wk 15</div></div>
-            <div onclick="mLeagueReg('Ladies Night','Aug 18','2026-08-18')" class="ml-date-tile ml-final">Aug 18<div class="ml-wk">Final</div></div>
-          </div>
-        </div>
-
-        <!-- Hit & Giggle -->
-        <div id="ml-panel-hg" style="display:none;">
-          <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Every Wednesday · 5:00 PM · May 6 – Aug 19 · 16 weeks</div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
-            <div onclick="mLeagueReg('Hit &amp; Giggle','May 6','2026-05-06')" class="ml-date-tile">May 6<div class="ml-wk">Wk 1</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','May 13','2026-05-13')" class="ml-date-tile">May 13<div class="ml-wk">Wk 2</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','May 20','2026-05-20')" class="ml-date-tile">May 20<div class="ml-wk">Wk 3</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','May 27','2026-05-27')" class="ml-date-tile">May 27<div class="ml-wk">Wk 4</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Jun 3','2026-06-03')" class="ml-date-tile">Jun 3<div class="ml-wk">Wk 5</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Jun 10','2026-06-10')" class="ml-date-tile">Jun 10<div class="ml-wk">Wk 6</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Jun 17','2026-06-17')" class="ml-date-tile">Jun 17<div class="ml-wk">Wk 7</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Jun 24','2026-06-24')" class="ml-date-tile">Jun 24<div class="ml-wk">Wk 8</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Jul 1','2026-07-01')" class="ml-date-tile">Jul 1<div class="ml-wk">Wk 9</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Jul 8','2026-07-08')" class="ml-date-tile">Jul 8<div class="ml-wk">Wk 10</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Jul 15','2026-07-15')" class="ml-date-tile">Jul 15<div class="ml-wk">Wk 11</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Jul 22','2026-07-22')" class="ml-date-tile">Jul 22<div class="ml-wk">Wk 12</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Jul 29','2026-07-29')" class="ml-date-tile">Jul 29<div class="ml-wk">Wk 13</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Aug 5','2026-08-05')" class="ml-date-tile">Aug 5<div class="ml-wk">Wk 14</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Aug 12','2026-08-12')" class="ml-date-tile">Aug 12<div class="ml-wk">Wk 15</div></div>
-            <div onclick="mLeagueReg('Hit &amp; Giggle','Aug 19','2026-08-19')" class="ml-date-tile ml-final">Aug 19<div class="ml-wk">Final</div></div>
-          </div>
-        </div>
-
-        <!-- Friday Night Fights -->
-        <div id="ml-panel-fnf" style="display:none;">
-          <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Every Friday · 5:00 PM · May 8 – Aug 21 · 16 weeks</div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
-            <div onclick="mLeagueReg('Friday Night Fights','May 8','2026-05-08')" class="ml-date-tile">May 8<div class="ml-wk">Wk 1</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','May 15','2026-05-15')" class="ml-date-tile">May 15<div class="ml-wk">Wk 2</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','May 22','2026-05-22')" class="ml-date-tile">May 22<div class="ml-wk">Wk 3</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','May 29','2026-05-29')" class="ml-date-tile">May 29<div class="ml-wk">Wk 4</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Jun 5','2026-06-05')" class="ml-date-tile">Jun 5<div class="ml-wk">Wk 5</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Jun 12','2026-06-12')" class="ml-date-tile">Jun 12<div class="ml-wk">Wk 6</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Jun 19','2026-06-19')" class="ml-date-tile">Jun 19<div class="ml-wk">Wk 7</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Jun 26','2026-06-26')" class="ml-date-tile">Jun 26<div class="ml-wk">Wk 8</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Jul 3','2026-07-03')" class="ml-date-tile">Jul 3<div class="ml-wk">Wk 9</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Jul 10','2026-07-10')" class="ml-date-tile">Jul 10<div class="ml-wk">Wk 10</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Jul 17','2026-07-17')" class="ml-date-tile">Jul 17<div class="ml-wk">Wk 11</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Jul 24','2026-07-24')" class="ml-date-tile">Jul 24<div class="ml-wk">Wk 12</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Jul 31','2026-07-31')" class="ml-date-tile">Jul 31<div class="ml-wk">Wk 13</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Aug 7','2026-08-07')" class="ml-date-tile">Aug 7<div class="ml-wk">Wk 14</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Aug 14','2026-08-14')" class="ml-date-tile">Aug 14<div class="ml-wk">Wk 15</div></div>
-            <div onclick="mLeagueReg('Friday Night Fights','Aug 21','2026-08-21')" class="ml-date-tile ml-final">Aug 21<div class="ml-wk">Final</div></div>
-          </div>
-        </div>
+        <div id="ml-panel-mens"><div id="ml-upcoming-mens"></div></div>
+        <div id="ml-panel-ladies" style="display:none;"><div id="ml-upcoming-ladies"></div></div>
+        <div id="ml-panel-hg" style="display:none;"><div id="ml-upcoming-hg"></div></div>
+        <div id="ml-panel-fnf" style="display:none;"><div id="ml-upcoming-fnf"></div></div>
       </div>
+
+      <div id="m-events-list"><div style="padding:8px 0;"><div class="skel skel-line" style="height:80px;margin-bottom:10px;border-radius:10px;"></div><div class="skel skel-line" style="height:80px;margin-bottom:10px;border-radius:10px;"></div><div class="skel skel-line" style="height:80px;border-radius:10px;"></div></div></div>
     </div>
-  </div>
+    <!-- Pool section -->
+    <div id="club-sec-pool" style="display:none;">
+      <div class="page">
+        <div class="page-title">The Pool</div>
+        <div class="page-sub">Open Memorial Day through Labor Day</div>
 
-  <!-- TEE SHEET TAB -->
-  <div class="tab-content" id="m-tab-teesheet" style="background:#111a14;">
-    <div style="padding:16px;background:#111a14;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#f5f0e8;margin-bottom:4px;">Today's <em style="color:#d4b483;">Tee Sheet</em></div>
-      <div style="font-size:.72rem;color:rgba(245,240,232,.45);margin-bottom:12px;">Current groupings and tee times · Auto-refreshes every 60s</div>
-      <!-- Event selector -->
-      <div style="display:flex;gap:6px;margin-bottom:10px;">
-        <select id="m-ts-event" onchange="mTeeSheetLoad()" style="flex:1;background:#1e3a20;border:1px solid rgba(184,151,106,.4);color:#f5f0e8;padding:8px 10px;font-size:12px;border-radius:2px;">
-          <option value="">— Loading events… —</option>
-        </select>
-        <button onclick="mTeeSheetBuildEventDropdown()" style="background:none;border:1px solid rgba(184,151,106,.3);color:rgba(184,151,106,.7);font-size:11px;padding:6px 10px;border-radius:2px;cursor:pointer;white-space:nowrap;">↻ Refresh</button>
+        <!-- LIVE STATUS BANNER -->
+        <div id="m-pool-status-banner" style="border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+          <span id="m-pool-status-icon" style="font-size:1.6rem;">🏊</span>
+          <div>
+            <div id="m-pool-status-label" style="font-size:.88rem;font-weight:700;"></div>
+            <div id="m-pool-status-note" style="font-size:.74rem;margin-top:2px;display:none;"></div>
+          </div>
+        </div>
+
+        <!-- HOURS CARD -->
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title" style="margin-bottom:12px;">🕐 Pool Hours</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+              <span style="font-size:.84rem;font-weight:600;color:var(--forest);">Tuesday – Sunday</span>
+              <span style="font-size:.84rem;color:var(--muted);">11:00 AM – 7:00 PM</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+              <span style="font-size:.84rem;font-weight:600;color:var(--forest);">Monday</span>
+              <span style="font-size:.84rem;color:var(--muted);">Closed</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;">
+              <span style="font-size:.84rem;font-weight:600;color:var(--forest);">Season</span>
+              <span style="font-size:.84rem;color:var(--muted);">Memorial Day – Labor Day</span>
+            </div>
+          </div>
+          <p style="font-size:.74rem;color:var(--muted);margin:10px 0 0;line-height:1.5;">Pool is closed when the lifeguard is off duty or on break.</p>
+        </div>
+
+        <!-- FEATURE CARDS -->
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+          <div style="background:linear-gradient(135deg,rgba(26,74,38,.08),rgba(26,74,38,.04));border:1px solid rgba(26,74,38,.12);border-radius:12px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;">
+            <span style="font-size:1.4rem;flex-shrink:0;">☀️</span>
+            <div>
+              <div style="font-size:.84rem;font-weight:700;color:var(--forest);margin-bottom:3px;">Six Days of Sun</div>
+              <div style="font-size:.78rem;color:var(--muted);line-height:1.5;">The perfect spot to unwind while the kids splash the afternoon away. Open Tuesday through Sunday all summer long.</div>
+            </div>
+          </div>
+          <div style="background:linear-gradient(135deg,rgba(26,74,38,.08),rgba(26,74,38,.04));border:1px solid rgba(26,74,38,.12);border-radius:12px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;">
+            <span style="font-size:1.4rem;flex-shrink:0;">🍽️</span>
+            <div>
+              <div style="font-size:.84rem;font-weight:700;color:var(--forest);margin-bottom:3px;">Poolside Dining</div>
+              <div style="font-size:.78rem;color:var(--muted);line-height:1.5;">Skip the cooler — food and beverages from the Westwood Grill are charged right to your member account.</div>
+            </div>
+          </div>
+          <div style="background:linear-gradient(135deg,rgba(26,74,38,.08),rgba(26,74,38,.04));border:1px solid rgba(26,74,38,.12);border-radius:12px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;">
+            <span style="font-size:1.4rem;flex-shrink:0;">🎉</span>
+            <div>
+              <div style="font-size:.84rem;font-weight:700;color:var(--forest);margin-bottom:3px;">Private Pool Parties</div>
+              <div style="font-size:.78rem;color:var(--muted);line-height:1.5;">Reserve the pool exclusively for your child's birthday or private event — 2-hour slots for up to 25 guests.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOOK A PARTY -->
+        <div style="background:var(--forest);border-radius:12px;padding:18px 16px;margin-bottom:14px;text-align:center;">
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(184,151,106,.8);margin-bottom:6px;">Book a Pool Party</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#f5f0e8;margin-bottom:4px;">Make it <em style="color:var(--gold);">unforgettable</em></div>
+          <div style="font-size:.78rem;color:rgba(245,240,232,.6);margin-bottom:14px;">Call the Pro Shop to reserve your date</div>
+          <button onclick="window.location.href='tel:+15737855253'" style="background:var(--gold);color:var(--forest);border:none;border-radius:8px;padding:11px 28px;font-size:.82rem;font-weight:700;cursor:pointer;letter-spacing:.04em;">📞 (573) 785-5253</button>
+        </div>
+
+        <!-- GUEST POLICY NOTE -->
+        <div style="background:rgba(26,74,38,.06);border-radius:10px;padding:12px 14px;margin-bottom:8px;">
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--forest);margin-bottom:6px;">Guest Policy</div>
+          <p style="font-size:.76rem;color:var(--muted);line-height:1.6;margin:0;">Local guests (Butler &amp; surrounding counties) may swim Wednesdays with a $2 fee. Non-local guests swim Tuesday–Sunday with a $2 fee. Grandchildren and nannies are always free.</p>
+        </div>
       </div>
-
-      <!-- Round selector -->
-      <div style="display:flex;gap:6px;margin-bottom:12px;" id="m-ts-round-row" style="display:none;">
-        <span style="font-size:.7rem;color:rgba(245,240,232,.4);align-self:center;">Round:</span>
-        <button onclick="mTeeSheetSetRound(1)" id="m-ts-r1" style="padding:4px 10px;font-size:.68rem;background:rgba(184,151,106,.2);border:1px solid rgba(184,151,106,.4);color:#d4b483;border-radius:2px;cursor:pointer;">1</button>
-        <button onclick="mTeeSheetSetRound(2)" id="m-ts-r2" style="padding:4px 10px;font-size:.68rem;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(245,240,232,.4);border-radius:2px;cursor:pointer;">2</button>
-        <button onclick="mTeeSheetSetRound(3)" id="m-ts-r3" style="padding:4px 10px;font-size:.68rem;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(245,240,232,.4);border-radius:2px;cursor:pointer;">3</button>
-        <button onclick="mTeeSheetSetRound(4)" id="m-ts-r4" style="padding:4px 10px;font-size:.68rem;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(245,240,232,.4);border-radius:2px;cursor:pointer;">4</button>
-        <span id="m-ts-saved" style="font-size:.6rem;color:rgba(245,240,232,.25);align-self:center;margin-left:4px;"></span>
-      </div>
-
-      <div id="m-ts-output"><div style="font-size:.8rem;color:rgba(245,240,232,.3);text-align:center;padding:40px 0;">Select an event to view the tee sheet</div></div>
     </div>
   </div>
 
@@ -904,6 +974,7 @@
       </div>
       <div class="card" id="round-log-section" style="display:none;">
         <div class="card-title" style="margin-bottom:10px;">Round History</div>
+        <div id="round-log-stats" style="display:flex;gap:0;margin-bottom:14px;border-radius:8px;overflow:hidden;border:1px solid var(--sand);"></div>
         <div id="round-log-list"></div>
       </div>
       <div class="card">
@@ -922,21 +993,17 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21V12h6v9"/></svg>
       <span>Home</span><div class="tab-dot"></div>
     </button>
-    <button class="tab-btn" id="m-btn-course" onclick="goTab('member','course')">
+    <button class="tab-btn" id="m-btn-golf" onclick="goTab('member','golf')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="20" r="1.5"/><line x1="12" y1="2" x2="12" y2="18.5"/><path d="M12 5l7 3.5-7 3.5"/></svg>
-      <span>Course</span><div class="tab-dot"></div>
+      <span>Golf</span><div class="tab-dot"></div>
     </button>
     <button class="tab-btn" id="m-btn-dining" onclick="goTab('member','dining')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
       <span>Dining</span><div class="tab-dot"></div>
     </button>
-    <button class="tab-btn" id="m-btn-events" onclick="goTab('member','events')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      <span>Events</span><div class="tab-dot"></div>
-    </button>
-    <button class="tab-btn" id="m-btn-teesheet" onclick="goTab('member','teesheet')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-      <span>Tee Sheet</span><div class="tab-dot"></div>
+    <button class="tab-btn" id="m-btn-club" onclick="goTab('member','club')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Club</span><div class="tab-dot"></div>
     </button>
     <button class="tab-btn" id="m-btn-account" onclick="goTab('member','account')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1029,22 +1096,6 @@
         <button class="ev-reg-btn" style="width:100%;margin:0;" onclick="saveConditions()">Save Conditions</button>
       </div>
 
-      <!-- PIN SHEET UPLOAD -->
-      <div class="card" style="margin-bottom:12px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div class="card-title" style="margin:0;">📋 Pin Sheet</div>
-          <div style="display:flex;gap:6px;">
-            <button class="ts-btn" id="ps-clear-btn" onclick="clearPinSheet()" style="display:none;">Reset</button>
-            <label class="ts-btn checkin" style="cursor:pointer;margin:0;">
-              📷 Upload
-              <input type="file" accept="image/*" capture="environment" onchange="uploadPinSheet(this)" style="display:none;">
-            </label>
-          </div>
-        </div>
-        <div id="ps-status" style="font-size:.75rem;color:var(--muted);margin-bottom:8px;"></div>
-        <img id="ps-preview" style="width:100%;border-radius:var(--radius-sm);display:none;" alt="Pin Sheet Preview">
-      </div>
-
       <!-- MEMBER LOOKUP -->
       <div class="card" style="margin-bottom:12px;">
         <div class="card-title" style="margin:0 0 10px;">🔍 Member Lookup</div>
@@ -1102,11 +1153,12 @@
     </div>
   </div>
 
-  <!-- POOL -->
+  <!-- OPS (Pool + Grounds merged) -->
   <div class="tab-content" id="s-tab-pool">
     <div class="page">
-      <div class="page-title">Pool</div>
-      <div class="page-sub">Aquatics &amp; Pool Operations</div>
+      <div class="page-title">Operations</div>
+      <div class="page-sub">Pool &amp; Grounds Management</div>
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 12px;">🏊 Aquatics</div>
 
       <!-- POOL STATUS -->
       <div class="card" style="margin-bottom:12px;">
@@ -1164,18 +1216,11 @@
         </div>
         <div id="pool-chem-list"><div class="ts-empty">No readings today — tap + Reading to log</div></div>
       </div>
-    </div>
-  </div>
-
-  <!-- GROUNDS -->
-  <div class="tab-content" id="s-tab-grounds">
-    <div class="page">
-      <div class="page-title">Grounds</div>
-      <div class="page-sub">Course &amp; Maintenance Operations</div>
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 12px;">⛳ Grounds</div>
 
       <!-- HOLE STATUS BOARD -->
       <div class="card" style="margin-bottom:12px;">
-        <div class="card-title" style="margin-bottom:4px;">⛳ Hole Status Board</div>
+        <div class="card-title" style="margin-bottom:4px;">Hole Status Board</div>
         <div style="font-size:.74rem;color:var(--muted);margin-bottom:12px;">Tap a hole to cycle status. Members see alerts on the Course tab.</div>
         <div id="hole-status-board" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
       </div>
@@ -1279,12 +1324,8 @@
       <span>Events</span><div class="tab-dot"></div>
     </button>
     <button class="tab-btn" id="s-btn-pool" onclick="goTab('staff','pool')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20M2 12c2-4 4-6 6-6s4 4 6 4 4-4 6-4M2 18c2-4 4-6 6-6s4 4 6 4 4-4 6-4"/></svg>
-      <span>Pool</span><div class="tab-dot"></div>
-    </button>
-    <button class="tab-btn" id="s-btn-grounds" onclick="goTab('staff','grounds')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 1 9 9c0 5-9 13-9 13S3 16 3 11a9 9 0 0 1 9-9z"/><circle cx="12" cy="11" r="3"/></svg>
-      <span>Grounds</span><div class="tab-dot"></div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      <span>Ops</span><div class="tab-dot"></div>
     </button>
   </div>
 </div>
@@ -1421,14 +1462,19 @@
 <div class="modal-overlay" id="modal-dining">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div class="modal-title">Dining Reservation</div>
+    <div class="modal-title" id="md-title">Reserve at Westwood Grill</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <button id="md-venue-grill" onclick="setModalVenue('grille')" style="flex:1;padding:9px;border-radius:8px;border:none;background:var(--forest);color:var(--white);font-size:.78rem;font-weight:700;cursor:pointer;">Westwood Grill</button>
+      <button id="md-venue-hoovers" onclick="setModalVenue('hoovers')" style="flex:1;padding:9px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;">Hoover's</button>
+    </div>
+    <div id="md-venue-hint" style="display:none;font-size:.75rem;color:var(--gold);margin-bottom:10px;padding:8px 12px;background:rgba(184,151,106,.1);border-radius:8px;border-left:3px solid var(--gold);"></div>
     <input class="modal-input" id="md-date" type="date">
     <input class="modal-input" id="md-time" type="time" value="12:00">
     <input class="modal-input" id="md-party" type="number" placeholder="Party size" min="1" max="20">
     <input class="modal-input" id="md-notes" type="text" placeholder="Special requests (optional)">
     <div class="modal-row">
       <button class="modal-btn secondary" onclick="closeModal('modal-dining')">Cancel</button>
-      <button class="modal-btn primary" onclick="confirmDining()">Request Reservation</button>
+      <button class="modal-btn primary" onclick="confirmDining()">Confirm Reservation</button>
     </div>
   </div>
 </div>
@@ -2023,7 +2069,84 @@ function goTab(role, tab) {
   var btn = document.getElementById(pre + '-btn-' + tab);
   if (tc)  tc.classList.add('active');
   if (btn) btn.classList.add('active');
-  if (tab === 'teesheet') mTeeSheetBuildEventDropdown();
+  if (tab === 'golf') golfSection('course');
+  if (tab === 'club') clubSection('events');
+  if (role === 'staff' && tab === 'dining') refreshDiningFromServer();
+}
+
+function golfSection(s) {
+  var sections = ['course','teesheet'];
+  sections.forEach(function(sec) {
+    var el = document.getElementById('golf-sec-' + sec);
+    var btn = document.getElementById('golf-sub-' + sec);
+    if (el) el.style.display = sec === s ? 'block' : 'none';
+    if (btn) {
+      btn.style.borderBottomColor = sec === s ? 'var(--gold)' : 'transparent';
+      btn.style.color = sec === s ? 'var(--forest)' : 'var(--muted)';
+    }
+  });
+  if (s === 'teesheet') mTeeSheetBuildEventDropdown();
+}
+
+function clubSection(s) {
+  var sections = ['events','pool'];
+  sections.forEach(function(sec) {
+    var el = document.getElementById('club-sec-' + sec);
+    var btn = document.getElementById('club-sub-' + sec);
+    if (el) el.style.display = sec === s ? 'block' : 'none';
+    if (btn) {
+      btn.style.borderBottomColor = sec === s ? 'var(--gold)' : 'transparent';
+      btn.style.color = sec === s ? 'var(--forest)' : 'var(--muted)';
+    }
+  });
+  if (s === 'events') { mLoadLiveScoring(); mLeagueShow('mens'); }
+  if (s === 'pool') renderMemberPool();
+}
+
+// ── LIVE SCORING (Events tab) ──────────────────────────────────────────────
+function mLoadLiveScoring() {
+  fetch(WHCC_SCRIPT_URL + '?action=get-live-scoring')
+    .then(function(r) { return r.json(); })
+    .then(function(cfg) { mRenderLiveScoring(cfg); })
+    .catch(function() { mRenderLiveScoring(null); });
+}
+
+function mRenderLiveScoring(cfg) {
+  var active = document.getElementById('m-ls-active');
+  var inactive = document.getElementById('m-ls-inactive');
+  if (!active || !inactive) return;
+
+  if (!cfg || !cfg.active) {
+    active.style.display = 'none';
+    inactive.style.display = 'flex';
+    return;
+  }
+
+  inactive.style.display = 'none';
+  active.style.display = 'block';
+
+  document.getElementById('m-ls-name').textContent = cfg.eventName || 'Tournament';
+  document.getElementById('m-ls-date').textContent = cfg.eventDate || '';
+
+  var linkDefs = [
+    { key: 'leaderboard', label: '🏆 Leaderboard' },
+    { key: 'pairings',    label: '📋 Pairings' },
+    { key: 'results',     label: '📊 Results' }
+  ];
+  var pages = cfg.pages || {};
+  var linksEl = document.getElementById('m-ls-links');
+  linksEl.innerHTML = '';
+  linkDefs.forEach(function(def) {
+    var url = pages[def.key];
+    if (!url) return;
+    var a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = def.label;
+    a.style.cssText = 'display:inline-block;padding:8px 16px;background:rgba(255,255,255,.12);color:#f5f0e8;border-radius:20px;font-size:.78rem;font-weight:600;text-decoration:none;border:1px solid rgba(255,255,255,.18);';
+    linksEl.appendChild(a);
+  });
 }
 
 // ════════════════════════════════════
@@ -2121,19 +2244,26 @@ function submitPartnerPost() {
   var displayName = parts[0] + (parts[1] ? ' ' + parts[1][0] + '.' : '');
   posts.unshift({name:displayName, email:currentUser.email, date:date, time:time, holes:holes, note:note, posted:new Date().toISOString()});
   localStorage.setItem('wh_partners', JSON.stringify(posts));
+  WHCC_SYNC.opsPush('partners', posts);
   closeModal('modal-partner-post');
   renderPartners();
   showToast('✅ Posted! Other members can now find you.');
 }
 
 function deletePartnerPost(posted) {
-  var posts = JSON.parse(localStorage.getItem('wh_partners') || '[]');
-  localStorage.setItem('wh_partners', JSON.stringify(posts.filter(function(p){ return p.posted !== posted; })));
+  var posts = JSON.parse(localStorage.getItem('wh_partners') || '[]').filter(function(p){ return p.posted !== posted; });
+  localStorage.setItem('wh_partners', JSON.stringify(posts));
+  WHCC_SYNC.opsPush('partners', posts);
   renderPartners();
   showToast('Post removed');
 }
 
 function initMember() {
+  WHCC_SYNC.fetchAllOps(function() {
+    _initMemberUI();
+  });
+}
+function _initMemberUI() {
   var u = currentUser;
   var first = u.name.split(' ')[0];
   var mSwBtn = document.getElementById('m-switch-btn');
@@ -2159,10 +2289,11 @@ function initMember() {
   renderAppMenu();
   renderRoundLog();
   loadWeather();
+  if (window._initHeroPhotos) window._initHeroPhotos();
   loadConditions();
   renderMyUpcoming();
   renderPartners();
-  loadPinSheetForMember();
+
   renderPoolChip();
   renderHoleAlerts();
   // Default partner post date to today
@@ -2404,10 +2535,41 @@ function submitRound() {
 function renderRoundLog() {
   var section = document.getElementById('round-log-section');
   var list    = document.getElementById('round-log-list');
+  var stats   = document.getElementById('round-log-stats');
   if (!section || !list || !currentUser) return;
   var rounds = JSON.parse(localStorage.getItem('wh_rounds_' + currentUser.email) || '[]');
   if (rounds.length === 0) { section.style.display = 'none'; return; }
   section.style.display = 'block';
+
+  // Stats bar
+  if (stats) {
+    var scores = rounds.map(function(r) { return r.gross != null ? r.gross : r.score; }).filter(function(s) { return s != null; });
+    var best = scores.length ? Math.min.apply(null, scores) : null;
+    var avg  = scores.length ? Math.round(scores.reduce(function(a,b){return a+b;},0) / scores.length) : null;
+    var trend = '';
+    if (scores.length >= 3) {
+      var recent = scores.slice(-3);
+      var older  = scores.slice(-6, -3);
+      if (older.length) {
+        var recentAvg = recent.reduce(function(a,b){return a+b;},0)/recent.length;
+        var olderAvg  = older.reduce(function(a,b){return a+b;},0)/older.length;
+        trend = recentAvg < olderAvg ? '↓ Improving' : recentAvg > olderAvg ? '↑ Rising' : '→ Steady';
+      }
+    }
+    var statItems = [
+      { label: 'Rounds', val: rounds.length },
+      { label: 'Best', val: best != null ? best : '—' },
+      { label: 'Avg', val: avg != null ? avg : '—' },
+      { label: 'Trend', val: trend || '—' }
+    ];
+    stats.innerHTML = statItems.map(function(s, i) {
+      return '<div style="flex:1;text-align:center;padding:10px 4px;background:' + (i%2===0?'var(--sand)':'#f0ece4') + ';">' +
+        '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.1rem;font-weight:700;color:var(--forest);">' + s.val + '</div>' +
+        '<div style="font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;">' + s.label + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
   list.innerHTML = rounds.map(function(r) {
     var gross = r.gross != null ? r.gross : r.score;
     var vp    = r.vsParNet != null ? r.vsParNet : r.vsPar;
@@ -2561,6 +2723,64 @@ var WHCC_SYNC = {
       .then(function(d){ if (cb) cb(d, null); })
       .catch(function(e){ if (cb) cb(null, e); });
   },
+
+  // Generic ops key/value push — fire and forget
+  opsPush: function(key, data) {
+    fetch(WHCC_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'save-ops-data', key: key, data: data })
+    }).catch(function() {});
+  },
+
+  // Fetch a single ops key from server, cache in localStorage
+  opsFetch: function(key, localKey, cb) {
+    fetch(WHCC_SCRIPT_URL + '?action=get-ops-data&key=' + encodeURIComponent(key))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        try { localStorage.setItem(localKey, JSON.stringify(data)); } catch(e) {}
+        if (cb) cb(data);
+      })
+      .catch(function() { if (cb) cb(null); });
+  },
+
+  // Pull ALL ops keys in one request and populate localStorage
+  fetchAllOps: function(cb) {
+    fetch(WHCC_SCRIPT_URL + '?action=get-all-ops')
+      .then(function(r) { return r.json(); })
+      .then(function(all) {
+        if (!all || typeof all !== 'object') { if (cb) cb(); return; }
+        var keyMap = {
+          pool_guests:    'wh_pool_guests',
+          pool_chem:      'wh_pool_chem',
+          work_orders:    'wh_work_orders',
+          spray_log:      'wh_spray_log',
+          staff_messages: 'wh_staff_messages',
+          lost_found:     'wh_lost_found',
+          incidents:      'wh_incidents',
+          dining_res:     'wh_dining_res',
+          partners:       'wh_partners',
+          pool_status:    'wh_pool',
+          hole_status:    'wh_hole_status',
+          on_course:      'wh_on_course'
+        };
+        Object.keys(keyMap).forEach(function(serverKey) {
+          if (all[serverKey] !== undefined) {
+            try { localStorage.setItem(keyMap[serverKey], JSON.stringify(all[serverKey])); } catch(e) {}
+          }
+        });
+        if (cb) cb(all);
+      })
+      .catch(function() { if (cb) cb(); });
+  },
+
+  refresh: function(cb) {
+    var done = 0;
+    var total = 2;
+    function check() { if (++done === total && cb) cb(); }
+    WHCC_SYNC.fetchCounts(check);
+    WHCC_SYNC.fetchAllOps(check);
+  }
 };
 
 document.addEventListener('DOMContentLoaded', function() { WHCC_SYNC.fetchCounts(); });
@@ -2588,8 +2808,9 @@ function mTeeSheetLoad() {
   // Auto-refresh every 60 seconds
   if (mTeeSheetTimer) clearInterval(mTeeSheetTimer);
   mTeeSheetTimer = setInterval(function() {
-    var _tab = document.getElementById('m-tab-teesheet');
-    if (!_tab || !_tab.classList.contains('active')) return;
+    var _tab = document.getElementById('m-tab-golf');
+    var _tsec = document.getElementById('golf-sec-teesheet');
+    if (!_tab || !_tab.classList.contains('active') || !_tsec || _tsec.style.display === 'none') return;
     var _sel = document.getElementById('m-ts-event');
     var _ev = _sel ? _sel.value : '';
     if (!_ev) return;
@@ -2601,29 +2822,108 @@ function mTeeSheetLoad() {
 }
 
 function mTeeSheetBuildEventDropdown() {
-  var sel = document.getElementById('m-ts-event');
-  if (!sel) return;
-  var current = sel.value;
+  var myEventsEl = document.getElementById('m-ts-my-events');
+  if (!myEventsEl) return;
+
+  // Get member's registered upcoming events
+  var today = new Date().toISOString().slice(0, 10);
+  var registered = appEvents.filter(function(ev) { return ev.registered && ev.date >= today; });
+
+  myEventsEl.innerHTML = '';
+
+  if (!registered.length) {
+    myEventsEl.innerHTML =
+      '<div style="text-align:center;padding:40px 16px;">' +
+        '<div style="font-size:1.6rem;margin-bottom:10px;">📋</div>' +
+        '<div style="font-size:.85rem;color:rgba(245,240,232,.5);margin-bottom:6px;">No upcoming registrations</div>' +
+        '<div style="font-size:.72rem;color:rgba(245,240,232,.3);">Register for events to see your tee times here</div>' +
+      '</div>';
+    return;
+  }
+
+  // Load tee sheets and cross-reference
   WHCC_SYNC.loadTeeSheets(null, function(data, err) {
-    if (err || !data || !data.length) {
-      sel.innerHTML = '<option value="">— No tee sheets saved yet —</option>';
-      return;
+    var sheetsByEvent = {};
+    if (data && data.length) {
+      data.forEach(function(ts) { if (ts.event) sheetsByEvent[ts.event] = ts; });
     }
-    // Collect distinct event names preserving first-seen order
-    var seen = {}, events = [];
-    data.forEach(function(ts) { if (ts.event && !seen[ts.event]) { seen[ts.event] = true; events.push(ts.event); } });
-    events.sort();
-    sel.innerHTML = '<option value="">— Select Event —</option>';
-    events.forEach(function(ev) {
-      var o = document.createElement('option');
-      o.value = ev; o.textContent = ev;
-      sel.appendChild(o);
+
+    registered.forEach(function(ev) {
+      var sheet = sheetsByEvent[ev.title];
+      var memberName = currentUser ? (currentUser.name || '').toLowerCase() : '';
+
+      // Find member's tee time in the sheet
+      var myTime = '';
+      var myGroup = null;
+      if (sheet && sheet.groups && memberName) {
+        sheet.groups.forEach(function(g, gi) {
+          (g.players || []).forEach(function(p) {
+            var pname = (p.player ? p.player.name : p.name || '').toLowerCase();
+            if (pname && memberName && pname.indexOf(memberName.split(' ')[0]) !== -1) {
+              myGroup = gi;
+              if (g.teeTime) myTime = g.teeTime;
+              else if (sheet.config) {
+                var defStart = sheet.config.startTime || '08:00';
+                var pts = defStart.split(':');
+                var bm = parseInt(pts[0]) * 60 + parseInt(pts[1]);
+                var iv = parseInt(sheet.config.intervalMin) || 10;
+                var tm = bm + gi * iv;
+                var hh = Math.floor(tm / 60) % 24, mm = tm % 60;
+                var ampm = hh >= 12 ? 'PM' : 'AM';
+                hh = hh % 12; if (!hh) hh = 12;
+                myTime = hh + ':' + (mm < 10 ? '0' : '') + mm + ' ' + ampm;
+              }
+            }
+          });
+        });
+      }
+
+      var card = document.createElement('div');
+      card.style.cssText = 'background:rgba(255,255,255,.04);border:1px solid rgba(184,151,106,.2);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;';
+      card.onclick = function() { mTeeSheetShowForEvent(ev.title); };
+
+      var dateObj = new Date(ev.date + 'T12:00:00');
+      var dateStr = dateObj.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+
+      card.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
+          '<div style="font-size:.92rem;font-weight:700;color:#f5f0e8;">' + ev.title + '</div>' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(184,151,106,.6)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>' +
+        '</div>' +
+        '<div style="font-size:.72rem;color:rgba(245,240,232,.5);margin-bottom:' + (myTime ? '8' : '0') + 'px;">' + dateStr + ' · ' + ev.time + '</div>' +
+        (myTime
+          ? '<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(184,151,106,.15);border:1px solid rgba(184,151,106,.3);border-radius:20px;padding:4px 12px;">' +
+              '<span style="font-size:.7rem;color:rgba(184,151,106,.8);">⛳ Your tee time</span>' +
+              '<span style="font-size:.82rem;font-weight:700;color:#d4b483;">' + myTime + '</span>' +
+            '</div>'
+          : (sheet
+              ? '<div style="font-size:.7rem;color:rgba(245,240,232,.3);">Tee sheet posted — tap to view</div>'
+              : '<div style="font-size:.7rem;color:rgba(245,240,232,.25);">Tee sheet not yet posted</div>')
+        );
+
+      myEventsEl.appendChild(card);
     });
-    if (current && seen[current]) {
-      sel.value = current;
-      mTeeSheetLoad();
-    }
   });
+}
+
+function mTeeSheetShowForEvent(eventName) {
+  var sel = document.getElementById('m-ts-event');
+  if (sel) { sel.innerHTML = '<option value="' + eventName + '">' + eventName + '</option>'; sel.value = eventName; }
+  var wrap = document.getElementById('m-ts-sheet-wrap');
+  var title = document.getElementById('m-ts-sheet-title');
+  if (wrap) wrap.style.display = 'block';
+  if (title) title.textContent = eventName;
+  document.getElementById('m-ts-my-events').style.display = 'none';
+  mTeeSheetLoad();
+}
+
+function mTeeSheetHideSheet() {
+  var wrap = document.getElementById('m-ts-sheet-wrap');
+  if (wrap) wrap.style.display = 'none';
+  document.getElementById('m-ts-my-events').style.display = 'block';
+  var out = document.getElementById('m-ts-output');
+  if (out) out.innerHTML = '';
+  if (mTeeSheetTimer) { clearInterval(mTeeSheetTimer); mTeeSheetTimer = null; }
 }
 
 function mTeeSheetSetRound(r) {
@@ -2858,6 +3158,15 @@ function submitAppReg() {
       headers: { 'Content-Type': 'text/plain' }
     }).catch(function() {});
   } catch(e) {}
+  // Mark event as registered in appEvents so tee sheet + card update
+  var evTitle = reg.event;
+  appEvents.forEach(function(ev) {
+    if (ev.title === evTitle) ev.registered = true;
+  });
+  try { localStorage.setItem('wh_app_events', JSON.stringify(appEvents)); } catch(e) {}
+  renderMemberEvents();
+  renderHomeEvents();
+
   // Show success
   document.getElementById('app-reg-form-wrap').style.display = 'none';
   document.getElementById('app-reg-success').style.display = 'block';
@@ -2894,8 +3203,25 @@ function eventCardHTML(ev, idx, isStaff) {
       })()
     : (function() {
         var isTeam = /scramble|invitational|2-man|2 man|best ball|powder puff|sweet treat|ucan|three rivers|mules/i.test(ev.title + ' ' + (ev.desc||''));
-        return '<button class="ev-reg-btn' + (ev.registered ? ' registered' : '') + '" onclick="openAppReg(\'' + ev.title.replace(/'/g,"\\'") + '\',\'' + (ev.time||'').replace(/'/g,"\\'") + '\',' + isTeam + ')">' + (ev.registered ? '✓ Registered' : 'Register') + '</button>'
-        + '<button class="ts-btn" style="font-size:.72rem;margin-top:6px;width:100%;" onclick="openMemberTeeSheet(' + idx + ')">Tee Sheet</button>';
+        var regCount = WHCC_SYNC.getCount(ev.title);
+        var cap = parseInt(ev.capacity) || 0;
+        var spotsLeft = cap > 0 ? cap - regCount : null;
+        var isFull = cap > 0 && regCount >= cap;
+        var capacityBadge = '';
+        if (cap > 0) {
+          if (isFull) {
+            capacityBadge = '<span style="display:inline-block;margin-bottom:8px;padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700;background:#fee2e2;color:#b91c1c;">Full</span>';
+          } else if (spotsLeft <= 5) {
+            capacityBadge = '<span style="display:inline-block;margin-bottom:8px;padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700;background:#fef9c3;color:#854d0e;">' + spotsLeft + ' spot' + (spotsLeft === 1 ? '' : 's') + ' left</span>';
+          }
+        }
+        var regBtn = ev.registered
+          ? '<div style="display:flex;gap:6px;">' +
+              '<button class="ev-reg-btn registered" style="flex:1;pointer-events:none;">✓ Registered</button>' +
+              '<button class="ts-btn" style="font-size:.72rem;flex-shrink:0;" onclick="cancelReg(' + idx + ')">Cancel</button>' +
+            '</div>'
+          : '<button class="ev-reg-btn' + (isFull ? ' disabled" disabled' : '"') + ' onclick="' + (isFull ? '' : 'openAppReg(\'' + ev.title.replace(/'/g,"\\'") + '\',\'' + (ev.time||'').replace(/'/g,"\\'") + '\',' + isTeam + ')') + '">' + (isFull ? 'Event Full' : 'Register') + '</button>';
+        return capacityBadge + regBtn + '<button class="ts-btn" style="font-size:.72rem;margin-top:6px;width:100%;" onclick="openMemberTeeSheet(' + idx + ')">Tee Sheet</button>';
       })();
   var metaRows = '';
   var feeHTML = ev.fee ? '<div class="ev-fee-row"><span class="ev-fee-lbl">Entry Fee</span><span class="ev-fee-val">' + ev.fee + '</span></div>' : '';
@@ -2913,15 +3239,39 @@ function eventCardHTML(ev, idx, isStaff) {
   '</div>';
 }
 
+function cancelReg(idx) {
+  var ev = upcomingEvents()[idx];
+  if (!ev) return;
+  ev.registered = false;
+  // Decrement count
+  try {
+    var counts = JSON.parse(localStorage.getItem('wh_counts') || '{}');
+    if (counts[ev.title] > 0) counts[ev.title]--;
+    localStorage.setItem('wh_counts', JSON.stringify(counts));
+  } catch(e) {}
+  try { localStorage.setItem('wh_app_events', JSON.stringify(appEvents)); } catch(e) {}
+  renderMemberEvents();
+  showToast('Registration cancelled for ' + ev.title);
+}
+
+function upcomingEvents() {
+  var today = new Date().toISOString().slice(0, 10);
+  return appEvents.filter(function(ev) { return ev.date >= today; });
+}
+
 function renderMemberEvents() {
   var el = document.getElementById('m-events-list');
-  if (el) el.innerHTML = appEvents.map(function(ev, i){ return eventCardHTML(ev, i, false); }).join('');
+  if (!el) return;
+  var events = upcomingEvents();
+  el.innerHTML = events.length
+    ? events.map(function(ev, i){ return eventCardHTML(ev, i, false); }).join('')
+    : '<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:.85rem;">No upcoming events</div>';
 }
 
 function renderHomeEvents() {
   var el = document.getElementById('m-home-events');
   if (!el) return;
-  el.innerHTML = appEvents.slice(0, 2).map(function(ev) {
+  el.innerHTML = upcomingEvents().slice(0, 2).map(function(ev) {
     return '<div class="card" style="display:flex;align-items:center;gap:12px;">' +
       '<div class="ev-date-box" style="background:var(--forest);border-radius:8px;padding:7px 10px;text-align:center;">' +
         '<div class="edb-mo" style="color:rgba(255,255,255,.6);">' + ev.month + '</div>' +
@@ -3077,7 +3427,31 @@ function removeEventTeeSlot(id) {
 // DINING RESERVATION
 // ════════════════════════════════════
 
-function openDiningRes() {
+var _activeDiningVenue = 'grille';
+
+function setModalVenue(v) {
+  _activeDiningVenue = v;
+  var grillBtn   = document.getElementById('md-venue-grill');
+  var hooversBtn = document.getElementById('md-venue-hoovers');
+  var titleEl    = document.getElementById('md-title');
+  var timeInput  = document.getElementById('md-time');
+  var hintEl     = document.getElementById('md-venue-hint');
+  var active = 'flex:1;padding:9px;border-radius:8px;border:none;background:var(--forest);color:var(--white);font-size:.78rem;font-weight:700;cursor:pointer;';
+  var inactive = 'flex:1;padding:9px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;';
+  if (grillBtn)   grillBtn.style.cssText   = (v === 'grille'  ? active : inactive);
+  if (hooversBtn) hooversBtn.style.cssText = (v === 'hoovers' ? active : inactive);
+  if (titleEl)    titleEl.textContent = (v === 'hoovers') ? "Reserve at Hoover's" : 'Reserve at Westwood Grill';
+  if (v === 'hoovers') {
+    if (timeInput) { timeInput.min = '17:00'; timeInput.max = '20:00'; if (timeInput.value < '17:00' || timeInput.value > '20:00') timeInput.value = '18:00'; }
+    if (hintEl) { hintEl.textContent = "Hoover's is open Thursday, Friday & Saturday, 5–8 PM last reservation."; hintEl.style.display = 'block'; }
+  } else {
+    if (timeInput) { timeInput.min = '11:00'; timeInput.max = '20:00'; if (timeInput.value < '11:00' || timeInput.value > '20:00') timeInput.value = '12:00'; }
+    if (hintEl) { hintEl.textContent = 'Westwood Grill is open Tuesday–Sunday, 11 AM–8 PM last reservation. Closed Mondays.'; hintEl.style.display = 'block'; }
+  }
+}
+
+function openDiningRes(venue) {
+  setModalVenue(venue || 'grille');
   var today = new Date();
   document.getElementById('md-date').value  = today.toISOString().split('T')[0];
   document.getElementById('md-party').value = '';
@@ -3089,12 +3463,122 @@ function confirmDining() {
   var date  = document.getElementById('md-date').value;
   var time  = document.getElementById('md-time').value;
   var party = document.getElementById('md-party').value;
+  var notes = document.getElementById('md-notes').value;
   if (!date || !party) { showToast('Please fill in date and party size.'); return; }
+
+  // Hoover's: Thursday, Friday & Saturday only, 5–8 PM last reservation
+  if (_activeDiningVenue === 'hoovers') {
+    var dow = new Date(date + 'T12:00:00').getDay(); // 0=Sun … 4=Thu, 5=Fri, 6=Sat
+    if (dow !== 4 && dow !== 5 && dow !== 6) {
+      showToast("Hoover's is only open Thursday, Friday & Saturday. Please select a valid date.");
+      return;
+    }
+    var hh = parseInt((time || '').split(':')[0]);
+    if (!time || hh < 17 || hh > 20) {
+      showToast("Hoover's reservations are available 5–8 PM only.");
+      return;
+    }
+  }
+
+  // Westwood Grill: closed Mondays, 11 AM–8 PM last reservation
+  if (_activeDiningVenue === 'grille') {
+    var dowG = new Date(date + 'T12:00:00').getDay(); // 1=Monday
+    if (dowG === 1) {
+      showToast('Westwood Grill is closed on Mondays. Please select another day.');
+      return;
+    }
+    var hhG = parseInt((time || '').split(':')[0]);
+    if (!time || hhG < 11 || hhG > 20) {
+      showToast('Westwood Grill reservations are available 11 AM–8 PM only.');
+      return;
+    }
+  }
+
   closeModal('modal-dining');
-  showToast('✅ Reservation requested for ' + party + ' on ' + date + ' at ' + time);
+
+  // Format date nicely
+  var d = new Date(date + 'T12:00:00');
+  var dateStr = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+
+  // Parse time into 24h and display formats
+  var time24 = time || '18:00';
+  var timeParts = time24.split(':');
+  var hh = parseInt(timeParts[0], 10);
+  var mm = timeParts[1] || '00';
+  var ampm = hh >= 12 ? 'PM' : 'AM';
+  var h12 = hh % 12 || 12;
+  var timeDisplay = h12 + ':' + mm + ' ' + ampm;
+
+  // Save reservation so staff can see it
+  var all = JSON.parse(localStorage.getItem('wh_dining_res') || '[]');
+  var res = {
+    id: Date.now().toString(),
+    isoDate: date,
+    date: d.toDateString(),
+    time24: time24,
+    timeDisplay: timeDisplay,
+    name: currentUser ? currentUser.name : 'Member',
+    party: party,
+    note: notes,
+    venue: _activeDiningVenue,
+    seated: false,
+    source: 'member'
+  };
+  all.push(res);
+  localStorage.setItem('wh_dining_res', JSON.stringify(all));
+
+  // Push to Ops Data (mobile staff portal)
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'save-ops-data', key: 'dining_res', data: all })
+  }).catch(function() {});
+
+  // Also push to Dining Reservations sheet (website staff portal)
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({
+      action:      'dining-reservation',
+      id:          res.id,
+      date:        res.isoDate,
+      time24:      res.time24,
+      timeDisplay: res.timeDisplay,
+      name:        res.name,
+      email:       currentUser ? currentUser.email : '',
+      party:       res.party,
+      note:        res.note,
+      venue:       _activeDiningVenue,
+      source:      'mobile',
+      submitted:   new Date().toISOString()
+    })
+  }).catch(function() {});
+
+
+  // Show confirmation card in dining tab
+  var conf = document.getElementById('dining-res-confirmation');
+  if (!conf) {
+    conf = document.createElement('div');
+    conf.id = 'dining-res-confirmation';
+    var diningPage = document.querySelector('#m-tab-dining .page');
+    if (diningPage) diningPage.insertBefore(conf, diningPage.firstChild);
+  }
+  conf.style.cssText = 'background:linear-gradient(135deg,var(--forest) 0%,#1e4d2b 100%);border-radius:12px;padding:16px;margin-bottom:16px;color:#f5f0e8;';
+  conf.innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
+      '<span style="font-size:1.2rem;">✅</span>' +
+      '<span style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4CAF50;">Reservation Confirmed</span>' +
+    '</div>' +
+    '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.1rem;font-weight:700;margin-bottom:4px;">' + dateStr + '</div>' +
+    '<div style="font-size:.8rem;color:rgba(245,240,232,.75);">' + timeDisplay + ' · Party of ' + party + (notes ? ' · ' + notes : '') + '</div>' +
+    '<div style="font-size:.7rem;color:rgba(245,240,232,.5);margin-top:8px;">We look forward to seeing you! Call (573) 785-5253 for changes.</div>';
+
+  goTab('member', 'dining');
+  showToast('✅ Reservation confirmed!');
 }
 
 function switchDiningView(view) {
+  _activeDiningVenue = (view === 'grill') ? 'grille' : 'hoovers';
   var hooversSection = document.getElementById('dt-hoovers-section');
   var grillSection = document.getElementById('dt-grill-section');
   var hooversBtn = document.getElementById('dt-hoovers-btn');
@@ -3291,76 +3775,12 @@ function saveMenuEdit() {
 
 // ════════════════════════════════════
 // STAFF INIT
-// ════════════════════════════════════
-// ════════════════════════════════════
-// PIN SHEET UPLOAD
-// ════════════════════════════════════
-function uploadPinSheet(input) {
-  var file = input.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var data = {src: e.target.result, uploaded: new Date().toISOString(), date: new Date().toDateString()};
-    localStorage.setItem('wh_pin_sheet', JSON.stringify(data));
-    renderPinSheetUpload();
-    // Update member view immediately
-    var memberImg = document.getElementById('pin-sheet-img');
-    if (memberImg) memberImg.src = e.target.result;
-    showToast('✅ Pin sheet updated — members see it now');
-  };
-  reader.readAsDataURL(file);
-  input.value = '';
-}
-function renderPinSheetUpload() {
-  var raw = localStorage.getItem('wh_pin_sheet');
-  var preview = document.getElementById('ps-preview');
-  var status  = document.getElementById('ps-status');
-  var clearBtn = document.getElementById('ps-clear-btn');
-  if (!preview) return;
-  if (raw) {
-    var data = JSON.parse(raw);
-    var uploaded = new Date(data.uploaded);
-    var timeStr = uploaded.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-    var dateStr = uploaded.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    preview.src = data.src;
-    preview.style.display = 'block';
-    if (status) status.textContent = 'Last uploaded ' + dateStr + ' at ' + timeStr;
-    if (clearBtn) clearBtn.style.display = 'inline-block';
-  } else {
-    preview.style.display = 'none';
-    if (status) status.textContent = 'No custom pin sheet uploaded — members see the default.';
-    if (clearBtn) clearBtn.style.display = 'none';
-  }
-}
-function clearPinSheet() {
-  localStorage.removeItem('wh_pin_sheet');
-  renderPinSheetUpload();
-  var memberImg = document.getElementById('pin-sheet-img');
-  if (memberImg) memberImg.src = 'https://skilltyb.github.io/whcc-website/images/pinsheet.jpg';
-  showToast('Pin sheet reset to default');
-}
-function loadPinSheetForMember() {
-  var raw = localStorage.getItem('wh_pin_sheet');
-  var img = document.getElementById('pin-sheet-img');
-  var dateEl = document.getElementById('pin-sheet-date');
-  if (!img) return;
-  if (raw) {
-    var data = JSON.parse(raw);
-    img.src = data.src;
-    if (dateEl) {
-      var d = new Date(data.uploaded);
-      dateEl.textContent = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) + ' · Updated ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-    }
-  } else {
-    if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-  }
-}
 
 // ════════════════════════════════════
 // POOL OPERATIONS
 // ════════════════════════════════════
 function poolLoad() { return JSON.parse(localStorage.getItem('wh_pool') || 'null') || {open:true, reason:'', bathers:0, notice:''}; }
-function poolSave(d) { localStorage.setItem('wh_pool', JSON.stringify(d)); }
+function poolSave(d) { localStorage.setItem('wh_pool', JSON.stringify(d)); WHCC_SYNC.opsPush('pool_status', d); }
 
 function initPool() { renderPoolStatus(); renderPoolNoticeCard(); renderPoolGuests(); renderChemLog(); }
 
@@ -3419,7 +3839,9 @@ function poolGuestLoad() { return JSON.parse(localStorage.getItem('wh_pool_guest
 function poolGuestSave(list) {
   var today = new Date().toDateString();
   var other = JSON.parse(localStorage.getItem('wh_pool_guests') || '[]').filter(function(g){ return g.date !== today; });
-  localStorage.setItem('wh_pool_guests', JSON.stringify(other.concat(list)));
+  var all = other.concat(list);
+  localStorage.setItem('wh_pool_guests', JSON.stringify(all));
+  WHCC_SYNC.opsPush('pool_guests', all);
 }
 function renderPoolGuests() {
   var el = document.getElementById('pool-guest-list');
@@ -3450,7 +3872,9 @@ function chemLoad() { return JSON.parse(localStorage.getItem('wh_pool_chem') || 
 function chemSaveAll(list) {
   var today = new Date().toDateString();
   var other = JSON.parse(localStorage.getItem('wh_pool_chem') || '[]').filter(function(r){ return r.date !== today; });
-  localStorage.setItem('wh_pool_chem', JSON.stringify(other.concat(list)));
+  var all = other.concat(list);
+  localStorage.setItem('wh_pool_chem', JSON.stringify(all));
+  WHCC_SYNC.opsPush('pool_chem', all);
 }
 function renderChemLog() {
   var el = document.getElementById('pool-chem-list');
@@ -3495,6 +3919,34 @@ function renderPoolChip() {
   if (d.notice) { noteEl.textContent = d.notice; noteEl.style.display=''; }
   else if (!d.open && d.reason) { noteEl.textContent = d.reason; noteEl.style.display=''; }
   else { noteEl.style.display='none'; }
+  // Keep member pool tab in sync
+  renderMemberPool();
+}
+
+// Member-facing pool tab render
+function renderMemberPool() {
+  var d = poolLoad();
+  var banner = document.getElementById('m-pool-status-banner');
+  var icon   = document.getElementById('m-pool-status-icon');
+  var label  = document.getElementById('m-pool-status-label');
+  var note   = document.getElementById('m-pool-status-note');
+  if (!banner) return;
+  if (d.open) {
+    banner.style.background = 'linear-gradient(135deg,#dcfce7,#bbf7d0)';
+    banner.style.border = '1px solid #86efac';
+    if (icon)  icon.textContent  = '🏊';
+    if (label) { label.textContent = 'Pool is Open'; label.style.color = '#166534'; }
+  } else {
+    banner.style.background = 'linear-gradient(135deg,#fee2e2,#fecaca)';
+    banner.style.border = '1px solid #fca5a5';
+    if (icon)  icon.textContent  = '🚫';
+    if (label) { label.textContent = 'Pool is Closed'; label.style.color = '#991b1b'; }
+  }
+  var msg = d.notice || (!d.open && d.reason ? d.reason : '');
+  if (note) {
+    if (msg) { note.textContent = msg; note.style.display = ''; note.style.color = d.open ? '#166534' : '#991b1b'; }
+    else { note.style.display = 'none'; }
+  }
 }
 
 // ════════════════════════════════════
@@ -3511,7 +3963,7 @@ function holeStatusLoad() {
   }
   return raw;
 }
-function holeStatusSave(list) { localStorage.setItem('wh_hole_status', JSON.stringify(list)); }
+function holeStatusSave(list) { localStorage.setItem('wh_hole_status', JSON.stringify(list)); WHCC_SYNC.opsPush('hole_status', list); }
 
 function renderHoleBoard() {
   var el = document.getElementById('hole-status-board');
@@ -3555,7 +4007,7 @@ function renderHoleAlerts() {
 }
 
 function woLoad() { return JSON.parse(localStorage.getItem('wh_work_orders') || '[]'); }
-function woSave(list) { localStorage.setItem('wh_work_orders', JSON.stringify(list)); }
+function woSave(list) { localStorage.setItem('wh_work_orders', JSON.stringify(list)); WHCC_SYNC.opsPush('work_orders', list); }
 function renderWorkOrders() {
   var el = document.getElementById('wo-list');
   if (!el) return;
@@ -3600,7 +4052,7 @@ function deleteWO(id) {
 }
 
 function sprayLoad() { return JSON.parse(localStorage.getItem('wh_spray_log') || '[]'); }
-function spraySave(list) { localStorage.setItem('wh_spray_log', JSON.stringify(list)); }
+function spraySave(list) { localStorage.setItem('wh_spray_log', JSON.stringify(list)); WHCC_SYNC.opsPush('spray_log', list); }
 function renderSprayLog() {
   var el = document.getElementById('spray-list');
   if (!el) return;
@@ -3688,6 +4140,7 @@ function staffMsgLoad() {
 }
 function staffMsgSave(list) {
   localStorage.setItem('wh_staff_messages', JSON.stringify(list));
+  WHCC_SYNC.opsPush('staff_messages', list);
 }
 function renderStaffMessages() {
   var el = document.getElementById('s-msg-list');
@@ -3739,6 +4192,7 @@ function lfLoad() {
 }
 function lfSave(list) {
   localStorage.setItem('wh_lost_found', JSON.stringify(list));
+  WHCC_SYNC.opsPush('lost_found', list);
 }
 function renderLostFound() {
   var el = document.getElementById('s-lf-list');
@@ -3806,6 +4260,7 @@ function incidentLoad() {
 }
 function incidentSave(list) {
   localStorage.setItem('wh_incidents', JSON.stringify(list));
+  WHCC_SYNC.opsPush('incidents', list);
 }
 function renderIncidents() {
   var el = document.getElementById('s-incident-list');
@@ -3880,8 +4335,11 @@ function refreshGlance() {
   if (el) el.textContent = totalOnCourse;
 
   // Dining reservations today
-  var today = new Date().toDateString();
-  var resList = JSON.parse(localStorage.getItem('wh_dining_res') || '[]').filter(function(r){ return r.date === today; });
+  var todayIsoG = new Date().toISOString().slice(0, 10);
+  var todayStrG = new Date().toDateString();
+  var resList = JSON.parse(localStorage.getItem('wh_dining_res') || '[]').filter(function(r){
+    return r.isoDate ? r.isoDate === todayIsoG : r.date === todayStrG;
+  });
   el = document.getElementById('s-stat-res');
   if (el) el.textContent = resList.length;
 
@@ -3957,17 +4415,57 @@ function clearMemberNotice() {
 // DINING RESERVATION LOG
 // ════════════════════════════════════
 function diningLoad() {
-  var today = new Date().toDateString();
-  return JSON.parse(localStorage.getItem('wh_dining_res') || '[]').filter(function(r){ return r.date === today; });
+  return JSON.parse(localStorage.getItem('wh_dining_res') || '[]');
+}
+function diningUpcoming() {
+  var todayStr = new Date().toISOString().slice(0, 10);
+  return diningLoad().filter(function(r) {
+    if (r.isoDate) return r.isoDate >= todayStr;
+    try { return new Date(r.date) >= new Date(todayStr + 'T00:00:00'); } catch(e) { return true; }
+  });
 }
 function diningSave(list) {
-  var today = new Date().toDateString();
-  var other = JSON.parse(localStorage.getItem('wh_dining_res') || '[]').filter(function(r){ return r.date !== today; });
-  localStorage.setItem('wh_dining_res', JSON.stringify(other.concat(list)));
+  localStorage.setItem('wh_dining_res', JSON.stringify(list));
+  WHCC_SYNC.opsPush('dining_res', list);
   refreshGlance();
 }
+function refreshDiningFromServer() {
+  fetch(WHCC_SCRIPT_URL + '?action=get-dining')
+    .then(function(r) { return r.json(); })
+    .then(function(rows) {
+      if (!Array.isArray(rows)) return;
+      // Convert website format → mobile format
+      var converted = rows.map(function(r) {
+        var isoDate = r['Date'] || '';
+        var d = isoDate ? new Date(isoDate + 'T12:00:00') : new Date();
+        var name = [r['First Name'], r['Last Name']].filter(Boolean).join(' ') || r['name'] || 'Guest';
+        var time24 = r['Time'] || r['time24'] || '18:00';
+        // normalize time24 — might come back as "6:00 PM" if stored as Date
+        var tdisplay = r['Time Display'] || r['timeDisplay'] || time24;
+        return {
+          id:          r['ID'] || r['id'] || String(Date.now()),
+          isoDate:     isoDate,
+          date:        d.toDateString(),
+          time24:      time24,
+          timeDisplay: tdisplay,
+          name:        name,
+          party:       r['Party Size'] || r['party'] || 1,
+          note:        r['Notes'] || r['note'] || '',
+          venue:       (r['Venue'] || r['venue'] || 'hoovers').toLowerCase(),
+          seated:      (r['Status'] || '').toLowerCase() === 'seated',
+          source:      r['Source'] || r['source'] || 'website'
+        };
+      });
+      localStorage.setItem('wh_dining_res', JSON.stringify(converted));
+      renderDiningLog();
+      refreshGlance();
+    }).catch(function() {});
+}
 function renderDiningLog() {
-  var list = diningLoad().sort(function(a,b){ return a.time24.localeCompare(b.time24); });
+  var list = diningUpcoming().sort(function(a,b) {
+    var ad = (a.isoDate || a.date) + a.time24, bd = (b.isoDate || b.date) + b.time24;
+    return ad.localeCompare(bd);
+  });
   var el = document.getElementById('s-dining-list');
   var cnt = document.getElementById('s-dining-count');
   if (!el) return;
@@ -3976,13 +4474,16 @@ function renderDiningLog() {
     if (cnt) cnt.textContent = '';
     return;
   }
-  var totalGuests = list.reduce(function(s,r){ return s + r.party; }, 0);
+  var todayIso = new Date().toISOString().slice(0, 10);
+  var totalGuests = list.reduce(function(s,r){ return s + parseInt(r.party||1); }, 0);
   el.innerHTML = list.map(function(r){
+    var isToday = r.isoDate ? r.isoDate === todayIso : r.date === new Date().toDateString();
+    var dateLabel = isToday ? '' : '<span style="font-size:.7rem;color:var(--gold);margin-left:4px;">' + (r.isoDate ? new Date(r.isoDate + 'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) : r.date) + '</span>';
     return '<div class="dr-row">' +
-      '<div class="dr-time">' + r.timeDisplay + '</div>' +
+      '<div class="dr-time">' + r.timeDisplay + dateLabel + '</div>' +
       '<div class="dr-info">' +
         '<div class="dr-name">' + r.name + '</div>' +
-        '<div class="dr-detail">Party of ' + r.party + (r.note ? ' &nbsp;·&nbsp; ' + r.note : '') + '</div>' +
+        '<div class="dr-detail">' + (r.venue === 'grille' ? 'Westwood Grill' : "Hoover's") + ' &nbsp;·&nbsp; Party of ' + r.party + (r.note ? ' &nbsp;·&nbsp; ' + r.note : '') + '</div>' +
       '</div>' +
       '<button class="ts-btn" onclick="removeReservation(\'' + r.id + '\')">✕</button>' +
     '</div>';
@@ -3997,9 +4498,16 @@ function addReservation() {
   if (!time24 || !name) { showToast('Please enter a time and party name'); return; }
   var h = parseInt(time24.split(':')[0]), m = time24.split(':')[1];
   var ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+  var todayIso = new Date().toISOString().slice(0, 10);
   var list = diningLoad();
-  list.push({id:Date.now().toString(), date:new Date().toDateString(), time24:time24, timeDisplay:h+':'+m+' '+ampm, name:name, party:party, note:note, seated:false});
+  var newRes = {id:Date.now().toString(), isoDate:todayIso, date:new Date().toDateString(), time24:time24, timeDisplay:h+':'+m+' '+ampm, name:name, party:party, note:note, seated:false, source:'staff'};
+  list.push(newRes);
   diningSave(list);
+  // Also write to the canonical Dining Reservations sheet
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ action:'dining-reservation', id:newRes.id, date:newRes.isoDate, time24:newRes.time24, timeDisplay:newRes.timeDisplay, name:newRes.name, party:newRes.party, note:newRes.note, source:'staff' })
+  }).catch(function(){});
   closeModal('modal-add-res');
   document.getElementById('dr-name').value = '';
   document.getElementById('dr-note').value = '';
@@ -4030,6 +4538,7 @@ function teeSheetLoad() {
 }
 function teeSheetSave(list) {
   localStorage.setItem('wh_on_course', JSON.stringify(list));
+  WHCC_SYNC.opsPush('on_course', list);
   refreshGlance();
 }
 function teeSheetLoad() {
@@ -4081,6 +4590,11 @@ function removeTeeTime(id) {
 }
 
 function initStaff() {
+  WHCC_SYNC.fetchAllOps(function() {
+    _initStaffUI();
+  });
+}
+function _initStaffUI() {
   var u     = currentUser;
   var first = u.name.split(' ')[0];
   var sSwBtn = document.getElementById('s-switch-btn');
@@ -4109,7 +4623,7 @@ function initStaff() {
   initGrounds();
   renderTeeSheet();
   renderDiningLog();
-  renderPinSheetUpload();
+
   renderStaffMessages();
   renderLostFound();
   renderIncidents();
@@ -4117,6 +4631,7 @@ function initStaff() {
   var n=new Date(); n.setMinutes(Math.round(n.getMinutes()/10)*10,0,0); var tStr=n.toTimeString().slice(0,5);
   var tsInput = document.getElementById('ts-time'); if (tsInput) tsInput.value = tStr;
   var drInput = document.getElementById('dr-time'); if (drInput) drInput.value = tStr;
+  refreshDiningFromServer();
   goTab('staff','dash');
 }
 
@@ -4264,6 +4779,12 @@ function loadWeather() {
       el = document.getElementById('wx-wind');    if(el) el.textContent = wind + ' ' + dir;
       el = document.getElementById('wx-feels');   if(el) el.textContent = feel + '°';
       el = document.getElementById('wx-verdict'); if(el) el.innerHTML   = '<div class="wx-badge ' + verdict.cls + '">' + verdict.label + '</div>';
+      // Course tab weather strip
+      el = document.getElementById('cwx-icon');    if(el) el.textContent = info.icon;
+      el = document.getElementById('cwx-temp');    if(el) el.innerHTML   = temp + '°F';
+      el = document.getElementById('cwx-desc');    if(el) el.textContent = info.desc;
+      el = document.getElementById('cwx-verdict'); if(el) { el.textContent = verdict.label; el.style.color = verdict.cls === 'great' || verdict.cls === 'good' ? '#4CAF50' : verdict.cls === 'poor' ? '#ef4444' : '#f59e0b'; }
+      el = document.getElementById('cwx-wind');    if(el) el.textContent = wind + ' mph ' + dir;
     })
     .catch(function() {
       var el = document.getElementById('wx-temp');
@@ -4342,7 +4863,8 @@ if ('serviceWorker' in navigator) {
 
 function openMemberTeeSheet(idx) {
   var ev = appEvents[idx];
-  goTab('member','teesheet');
+  goTab('member','golf');
+  golfSection('teesheet');
   mTeeSheetBuildEventDropdown();
   setTimeout(function() {
     var sel = document.getElementById('m-ts-event');
@@ -4617,7 +5139,146 @@ function completeSetup() {
     });
 }
 
+// ── HERO PHOTO ROTATION ───────────────────────────────────────────────────────
+(function() {
+  var heroPhotos = [];
+  var heroIdx = 0;
+  var heroBg = null;
+
+  function setHeroPhoto(url) {
+    if (!heroBg) heroBg = document.getElementById('m-hero-bg');
+    if (!heroBg || !url) return;
+    var img = new Image();
+    img.onload = function() {
+      heroBg.style.backgroundImage = 'url(' + url + ')';
+      heroBg.style.opacity = '1';
+    };
+    img.src = url;
+  }
+
+  function rotateHero() {
+    if (!heroPhotos.length) return;
+    heroIdx = (heroIdx + 1) % heroPhotos.length;
+    setHeroPhoto(heroPhotos[heroIdx]);
+  }
+
+  function initHeroPhotos() {
+    fetch(WHCC_SCRIPT_URL + '?action=get-photos')
+      .then(function(r) { return r.json(); })
+      .then(function(photos) {
+        if (!Array.isArray(photos) || !photos.length) return;
+        // Shuffle
+        heroPhotos = photos.sort(function() { return Math.random() - .5; }).map(function(p) { return p.url || p; });
+        setHeroPhoto(heroPhotos[0]);
+        setInterval(rotateHero, 6000);
+      })
+      .catch(function() {}); // silently fail — hero looks fine without photo
+  }
+
+  // Run after login
+  window._initHeroPhotos = initHeroPhotos;
+})();
+
+// ── PULL TO REFRESH ──────────────────────────────────────────────────────────
+(function() {
+  var startY = 0, pulling = false, indicator = null;
+  var THRESHOLD = 65;
+
+  function refreshCurrentTab() {
+    indicator = indicator || document.getElementById('ptr-indicator');
+    if (indicator) indicator.classList.add('ptr-visible');
+    // Re-run data loads for the active tab
+    loadWeather();
+    renderMemberEvents();
+    renderHomeEvents();
+    renderRoundLog();
+    WHCC_SYNC.refresh(function() {
+      renderMemberEvents();
+      renderHomeEvents();
+      setTimeout(function() {
+        if (indicator) indicator.classList.remove('ptr-visible');
+      }, 800);
+    });
+  }
+
+  document.addEventListener('touchstart', function(e) {
+    var screen = document.getElementById('screen-member');
+    if (!screen || screen.classList.contains('hidden')) return;
+    if (window.scrollY === 0) { startY = e.touches[0].clientY; pulling = true; }
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    if (!pulling) return;
+    var dy = e.changedTouches[0].clientY - startY;
+    pulling = false;
+    if (dy > THRESHOLD) refreshCurrentTab();
+  }, { passive: true });
+})();
+
 // ── LEAGUE SCHEDULES ─────────────────────────────────────────────────────────
+var ML_DATA = {
+  mens:   { name: "Men's League",       sub: 'Saturdays · 5:00 PM', dates: [
+    ['May 9','2026-05-09','Wk 1'],['May 16','2026-05-16','Wk 2'],['May 23','2026-05-23','Wk 3'],
+    ['May 30','2026-05-30','Wk 4'],['Jun 6','2026-06-06','Wk 5'],['Jun 13','2026-06-13','Wk 6'],
+    ['Jun 20','2026-06-20','Wk 7'],['Jun 27','2026-06-27','Wk 8'],['Jul 4','2026-07-04','Wk 9'],
+    ['Jul 11','2026-07-11','Wk 10'],['Jul 18','2026-07-18','Wk 11'],['Jul 25','2026-07-25','Wk 12'],
+    ['Aug 1','2026-08-01','Wk 13'],['Aug 8','2026-08-08','Wk 14'],['Aug 15','2026-08-15','Wk 15'],
+    ['Aug 22','2026-08-22','Final']
+  ]},
+  ladies: { name: 'Ladies Night',       sub: 'Tuesdays · 5:00 PM', dates: [
+    ['May 5','2026-05-05','Wk 1'],['May 12','2026-05-12','Wk 2'],['May 19','2026-05-19','Wk 3'],
+    ['May 26','2026-05-26','Wk 4'],['Jun 2','2026-06-02','Wk 5'],['Jun 9','2026-06-09','Wk 6'],
+    ['Jun 16','2026-06-16','Wk 7'],['Jun 23','2026-06-23','Wk 8'],['Jun 30','2026-06-30','Wk 9'],
+    ['Jul 7','2026-07-07','Wk 10'],['Jul 14','2026-07-14','Wk 11'],['Jul 21','2026-07-21','Wk 12'],
+    ['Jul 28','2026-07-28','Wk 13'],['Aug 4','2026-08-04','Wk 14'],['Aug 11','2026-08-11','Wk 15'],
+    ['Aug 18','2026-08-18','Final']
+  ]},
+  hg:     { name: 'Hit & Giggle',       sub: 'Wednesdays · 5:00 PM', dates: [
+    ['May 6','2026-05-06','Wk 1'],['May 13','2026-05-13','Wk 2'],['May 20','2026-05-20','Wk 3'],
+    ['May 27','2026-05-27','Wk 4'],['Jun 3','2026-06-03','Wk 5'],['Jun 10','2026-06-10','Wk 6'],
+    ['Jun 17','2026-06-17','Wk 7'],['Jun 24','2026-06-24','Wk 8'],['Jul 1','2026-07-01','Wk 9'],
+    ['Jul 8','2026-07-08','Wk 10'],['Jul 15','2026-07-15','Wk 11'],['Jul 22','2026-07-22','Wk 12'],
+    ['Jul 29','2026-07-29','Wk 13'],['Aug 5','2026-08-05','Wk 14'],['Aug 12','2026-08-12','Wk 15'],
+    ['Aug 19','2026-08-19','Final']
+  ]},
+  fnf:    { name: 'Friday Night Fights', sub: 'Fridays · 5:00 PM', dates: [
+    ['May 8','2026-05-08','Wk 1'],['May 15','2026-05-15','Wk 2'],['May 22','2026-05-22','Wk 3'],
+    ['May 29','2026-05-29','Wk 4'],['Jun 5','2026-06-05','Wk 5'],['Jun 12','2026-06-12','Wk 6'],
+    ['Jun 19','2026-06-19','Wk 7'],['Jun 26','2026-06-26','Wk 8'],['Jul 3','2026-07-03','Wk 9'],
+    ['Jul 10','2026-07-10','Wk 10'],['Jul 17','2026-07-17','Wk 11'],['Jul 24','2026-07-24','Wk 12'],
+    ['Jul 31','2026-07-31','Wk 13'],['Aug 7','2026-08-07','Wk 14'],['Aug 14','2026-08-14','Wk 15'],
+    ['Aug 21','2026-08-21','Final']
+  ]}
+};
+
+function mLeagueRenderUpcoming(id) {
+  var data = ML_DATA[id];
+  var el = document.getElementById('ml-upcoming-' + id);
+  if (!data || !el) return;
+  var today = new Date().toISOString().slice(0,10);
+  var upcoming = data.dates.filter(function(d){ return d[1] >= today; }).slice(0,3);
+
+  if (!upcoming.length) {
+    el.innerHTML = '<div style="font-size:.75rem;color:var(--muted);padding:8px 0;">Season complete — see you next year!</div>';
+    return;
+  }
+
+  var sub = '<div style="font-size:.68rem;color:var(--muted);margin-bottom:8px;">' + data.sub + '</div>';
+  var chips = upcoming.map(function(d, i) {
+    var isNext = i === 0;
+    return '<div onclick="mLeagueReg(\'' + data.name.replace(/'/g,"\\'") + '\',\'' + d[0] + '\',\'' + d[1] + '\')" style="'
+      + 'flex:1;text-align:center;padding:9px 4px;border-radius:8px;cursor:pointer;'
+      + 'background:' + (isNext ? 'var(--forest)' : 'rgba(26,74,38,.08)') + ';'
+      + 'border:1px solid ' + (isNext ? 'var(--forest)' : 'rgba(26,74,38,.2)') + ';'
+      + '">'
+      + '<div style="font-size:.78rem;font-weight:700;color:' + (isNext ? '#f5f0e8' : 'var(--dark)') + ';">' + d[0] + '</div>'
+      + '<div style="font-size:.62rem;color:' + (isNext ? 'rgba(245,240,232,.65)' : 'var(--muted)') + ';margin-top:2px;">' + d[2] + '</div>'
+      + '</div>';
+  }).join('');
+
+  el.innerHTML = sub + '<div style="display:flex;gap:8px;">' + chips + '</div>';
+}
+
 function mLeagueShow(which) {
   ['mens','ladies','hg','fnf'].forEach(function(id) {
     var panel = document.getElementById('ml-panel-' + id);
@@ -4628,7 +5289,12 @@ function mLeagueShow(which) {
     tab.style.background = active ? 'var(--forest)' : 'rgba(26,74,38,.12)';
     tab.style.color      = active ? '#f5f0e8'        : 'var(--muted)';
     tab.style.border     = active ? 'none'           : '1px solid rgba(26,74,38,.2)';
+    if (active) mLeagueRenderUpcoming(id);
   });
+}
+
+function mLeagueInitAll() {
+  ['mens','ladies','hg','fnf'].forEach(mLeagueRenderUpcoming);
 }
 
 function mLeagueReg(leagueName, dateLabel, isoDate) {

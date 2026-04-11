@@ -422,6 +422,91 @@
     .modal-btn.primary { background: var(--forest); color: var(--white); }
     .modal-btn.secondary { background: var(--sand); color: var(--dark); }
 
+    /* ── DARK MODE ── */
+    [data-theme="dark"] {
+      --white:  #1c2b21;
+      --cream:  #111b14;
+      --sand:   #182319;
+      --dark:   #e8f0e9;
+      --muted:  rgba(245,240,232,.45);
+      --border: rgba(255,255,255,.09);
+      --shadow: 0 2px 16px rgba(0,0,0,.45);
+    }
+    [data-theme="dark"] .wx-card { background:#1b3322 !important; color:var(--dark); }
+    [data-theme="dark"] .wx-cond-hdr { color:rgba(245,240,232,.6) !important; }
+    [data-theme="dark"] .wx-cond-lbl { color:rgba(245,240,232,.55) !important; }
+    [data-theme="dark"] .wx-cond-val { color:var(--dark) !important; }
+    [data-theme="dark"] .wx-notice   { background:rgba(255,220,100,.12); color:rgba(245,240,232,.85); }
+    [data-theme="dark"] .wx-stat-lbl { color:rgba(245,240,232,.5) !important; }
+    [data-theme="dark"] .wx-stat-val { color:var(--dark) !important; }
+    [data-theme="dark"] .wx-divider  { border-color:rgba(255,255,255,.08); }
+    [data-theme="dark"] .skel        { background:linear-gradient(90deg,#1c2b21 25%,#243328 50%,#1c2b21 75%);background-size:200% 100%; }
+    [data-theme="dark"] .modal-sheet { background:#1a2820; }
+    [data-theme="dark"] .modal-input,.cond-input,[data-theme="dark"] .cond-input,[data-theme="dark"] .cond-select { background:#111b14 !important; border-color:rgba(255,255,255,.1) !important; color:var(--dark) !important; }
+    [data-theme="dark"] .hole-tile.open   { background:#0e2e18; border-color:#2d6040; }
+    [data-theme="dark"] .hole-tile.temp   { background:#2e1e08; border-color:#8a6020; }
+    [data-theme="dark"] .hole-tile.closed { background:#2e0808; border-color:#8a2020; }
+    [data-theme="dark"] .chem-badge.good  { background:#0e2e18; color:#4ade80; }
+    [data-theme="dark"] .chem-badge.warn  { background:#2e1e08; color:#fbbf24; }
+    [data-theme="dark"] .chem-badge.bad   { background:#2e0808; color:#f87171; }
+    [data-theme="dark"] .inc-badge.urgent { background:#2e0808; color:#f87171; }
+    [data-theme="dark"] .inc-badge.medium { background:#2e1808; color:#fbbf24; }
+    [data-theme="dark"] .inc-badge.low    { background:#0e2e18; color:#4ade80; }
+    [data-theme="dark"] .inc-badge.resolved { background:#1c2b21; color:var(--muted); }
+    [data-theme="dark"] .lf-status.unclaimed { background:rgba(184,150,62,.15); color:var(--gold-light,#d4ab50); }
+    [data-theme="dark"] .ev-fee-row { background:rgba(255,255,255,.05); }
+    [data-theme="dark"] select.modal-input { background-color:#111b14 !important; }
+
+    /* ── SCORECARD ── */
+    .sc-grid { display:grid; grid-template-columns:repeat(9,1fr); gap:4px; margin-bottom:8px; }
+    .sc-hole { text-align:center; }
+    .sc-hole-num { font-size:.6rem; font-weight:700; color:var(--muted); margin-bottom:2px; }
+    .sc-hole-par { font-size:.55rem; color:var(--gold); margin-bottom:3px; }
+    .sc-hole-in  { width:100%; padding:5px 2px; border:1.5px solid var(--border); border-radius:6px; font-size:.82rem; font-weight:600; text-align:center; background:var(--white); color:var(--dark); box-sizing:border-box; }
+    .sc-hole-in:focus { border-color:var(--forest); outline:none; }
+    .sc-vs { font-size:.5rem; font-weight:700; margin-top:2px; }
+    .sc-vs.under { color:var(--success); }
+    .sc-vs.over  { color:var(--danger); }
+    .sc-vs.even  { color:var(--muted); }
+    .sc-totals { display:flex; gap:12px; padding:10px 14px; background:var(--forest); border-radius:var(--radius-sm); color:var(--white); font-size:.8rem; }
+    .sc-tot-item { text-align:center; flex:1; }
+    .sc-tot-num  { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:700; }
+    .sc-tot-lbl  { font-size:.6rem; opacity:.6; text-transform:uppercase; letter-spacing:.06em; }
+
+    /* ── HOLE GUIDE ── */
+    .hg-row { display:grid; grid-template-columns:28px 24px 24px 1fr; gap:0; align-items:center; padding:6px 0; border-bottom:1px solid var(--border); font-size:.78rem; }
+    .hg-row:last-child { border-bottom:none; }
+    .hg-num  { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:700; color:var(--forest); }
+    .hg-par  { font-size:.7rem; font-weight:600; color:var(--gold); }
+    .hg-hcp  { font-size:.62rem; color:var(--muted); }
+    .hg-yds  { display:flex; gap:8px; justify-content:flex-end; }
+    .hg-tee  { font-size:.7rem; font-weight:600; padding:1px 6px; border-radius:10px; }
+    .hg-tee.blue  { background:#dbeafe; color:#1e40af; }
+    .hg-tee.white { background:#f3f4f6; color:#374151; }
+    .hg-tee.red   { background:#fee2e2; color:#991b1b; }
+
+    /* ── KITCHEN 86 BOARD ── */
+    .k86-item { background:var(--danger); color:#fff; border-radius:var(--radius); padding:18px 20px; margin-bottom:10px; display:flex; align-items:center; gap:14px; }
+    .k86-name { font-size:1.3rem; font-weight:700; flex:1; }
+    .k86-sec  { font-size:.78rem; opacity:.75; }
+    .k86-restore { background:rgba(255,255,255,.2); border:none; border-radius:20px; color:#fff; font-size:.75rem; font-weight:600; padding:6px 14px; cursor:pointer; flex-shrink:0; }
+
+    /* ── GLOBAL SEARCH ── */
+    #search-overlay { position:fixed; inset:0; z-index:350; background:rgba(0,0,0,.5); display:none; }
+    #search-overlay.open { display:flex; flex-direction:column; }
+    .search-bar  { background:var(--white); padding:12px 16px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .search-input { flex:1; padding:10px 14px; border:1.5px solid var(--border); border-radius:24px; font-size:.9rem; outline:none; background:var(--cream); color:var(--dark); }
+    .search-input:focus { border-color:var(--forest); }
+    .search-cancel { background:none; border:none; font-size:.84rem; font-weight:600; color:var(--forest); cursor:pointer; }
+    .search-results { flex:1; overflow-y:auto; background:var(--cream); }
+    .sr-section { padding:10px 16px 4px; font-size:.62rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+    .sr-item  { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; background:var(--white); }
+    .sr-item:active { background:var(--cream); }
+    .sr-icon  { font-size:1.1rem; width:36px; text-align:center; flex-shrink:0; }
+    .sr-main  { flex:1; }
+    .sr-title { font-size:.86rem; font-weight:600; color:var(--dark); }
+    .sr-sub   { font-size:.72rem; color:var(--muted); margin-top:1px; }
+
     /* ── NETWORK BANNER ── */
     #network-banner{position:fixed;top:0;left:0;right:0;z-index:501;display:flex;align-items:center;justify-content:center;gap:7px;font-size:.78rem;font-weight:600;height:0;overflow:hidden;transition:height .2s ease;}
     #network-banner.nb-show{height:44px;padding-top:env(safe-area-inset-top);}
@@ -526,6 +611,7 @@
     <input class="login-input" id="li-pin" type="password" placeholder="4-digit PIN" maxlength="4" pattern="[0-9]*" inputmode="numeric">
     <div class="login-error" id="li-error"></div>
     <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <button class="login-btn" id="bio-login-btn" onclick="doBiometricLogin()" style="display:none;background:var(--gold);margin-top:-8px;">🔐 Use Face / Touch ID</button>
     <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:4px;cursor:pointer;" onclick="showToast('Contact the Pro Shop at (573) 785-5253 to reset your PIN.')">Forgot your PIN?</p>
     <p style="text-align:center;font-size:.78rem;font-weight:600;color:var(--gold);margin-top:10px;cursor:pointer;" onclick="showSetup()">First time here? Set up your PIN →</p>
   </div>
@@ -612,6 +698,7 @@
   <div class="app-header">
     <div class="hdr-logo">W</div>
     <div class="hdr-title">Westwood Hills CC</div><span id="m-hdr-user" style="color:rgba(255,255,255,.7);font-size:.75rem;margin-right:4px;"></span>
+    <button onclick="openSearch()" style="background:none;border:none;color:rgba(255,255,255,.75);font-size:1.1rem;cursor:pointer;padding:4px 8px;margin-right:2px;" aria-label="Search">🔍</button>
     <button id="m-switch-btn" onclick="switchView('staff')" style="display:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;margin-right:6px;letter-spacing:.03em;">Staff →</button>
     <button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;letter-spacing:.03em;">Sign Out</button>
   </div>
@@ -649,6 +736,9 @@
               <div class="wx-stat"><div class="wx-stat-lbl">🌧 Rain (3 hr)</div><div class="wx-stat-val" id="wx-rain">—</div></div>
               <div class="wx-stat"><div class="wx-stat-lbl">💨 Wind</div><div class="wx-stat-val" id="wx-wind">—</div></div>
               <div class="wx-stat"><div class="wx-stat-lbl">🌡 Feels Like</div><div class="wx-stat-val" id="wx-feels">—</div></div>
+              <div class="wx-stat"><div class="wx-stat-lbl">☀️ UV Index</div><div class="wx-stat-val" id="wx-uv">—</div></div>
+              <div class="wx-stat"><div class="wx-stat-lbl">🌅 Sunrise</div><div class="wx-stat-val" id="wx-sunrise">—</div></div>
+              <div class="wx-stat"><div class="wx-stat-lbl">🌇 Sunset</div><div class="wx-stat-val" id="wx-sunset">—</div></div>
             </div>
             <hr class="wx-divider">
             <div class="wx-cond-box">
@@ -985,10 +1075,10 @@
           <button onclick="mLeagueShow('fnf')" id="ml-tab-fnf" style="flex-shrink:0;padding:5px 12px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;">Fri Night</button>
         </div>
 
-        <div id="ml-panel-mens"><div id="ml-upcoming-mens"></div></div>
-        <div id="ml-panel-ladies" style="display:none;"><div id="ml-upcoming-ladies"></div></div>
-        <div id="ml-panel-hg" style="display:none;"><div id="ml-upcoming-hg"></div></div>
-        <div id="ml-panel-fnf" style="display:none;"><div id="ml-upcoming-fnf"></div></div>
+        <div id="ml-panel-mens"><div id="ml-upcoming-mens"></div><div id="ml-standings-mens"></div></div>
+        <div id="ml-panel-ladies" style="display:none;"><div id="ml-upcoming-ladies"></div><div id="ml-standings-ladies"></div></div>
+        <div id="ml-panel-hg" style="display:none;"><div id="ml-upcoming-hg"></div><div id="ml-standings-hg"></div></div>
+        <div id="ml-panel-fnf" style="display:none;"><div id="ml-upcoming-fnf"></div><div id="ml-standings-fnf"></div></div>
       </div>
 
       <div id="m-events-list"><div style="padding:8px 0;"><div class="skel skel-line" style="height:80px;margin-bottom:10px;border-radius:10px;"></div><div class="skel skel-line" style="height:80px;margin-bottom:10px;border-radius:10px;"></div><div class="skel skel-line" style="height:80px;border-radius:10px;"></div></div></div>
@@ -1127,6 +1217,19 @@
           </div>
           <label class="notif-toggle">
             <input type="checkbox" id="notif-dining" onchange="saveNotifPrefs()">
+            <span class="notif-slider"></span>
+          </label>
+        </div>
+      </div>
+      <!-- DARK MODE -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="notif-row">
+          <div class="notif-info">
+            <div class="notif-label">🌙 Dark Mode</div>
+            <div class="notif-sub">Easier on the eyes at night</div>
+          </div>
+          <label class="notif-toggle">
+            <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode(this.checked)">
             <span class="notif-slider"></span>
           </label>
         </div>
@@ -1296,6 +1399,16 @@
         </div>
       </div>
 
+      <!-- SHIFT HANDOFF NOTES -->
+      <div class="card" style="margin-bottom:12px;border-left:3px solid var(--forest);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="card-title" style="margin:0;">🔄 Shift Handoff Notes</div>
+          <span id="handoff-saved-lbl" style="font-size:.65rem;color:var(--success);display:none;">✓ Saved</span>
+        </div>
+        <textarea id="handoff-notes-input" class="cond-textarea" placeholder="Notes for next shift: course status, incidents, open items, etc." style="min-height:90px;resize:none;margin-bottom:10px;"></textarea>
+        <button class="ev-reg-btn" style="width:100%;margin:0;" onclick="saveHandoffNotes()">Save Handoff Notes</button>
+        <div id="handoff-prev" style="display:none;margin-top:10px;padding:10px 12px;background:var(--cream);border-radius:var(--radius-sm);font-size:.78rem;color:var(--dark);line-height:1.5;"></div>
+      </div>
       <!-- PUSH A NOTICE -->
       <div class="card" style="margin-bottom:12px;border-left:3px solid #e67e22;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -1435,9 +1548,21 @@
       <div class="card" style="margin-bottom:12px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div class="card-title" style="margin:0;">🚫 86'd Today</div>
-          <button class="ts-btn checkin" onclick="open86Modal()">+ Mark 86</button>
+          <div style="display:flex;gap:8px;">
+            <button class="ts-btn" onclick="toggleKitchenView()" id="kitchen-view-btn" style="font-size:.68rem;">👨‍🍳 Kitchen View</button>
+            <button class="ts-btn checkin" onclick="open86Modal()">+ Mark 86</button>
+          </div>
         </div>
         <div id="s-86-list"><div class="ts-empty" style="font-size:.78rem;">No items 86'd — members see full menu</div></div>
+      </div>
+      <!-- KITCHEN 86 BOARD (large-text view for kitchen display) -->
+      <div id="kitchen-board" style="display:none;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">Kitchen Display — 86'd Items</div>
+          <button onclick="toggleKitchenView()" style="background:none;border:none;color:var(--muted);font-size:.75rem;cursor:pointer;">✕ Close</button>
+        </div>
+        <div id="kitchen-board-items"></div>
+        <div id="kitchen-board-empty" style="display:none;text-align:center;padding:30px;font-size:1.1rem;color:var(--success);font-weight:700;">✅ All clear — nothing 86'd</div>
       </div>
       <div id="s-menu-sections"></div>
     </div>
@@ -2323,6 +2448,10 @@ function loginAs(acct, email) {
   var isFirstLogin = !localStorage.getItem('wh_onboarded');
   currentUser = Object.assign({email: email}, acct);
   localStorage.setItem('wh_current_user', JSON.stringify(currentUser));
+  // Offer biometric enrollment after PIN login (member only, if not already enrolled)
+  if (acct.role === 'member' || acct.role === 'both') {
+    maybeOfferBiometric(email, acct);
+  }
   if (acct.role === 'both') {
     var sub = document.getElementById('picker-sub');
     if (sub) sub.textContent = 'Welcome, ' + (acct.name ? acct.name.split(' ')[0] : 'back') + '!';
@@ -2654,6 +2783,9 @@ function _initMemberUI() {
   // Sync status + notification prefs
   updateSyncLabel();
   loadNotifPrefs();
+  // Restore dark mode toggle state
+  var dmToggle = document.getElementById('dark-mode-toggle');
+  if (dmToggle) dmToggle.checked = localStorage.getItem('wh_dark_mode') === '1';
 }
 
 function greet() {
@@ -3187,6 +3319,17 @@ var WHCC_SYNC = {
       .then(function(r){ return r.json(); })
       .then(function(d){ if (cb) cb(d, null); })
       .catch(function(e){ if (cb) cb(null, e); });
+  },
+
+  // Fetch member directory from Apps Script
+  fetchMembers: function(cb) {
+    fetch(WHCC_SCRIPT_URL + '?action=get-members')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var list = Array.isArray(data) ? data : (data && Array.isArray(data.members) ? data.members : null);
+        if (cb) cb(list, list ? null : new Error('bad response'));
+      })
+      .catch(function(e) { if (cb) cb(null, e); });
   },
 
   // Generic ops key/value push — fire and forget
@@ -3812,7 +3955,11 @@ function eventCardHTML(ev, idx, isStaff) {
               '<button class="ev-reg-btn registered" style="flex:1;pointer-events:none;">✓ Registered</button>' +
               '<button class="ts-btn" style="font-size:.72rem;flex-shrink:0;" onclick="cancelReg(' + idx + ')">Cancel</button>' +
             '</div>'
-          : '<button class="ev-reg-btn' + (isFull ? ' disabled" disabled' : '"') + ' onclick="' + (isFull ? '' : 'openAppReg(\'' + ev.title.replace(/'/g,"\\'") + '\',\'' + (ev.time||'').replace(/'/g,"\\'") + '\',' + isTeam + ')') + '">' + (isFull ? 'Event Full' : 'Register') + '</button>';
+          : isFull
+            ? (isOnWaitlist(ev.title)
+                ? '<button class="ev-reg-btn" style="background:#6b7280;cursor:default;" disabled>✓ On Waitlist</button>'
+                : '<button class="ev-reg-btn" style="background:#92400e;" onclick="joinWaitlist(\'' + ev.title.replace(/'/g,"\\'") + '\')">Join Waitlist</button>')
+            : '<button class="ev-reg-btn" onclick="openAppReg(\'' + ev.title.replace(/'/g,"\\'") + '\',\'' + (ev.time||'').replace(/'/g,"\\'") + '\',' + isTeam + ')">Register</button>';
         return capacityBadge + regBtn + '<button class="ts-btn" style="font-size:.72rem;margin-top:6px;width:100%;" onclick="openMemberTeeSheet(' + idx + ')">Tee Sheet</button>';
       })();
   var metaRows = '';
@@ -3849,6 +3996,27 @@ function cancelReg(idx) {
 function upcomingEvents() {
   var today = new Date().toISOString().slice(0, 10);
   return appEvents.filter(function(ev) { return ev.date >= today; });
+}
+
+// ── WAITLIST ──────────────────────────────────────────────────────────────────
+function getWaitlist() {
+  try { return JSON.parse(localStorage.getItem('wh_waitlist') || '{}'); } catch(e) { return {}; }
+}
+function isOnWaitlist(eventTitle) {
+  if (!currentUser) return false;
+  var wl = getWaitlist();
+  return !!(wl[eventTitle] && wl[eventTitle].indexOf(currentUser.email) >= 0);
+}
+function joinWaitlist(eventTitle) {
+  if (!currentUser) return;
+  var wl = getWaitlist();
+  if (!wl[eventTitle]) wl[eventTitle] = [];
+  if (wl[eventTitle].indexOf(currentUser.email) >= 0) { showToast('Already on waitlist'); return; }
+  wl[eventTitle].push(currentUser.email);
+  localStorage.setItem('wh_waitlist', JSON.stringify(wl));
+  WHCC_SYNC.opsPush('waitlist_' + eventTitle.replace(/[^a-z0-9]/gi,'_'), { event: eventTitle, waitlist: wl[eventTitle] });
+  renderMemberEvents();
+  showToast('Added to waitlist for ' + eventTitle);
 }
 
 function renderMemberEvents() {
@@ -4148,6 +4316,24 @@ function confirmDining() {
   }).catch(function() {});
 
 
+  // Send confirmation email via Apps Script
+  if (currentUser && currentUser.email) {
+    fetch(WHCC_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action:      'send-dining-confirm',
+        email:       currentUser.email,
+        name:        currentUser.name || 'Member',
+        venue:       _activeDiningVenue === 'hoovers' ? "Hoover's" : 'Westwood Grill',
+        date:        dateStr,
+        time:        timeDisplay,
+        party:       party,
+        note:        notes || ''
+      })
+    }).catch(function() {});
+  }
+
   // Show confirmation card in dining tab
   var conf = document.getElementById('dining-res-confirmation');
   if (!conf) {
@@ -4271,6 +4457,31 @@ function render86List() {
   el.innerHTML = list.map(function(item) {
     return '<div class="ts-row"><div class="ts-info"><div class="ts-name" style="text-decoration:line-through;color:var(--muted);">' + item.name + '</div><div class="ts-detail">' + MENU_SECTION_LABELS[item.section] + '</div></div><button class="ts-btn" onclick="remove86Item(\'' + item.id + '\')">Restore</button></div>';
   }).join('');
+  renderKitchenBoard();
+}
+function renderKitchenBoard() {
+  var itemsEl = document.getElementById('kitchen-board-items');
+  var emptyEl = document.getElementById('kitchen-board-empty');
+  if (!itemsEl) return;
+  var list = load86List();
+  if (!list.length) {
+    itemsEl.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+  itemsEl.innerHTML = list.map(function(item) {
+    return '<div class="k86-item"><div><div class="k86-name">' + item.name + '</div><div class="k86-sec">' + MENU_SECTION_LABELS[item.section] + '</div></div><button class="k86-restore" onclick="remove86Item(\'' + item.id + '\')">Restore</button></div>';
+  }).join('');
+}
+function toggleKitchenView() {
+  var board = document.getElementById('kitchen-board');
+  var btn   = document.getElementById('kitchen-view-btn');
+  if (!board) return;
+  var showing = board.style.display !== 'none';
+  board.style.display = showing ? 'none' : 'block';
+  if (btn) btn.textContent = showing ? '👨‍🍳 Kitchen View' : '✕ Hide Board';
+  if (!showing) renderKitchenBoard();
 }
 function open86Modal() {
   var secEl = document.getElementById('86-section');
@@ -4309,6 +4520,7 @@ function add86Item() {
 function remove86Item(id) {
   save86List(load86List().filter(function(i){ return i.id !== id; }));
   render86List();
+  renderKitchenBoard();
   renderStaffMenus();
   showToast('✅ Item restored to menu');
 }
@@ -4698,31 +4910,58 @@ function memberSearch(q) {
   if (!el) return;
   var term = q.trim().toLowerCase();
   if (!term) { el.innerHTML = ''; return; }
-  var results = MEMBER_DIRECTORY.filter(function(m) {
-    return m.name.toLowerCase().indexOf(term) !== -1 ||
-           m.number.indexOf(term) !== -1;
-  });
-  if (!results.length) {
-    el.innerHTML = '<div class="mem-empty">No members found for "' + q + '"</div>';
-    return;
+
+  function renderResults(dir) {
+    var results = dir.filter(function(m) {
+      return (m.name || '').toLowerCase().indexOf(term) !== -1 ||
+             (m.number || '').indexOf(term) !== -1 ||
+             (m.email  || '').toLowerCase().indexOf(term) !== -1;
+    });
+    if (!results.length) {
+      el.innerHTML = '<div class="mem-empty">No members found for "' + q + '"</div>';
+      return;
+    }
+    el.innerHTML = results.slice(0, 15).map(function(m) {
+      var hcpPill = m.handicap && m.handicap !== 'N/A'
+        ? '<span class="mem-pill hcp">HCP ' + m.handicap + '</span>'
+        : '';
+      var phonePart = m.phone ? '<a href="tel:' + m.phone.replace(/\D/g,'') + '" class="mem-contact-btn">📞 ' + m.phone + '</a>' : '';
+      var emailPart = m.email ? '<a href="mailto:' + m.email + '" class="mem-contact-btn">✉️ Email</a>' : '';
+      return '<div class="mem-result">' +
+        '<div><span class="mem-name">' + m.name + '</span>' + (m.number ? '<span class="mem-number">#' + m.number + '</span>' : '') + '</div>' +
+        '<div class="mem-pills">' +
+          (m.membership ? '<span class="mem-pill type">' + m.membership + '</span>' : '') +
+          hcpPill +
+          (m.since ? '<span class="mem-pill since">Member since ' + m.since + '</span>' : '') +
+        '</div>' +
+        '<div class="mem-contact-row">' + phonePart + emailPart + '</div>' +
+      '</div>';
+    }).join('');
   }
-  el.innerHTML = results.map(function(m) {
-    var hcpPill = m.handicap !== 'N/A'
-      ? '<span class="mem-pill hcp">HCP ' + m.handicap + '</span>'
-      : '';
-    return '<div class="mem-result">' +
-      '<div><span class="mem-name">' + m.name + '</span><span class="mem-number">#' + m.number + '</span></div>' +
-      '<div class="mem-pills">' +
-        '<span class="mem-pill type">' + m.membership + '</span>' +
-        hcpPill +
-        '<span class="mem-pill since">Member since ' + m.since + '</span>' +
-      '</div>' +
-      '<div class="mem-contact-row">' +
-        '<a href="tel:' + m.phone.replace(/\D/g,'') + '" class="mem-contact-btn">📞 ' + m.phone + '</a>' +
-        '<a href="mailto:' + m.email + '" class="mem-contact-btn">✉️ Email</a>' +
-      '</div>' +
-    '</div>';
-  }).join('');
+
+  // Use local directory if populated, otherwise fetch from server
+  if (MEMBER_DIRECTORY && MEMBER_DIRECTORY.length) {
+    renderResults(MEMBER_DIRECTORY);
+  } else {
+    // Try cached fetch first
+    var cached = null;
+    try { cached = JSON.parse(localStorage.getItem('wh_member_dir') || 'null'); } catch(e) {}
+    if (cached && cached.length) {
+      MEMBER_DIRECTORY = cached;
+      renderResults(cached);
+    } else {
+      el.innerHTML = '<div class="mem-empty" style="opacity:.6;">Searching…</div>';
+      WHCC_SYNC.fetchMembers(function(data, err) {
+        if (err || !data) {
+          el.innerHTML = '<div class="mem-empty">Member directory unavailable — check connection</div>';
+          return;
+        }
+        MEMBER_DIRECTORY = data;
+        try { localStorage.setItem('wh_member_dir', JSON.stringify(data)); } catch(e) {}
+        renderResults(data);
+      });
+    }
+  }
 }
 
 // ════════════════════════════════════
@@ -4775,6 +5014,36 @@ function deleteStaffMessage(posted) {
   var msgs = staffMsgLoad().filter(function(m){ return m.posted !== posted; });
   staffMsgSave(msgs);
   renderStaffMessages();
+}
+
+// ════════════════════════════════════
+// SHIFT HANDOFF NOTES
+// ════════════════════════════════════
+function loadHandoffNotes() {
+  var input = document.getElementById('handoff-notes-input');
+  var prevEl = document.getElementById('handoff-prev');
+  var data = null;
+  try { data = JSON.parse(localStorage.getItem('wh_handoff') || 'null'); } catch(e) {}
+  // Show current shift's notes in input
+  if (input && data && data.current) input.value = data.current;
+  // Show previous shift's notes below
+  if (prevEl && data && data.previous) {
+    prevEl.style.display = 'block';
+    prevEl.innerHTML = '<div style="font-size:.62rem;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Previous shift notes</div>' + data.previous.replace(/\n/g,'<br>');
+  }
+}
+function saveHandoffNotes() {
+  var input = document.getElementById('handoff-notes-input');
+  var text  = input ? input.value.trim() : '';
+  if (!text) { showToast('Add notes first'); return; }
+  var data = null;
+  try { data = JSON.parse(localStorage.getItem('wh_handoff') || 'null'); } catch(e) {}
+  var newData = { current: text, previous: data && data.current ? data.current : '' };
+  localStorage.setItem('wh_handoff', JSON.stringify(newData));
+  WHCC_SYNC.opsPush('handoff_notes', { author: currentUser && currentUser.name, notes: text, ts: Date.now() });
+  var lbl = document.getElementById('handoff-saved-lbl');
+  if (lbl) { lbl.style.display = 'inline'; setTimeout(function(){ lbl.style.display = 'none'; }, 2500); }
+  showToast('Handoff notes saved');
 }
 
 // ════════════════════════════════════
@@ -5218,6 +5487,7 @@ function _initStaffUI() {
   renderDiningLog();
 
   renderStaffMessages();
+  loadHandoffNotes();
   renderLostFound();
   renderIncidents();
   // Default time inputs to current time rounded to nearest 10 min
@@ -5366,6 +5636,7 @@ function loadWeather() {
     '?latitude=36.7566&longitude=-90.3932' +
     '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m' +
     '&hourly=precipitation_probability' +
+    '&daily=sunrise,sunset,uv_index_max' +
     '&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FChicago&forecast_days=1';
 
   fetch(url)
@@ -5397,6 +5668,22 @@ function loadWeather() {
       el = document.getElementById('wx-wind');    if(el) el.textContent = wind + ' ' + dir;
       el = document.getElementById('wx-feels');   if(el) el.textContent = feel + '°';
       el = document.getElementById('wx-verdict'); if(el) el.innerHTML   = '<div class="wx-badge ' + verdict.cls + '">' + verdict.label + '</div>';
+      // UV + sunrise/sunset from daily
+      if (data.daily) {
+        var uv = data.daily.uv_index_max && data.daily.uv_index_max[0] != null ? data.daily.uv_index_max[0] : null;
+        if (uv !== null) {
+          var uvLabel = uv <= 2 ? uv + ' Low' : uv <= 5 ? uv + ' Moderate' : uv <= 7 ? uv + ' High' : uv + ' Very High';
+          el = document.getElementById('wx-uv'); if(el) el.textContent = uvLabel;
+        }
+        function fmtTime(isoStr) {
+          if (!isoStr) return '—';
+          var d = new Date(isoStr);
+          var h = d.getHours(), m = d.getMinutes();
+          return (h % 12 || 12) + ':' + (m < 10 ? '0' : '') + m + (h < 12 ? ' AM' : ' PM');
+        }
+        el = document.getElementById('wx-sunrise'); if(el) el.textContent = fmtTime(data.daily.sunrise && data.daily.sunrise[0]);
+        el = document.getElementById('wx-sunset');  if(el) el.textContent = fmtTime(data.daily.sunset  && data.daily.sunset[0]);
+      }
       // Course tab weather strip
       el = document.getElementById('cwx-icon');    if(el) el.textContent = info.icon;
       el = document.getElementById('cwx-temp');    if(el) el.innerHTML   = temp + '°F';
@@ -5473,11 +5760,44 @@ if ('serviceWorker' in navigator) {
   });
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('sw.js?v=4', { updateViaCache: 'none' })
-      .then(function(r) {
-        r.update(); // immediately check for a newer worker
+      .then(function(reg) {
+        reg.update(); // immediately check for a newer worker
+        // Show update banner when a new SW is waiting
+        function checkWaiting(r) {
+          if (r.waiting) showUpdateBanner(r);
+        }
+        checkWaiting(reg);
+        reg.addEventListener('updatefound', function() {
+          var newWorker = reg.installing;
+          newWorker.addEventListener('statechange', function() {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateBanner(reg);
+            }
+          });
+        });
       })
       .catch(function() {});
   });
+}
+
+function showUpdateBanner(reg) {
+  var existing = document.getElementById('update-banner');
+  if (existing) return;
+  var banner = document.createElement('div');
+  banner.id = 'update-banner';
+  banner.style.cssText = 'position:fixed;bottom:calc(var(--tab-h) + var(--safe-b) + 8px);left:50%;transform:translateX(-50%);background:var(--forest);color:#fff;border-radius:24px;padding:10px 20px;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:12px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.35);white-space:nowrap;';
+  banner.innerHTML = '<span>✨ App update available</span><button onclick="applyUpdate(this.closest(\'#update-banner\'))" style="background:var(--gold);color:#fff;border:none;border-radius:20px;padding:5px 14px;font-size:.75rem;font-weight:700;cursor:pointer;">Update</button>';
+  document.body.appendChild(banner);
+  window._pendingSwReg = reg;
+}
+function applyUpdate(bannerEl) {
+  if (bannerEl) bannerEl.remove();
+  var reg = window._pendingSwReg;
+  if (reg && reg.waiting) {
+    reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+  } else {
+    window.location.reload();
+  }
 }
 
 
@@ -6203,6 +6523,60 @@ function mLeagueRenderUpcoming(id) {
   el.innerHTML = sub + '<div style="display:flex;gap:8px;">' + chips + '</div>';
 }
 
+function mLeagueRenderStandings(id) {
+  var el = document.getElementById('ml-standings-' + id);
+  if (!el) return;
+  // Collect all scores from events associated with this league
+  var leagueName = ML_DATA[id] ? ML_DATA[id].name : '';
+  var totals = {};
+  appEvents.forEach(function(ev, idx) {
+    if (!ev.title) return;
+    var isLeague = (leagueName && ev.title.toLowerCase().indexOf(leagueName.split(' ')[0].toLowerCase()) >= 0)
+                || (id === 'fnf' && ev.title.toLowerCase().indexOf('friday') >= 0)
+                || (id === 'hg'  && ev.title.toLowerCase().indexOf('giggle') >= 0);
+    if (!isLeague) return;
+    var scores = JSON.parse(localStorage.getItem('wh_scores_' + idx) || '[]');
+    scores.forEach(function(s) {
+      var key = s.name;
+      if (!totals[key]) totals[key] = { name: s.name, rounds: 0, grossTotal: 0, netTotal: 0 };
+      totals[key].rounds++;
+      totals[key].grossTotal += parseInt(s.gross) || 0;
+      if (s.net) totals[key].netTotal += parseInt(s.net) || 0;
+    });
+  });
+  var rows = Object.values(totals);
+  if (!rows.length) {
+    el.innerHTML = '<div style="font-size:.74rem;color:var(--muted);padding:8px 0 4px;">No standings yet — scores will appear here as rounds are played.</div>';
+    return;
+  }
+  rows.sort(function(a, b) {
+    var aAvg = a.rounds ? a.netTotal / a.rounds || a.grossTotal / a.rounds : 999;
+    var bAvg = b.rounds ? b.netTotal / b.rounds || b.grossTotal / b.rounds : 999;
+    return aAvg - bAvg;
+  });
+  var html = '<div style="margin-top:12px;">'
+    + '<div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Season Standings</div>'
+    + '<table style="width:100%;border-collapse:collapse;font-size:.76rem;">'
+    + '<thead><tr style="border-bottom:2px solid var(--border);">'
+    + '<th style="text-align:left;padding:4px 6px;color:var(--muted);font-weight:600;">#</th>'
+    + '<th style="text-align:left;padding:4px 6px;color:var(--muted);font-weight:600;">Player</th>'
+    + '<th style="text-align:center;padding:4px 6px;color:var(--muted);font-weight:600;">Rds</th>'
+    + '<th style="text-align:center;padding:4px 6px;color:var(--muted);font-weight:600;">Avg Net</th>'
+    + '</tr></thead><tbody>';
+  rows.forEach(function(r, i) {
+    var avg = r.rounds ? (r.netTotal || r.grossTotal) / r.rounds : 0;
+    var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+    html += '<tr style="border-bottom:1px solid var(--border);">'
+      + '<td style="padding:6px 6px;color:var(--muted);">' + (medal || (i+1)) + '</td>'
+      + '<td style="padding:6px 6px;font-weight:' + (i < 3 ? '700' : '400') + ';color:var(--dark);">' + r.name + '</td>'
+      + '<td style="padding:6px 6px;text-align:center;color:var(--muted);">' + r.rounds + '</td>'
+      + '<td style="padding:6px 6px;text-align:center;font-weight:600;color:var(--forest);">' + (avg ? avg.toFixed(1) : '—') + '</td>'
+      + '</tr>';
+  });
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+}
+
 function mLeagueShow(which) {
   ['mens','ladies','hg','fnf'].forEach(function(id) {
     var panel = document.getElementById('ml-panel-' + id);
@@ -6213,12 +6587,15 @@ function mLeagueShow(which) {
     tab.style.background = active ? 'var(--forest)' : 'rgba(26,74,38,.12)';
     tab.style.color      = active ? '#f5f0e8'        : 'var(--muted)';
     tab.style.border     = active ? 'none'           : '1px solid rgba(26,74,38,.2)';
-    if (active) mLeagueRenderUpcoming(id);
+    if (active) { mLeagueRenderUpcoming(id); mLeagueRenderStandings(id); }
   });
 }
 
 function mLeagueInitAll() {
-  ['mens','ladies','hg','fnf'].forEach(mLeagueRenderUpcoming);
+  ['mens','ladies','hg','fnf'].forEach(function(id) {
+    mLeagueRenderUpcoming(id);
+    mLeagueRenderStandings(id);
+  });
 }
 
 var _lrLeague = '', _lrDate = '', _lrIso = '', _lrLeagueId = '';
@@ -6369,6 +6746,119 @@ function dismissWelcome() {
 }
 
 // ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+// DARK MODE
+// ════════════════════════════════════════════════════════
+function applyDarkMode(on) {
+  document.body.setAttribute('data-theme', on ? 'dark' : '');
+  var toggle = document.getElementById('dark-mode-toggle');
+  if (toggle) toggle.checked = !!on;
+}
+function toggleDarkMode(on) {
+  localStorage.setItem('wh_dark_mode', on ? '1' : '0');
+  applyDarkMode(on);
+}
+(function() {
+  // Apply on page load before first paint
+  if (localStorage.getItem('wh_dark_mode') === '1') applyDarkMode(true);
+})();
+
+// ════════════════════════════════════════════════════════
+// BIOMETRIC LOGIN (WebAuthn Passkey)
+// ════════════════════════════════════════════════════════
+function bioSupported() {
+  return !!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.create);
+}
+function bioEnrolled(email) {
+  return localStorage.getItem('wh_bio_enrolled_' + email) === '1';
+}
+
+function maybeOfferBiometric(email, acct) {
+  if (!bioSupported() || bioEnrolled(email)) {
+    // Already enrolled — show button on login screen
+    var btn = document.getElementById('bio-login-btn');
+    if (btn && bioEnrolled(email)) btn.style.display = 'block';
+    return;
+  }
+  // Ask after a short delay so portal renders first
+  setTimeout(function() {
+    if (confirm('Would you like to enable Face ID / Touch ID for faster sign-in?')) {
+      enrollBiometric(email, acct);
+    }
+  }, 1200);
+}
+
+function enrollBiometric(email, acct) {
+  if (!bioSupported()) { showToast('Biometric login not supported on this device'); return; }
+  var challenge = new Uint8Array(32);
+  crypto.getRandomValues(challenge);
+  var userId = new TextEncoder().encode(email);
+  navigator.credentials.create({
+    publicKey: {
+      challenge: challenge,
+      rp: { name: 'Westwood Hills CC' },
+      user: { id: userId, name: email, displayName: acct.name || email },
+      pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+      authenticatorSelection: { userVerification: 'required', residentKey: 'preferred' },
+      timeout: 60000
+    }
+  }).then(function(cred) {
+    // Store credential id for future authentication
+    localStorage.setItem('wh_bio_cred_' + email, btoa(String.fromCharCode.apply(null, new Uint8Array(cred.rawId))));
+    localStorage.setItem('wh_bio_enrolled_' + email, '1');
+    localStorage.setItem('wh_bio_email', email);
+    var btn = document.getElementById('bio-login-btn');
+    if (btn) btn.style.display = 'block';
+    showToast('Face / Touch ID enabled ✓');
+  }).catch(function(e) {
+    if (e.name !== 'NotAllowedError') showToast('Could not enable biometric login');
+  });
+}
+
+function doBiometricLogin() {
+  if (!bioSupported()) { showToast('Biometric login not supported'); return; }
+  var email = localStorage.getItem('wh_bio_email');
+  if (!email) { showToast('No biometric account found — sign in with PIN first'); return; }
+  var challenge = new Uint8Array(32);
+  crypto.getRandomValues(challenge);
+  navigator.credentials.get({
+    publicKey: {
+      challenge: challenge,
+      userVerification: 'required',
+      timeout: 60000
+    }
+  }).then(function() {
+    // Credential verified by device — restore session
+    var saved = localStorage.getItem('wh_current_user');
+    if (!saved) { showToast('Session expired — sign in with PIN'); return; }
+    var acct = JSON.parse(saved);
+    if (acct.email !== email) { showToast('Account mismatch — sign in with PIN'); return; }
+    currentUser = acct;
+    if (acct.role === 'both') {
+      var sub = document.getElementById('picker-sub');
+      if (sub) sub.textContent = 'Welcome back, ' + (acct.name ? acct.name.split(' ')[0] : '') + '!';
+      showScreen('screen-role-picker');
+    } else if (acct.role === 'member') {
+      initMember(); showScreen('screen-member');
+    } else {
+      initStaff(); showScreen('screen-staff');
+    }
+  }).catch(function(e) {
+    if (e.name !== 'NotAllowedError') showToast('Biometric check failed — try PIN');
+  });
+}
+
+// Show biometric button on login screen if enrolled
+(function() {
+  var email = localStorage.getItem('wh_bio_email');
+  if (email && bioEnrolled(email)) {
+    window.addEventListener('DOMContentLoaded', function() {
+      var btn = document.getElementById('bio-login-btn');
+      if (btn) btn.style.display = 'block';
+    });
+  }
+})();
+
 // NOTIFICATION PREFERENCES
 // ════════════════════════════════════════════════════════
 function loadNotifPrefs() {
@@ -6398,7 +6888,107 @@ function saveNotifPrefs() {
 function getNotifPrefs() {
   try { return JSON.parse(localStorage.getItem('wh_notif_prefs') || '{}'); } catch(e) { return {}; }
 }
+
+// ════════════════════════════════════════════════════════
+// GLOBAL SEARCH
+// ════════════════════════════════════════════════════════
+function openSearch() {
+  var overlay = document.getElementById('search-overlay');
+  if (!overlay) return;
+  overlay.classList.add('open');
+  var inp = document.getElementById('search-input');
+  if (inp) { inp.value = ''; setTimeout(function(){ inp.focus(); }, 100); }
+  document.getElementById('search-results').innerHTML =
+    '<div class="sr-section" style="padding-top:20px;text-align:center;color:var(--muted);font-size:.82rem;letter-spacing:0;text-transform:none;font-weight:400;">Type to search across events, menu &amp; members</div>';
+}
+function closeSearch() {
+  var overlay = document.getElementById('search-overlay');
+  if (overlay) overlay.classList.remove('open');
+}
+function globalSearch(q) {
+  var el = document.getElementById('search-results');
+  if (!el) return;
+  var term = q.trim().toLowerCase();
+  if (!term) {
+    el.innerHTML = '<div class="sr-section" style="padding-top:20px;text-align:center;color:var(--muted);font-size:.82rem;letter-spacing:0;text-transform:none;font-weight:400;">Type to search</div>';
+    return;
+  }
+  var html = '';
+  // ── Events ──
+  var evResults = appEvents.filter(function(ev) {
+    return ev.date >= new Date().toISOString().slice(0,10) &&
+      ((ev.title||'').toLowerCase().indexOf(term) >= 0 || (ev.desc||'').toLowerCase().indexOf(term) >= 0);
+  }).slice(0, 5);
+  if (evResults.length) {
+    html += '<div class="sr-section">Events</div>';
+    html += evResults.map(function(ev) {
+      return '<div class="sr-item" onclick="goTab(\'member\',\'club\');closeSearch();">' +
+        '<div class="sr-icon">📅</div>' +
+        '<div><div style="font-size:.84rem;font-weight:600;color:var(--dark);">' + ev.title + '</div>' +
+        '<div style="font-size:.72rem;color:var(--muted);">' + ev.month + ' ' + ev.day + ' · ' + (ev.time||'') + '</div></div>' +
+        '</div>';
+    }).join('');
+  }
+  // ── Menu items ──
+  var menu = menuLoad();
+  var menuResults = [];
+  Object.keys(menu.grill || {}).forEach(function(sec) {
+    (menu.grill[sec] || []).forEach(function(item) {
+      if ((item.name||'').toLowerCase().indexOf(term) >= 0 || (item.desc||'').toLowerCase().indexOf(term) >= 0) {
+        menuResults.push({ name: item.name, desc: item.desc, section: MENU_SECTION_LABELS[sec] || sec });
+      }
+    });
+  });
+  menuResults = menuResults.slice(0, 5);
+  if (menuResults.length) {
+    html += '<div class="sr-section">Menu</div>';
+    html += menuResults.map(function(item) {
+      return '<div class="sr-item" onclick="goTab(\'member\',\'dining\');closeSearch();">' +
+        '<div class="sr-icon">🍽</div>' +
+        '<div><div style="font-size:.84rem;font-weight:600;color:var(--dark);">' + item.name + '</div>' +
+        '<div style="font-size:.72rem;color:var(--muted);">' + item.section + (item.desc ? ' · ' + item.desc.slice(0,40) : '') + '</div></div>' +
+        '</div>';
+    }).join('');
+  }
+  // ── Members (staff only) ──
+  if (currentUser && (currentUser.role === 'staff' || currentUser.role === 'both')) {
+    var memDir = MEMBER_DIRECTORY && MEMBER_DIRECTORY.length ? MEMBER_DIRECTORY
+      : (function(){ try { return JSON.parse(localStorage.getItem('wh_member_dir') || '[]'); } catch(e){ return []; } })();
+    var memResults = memDir.filter(function(m) {
+      return (m.name||'').toLowerCase().indexOf(term) >= 0 || (m.email||'').toLowerCase().indexOf(term) >= 0;
+    }).slice(0, 4);
+    if (memResults.length) {
+      html += '<div class="sr-section">Members</div>';
+      html += memResults.map(function(m) {
+        return '<div class="sr-item">' +
+          '<div class="sr-icon">👤</div>' +
+          '<div><div style="font-size:.84rem;font-weight:600;color:var(--dark);">' + m.name + '</div>' +
+          '<div style="font-size:.72rem;color:var(--muted);">' + (m.membership||'') + (m.handicap && m.handicap !== 'N/A' ? ' · HCP ' + m.handicap : '') + '</div></div>' +
+          '</div>';
+      }).join('');
+    }
+  }
+  if (!html) {
+    html = '<div style="padding:30px 16px;text-align:center;color:var(--muted);font-size:.82rem;">No results for "<strong>' + q + '</strong>"</div>';
+  }
+  el.innerHTML = html;
+}
+// Close search on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeSearch();
+});
 </script>
+
+<!-- GLOBAL SEARCH OVERLAY -->
+<div id="search-overlay">
+  <div class="search-bar">
+    <input class="search-input" id="search-input" type="search" placeholder="Search events, menu, members…" oninput="globalSearch(this.value)" autocomplete="off">
+    <button class="search-cancel" onclick="closeSearch()">Cancel</button>
+  </div>
+  <div class="search-results" id="search-results">
+    <div class="sr-section" style="padding-top:20px;text-align:center;color:var(--muted);font-size:.82rem;letter-spacing:0;text-transform:none;font-weight:400;">Type to search across events, menu &amp; members</div>
+  </div>
+</div>
 
 <!-- WELCOME OVERLAY (shown once after first login) -->
 <div id="welcome-overlay">

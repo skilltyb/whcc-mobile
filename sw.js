@@ -1,5 +1,11 @@
-var CACHE_NAME = 'whcc-mobile-v2';
-var ASSETS = ['./', './index.html', './manifest.json'];
+var CACHE_NAME = 'whcc-mobile-v4';
+var ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
+];
 
 self.addEventListener('install', function(e) {
   e.waitUntil(
@@ -22,12 +28,16 @@ self.addEventListener('activate', function(e) {
 
 // Network-first: always try the network, fall back to cache only when offline
 self.addEventListener('fetch', function(e) {
+  // Only handle GET requests for same-origin or CDN assets
+  if (e.request.method !== 'GET') return;
   e.respondWith(
     fetch(e.request)
       .then(function(response) {
-        // Update cache with fresh response
-        var clone = response.clone();
-        caches.open(CACHE_NAME).then(function(cache) { cache.put(e.request, clone); });
+        // Cache successful responses for static assets
+        if (response.ok) {
+          var clone = response.clone();
+          caches.open(CACHE_NAME).then(function(cache) { cache.put(e.request, clone); });
+        }
         return response;
       })
       .catch(function() {

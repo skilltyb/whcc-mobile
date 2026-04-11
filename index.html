@@ -79,6 +79,11 @@
     .staff-msg-text { font-size:.82rem; color:var(--dark); line-height:1.45; }
     .staff-msg-del { background:none; border:none; font-size:.75rem; color:var(--muted); cursor:pointer; padding:2px 4px; margin-left:6px; }
 
+    /* ── STAFF DASHBOARD 2-COL LAYOUT ── */
+    .s-dash-cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 16px; align-items: start; }
+    .s-dash-col  { display: flex; flex-direction: column; gap: 12px; }
+    .s-dash-col .card { margin-bottom: 0; }
+
     /* ── INCIDENT LOG ── */
     .inc-row { border-radius:var(--radius-sm); padding:11px 13px; margin-bottom:8px; background:var(--white); box-shadow:var(--shadow); border-left:3px solid var(--muted); }
     .inc-row.urgent { border-left-color:#dc2626; }
@@ -1309,8 +1314,12 @@
         <button class="qa-btn" onclick="openModal('modal-add-incident')"><span class="qa-icon">🔧</span>Incident</button>
         <button class="qa-btn" onclick="openModal('modal-add-lf')"><span class="qa-icon">🎒</span>Lost &amp; Found</button>
       </div>
+      <div class="s-dash-cols">
+      <!-- LEFT COL: live ops -->
+      <div class="s-dash-col">
+
       <!-- ON THE COURSE -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">⛳ On the Course</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-tee')">+ Check In</button>
@@ -1320,7 +1329,7 @@
       </div>
 
       <!-- DINING RESERVATIONS -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">🍽 Dining Reservations</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-res')">+ Add</button>
@@ -1386,14 +1395,18 @@
       </div>
 
       <!-- MEMBER LOOKUP -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div class="card-title" style="margin:0 0 10px;">🔍 Member Lookup</div>
         <input id="member-search" class="cond-input" type="search" placeholder="Search by name…" oninput="memberSearch(this.value)" style="margin-bottom:8px;">
         <div id="member-results"></div>
       </div>
 
+      </div><!-- /s-dash-col left -->
+      <!-- RIGHT COL: team comms + logs -->
+      <div class="s-dash-col">
+
       <!-- STAFF MESSAGE BOARD -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">📝 Staff Message Board</div>
         </div>
@@ -1405,7 +1418,7 @@
       </div>
 
       <!-- SHIFT HANDOFF NOTES -->
-      <div class="card" style="margin-bottom:12px;border-left:3px solid var(--forest);">
+      <div class="card" style="border-left:3px solid var(--forest);">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div class="card-title" style="margin:0;">🔄 Shift Handoff Notes</div>
           <span id="handoff-saved-lbl" style="font-size:.65rem;color:var(--success);display:none;">✓ Saved</span>
@@ -1415,7 +1428,7 @@
         <div id="handoff-prev" style="display:none;margin-top:10px;padding:10px 12px;background:var(--cream);border-radius:var(--radius-sm);font-size:.78rem;color:var(--dark);line-height:1.5;"></div>
       </div>
       <!-- PUSH A NOTICE -->
-      <div class="card" style="margin-bottom:12px;border-left:3px solid #e67e22;">
+      <div class="card" style="border-left:3px solid #e67e22;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div class="card-title" style="margin:0;">📣 Push a Notice to Members</div>
           <button class="ts-btn" id="notice-clear-btn" onclick="clearMemberNotice()" style="display:none;font-size:.65rem;">Clear</button>
@@ -1428,7 +1441,7 @@
       </div>
 
       <!-- LOST & FOUND -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">🎒 Lost &amp; Found</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-lf')">+ Add</button>
@@ -1437,13 +1450,16 @@
       </div>
 
       <!-- INCIDENT / MAINTENANCE LOG -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">🔧 Incident Log</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-incident')">+ Log</button>
         </div>
         <div id="s-incident-list"><div class="ts-empty">No incidents logged — tap + Log to report an issue.</div></div>
       </div>
+
+      </div><!-- /s-dash-col right -->
+      </div><!-- /s-dash-cols -->
 
       <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0 4px;">
         <div style="font-size:.78rem;color:var(--muted);" id="s-acct-info"></div>

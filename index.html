@@ -572,8 +572,12 @@
       .quick-grid { gap: 14px; }
       .stat-grid  { gap: 14px; }
       .modal-sheet { max-width: 620px; }
-      /* 2-col home layout */
-      .home-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+      /* 2-col home layout — left col stretches to match right */
+      .home-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; }
+      .home-col-left { display: flex; flex-direction: column; }
+      /* Quick grid fills remaining space with 2 larger columns */
+      .home-col-left .quick-grid { grid-template-columns: repeat(2, 1fr); flex: 1; align-content: start; }
+      .home-col-left .quick-action { padding: 20px 10px; }
     }
 
     /* 1280px — desktop */

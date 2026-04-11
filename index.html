@@ -466,6 +466,35 @@
     [data-theme="dark"] .lf-status.unclaimed { background:rgba(184,150,62,.15); color:var(--gold-light,#d4ab50); }
     [data-theme="dark"] .ev-fee-row { background:rgba(255,255,255,.05); }
     [data-theme="dark"] select.modal-input { background-color:#111b14 !important; }
+    /* Dark mode: tab bar, search overlay, stat cards, quick actions, login card */
+    [data-theme="dark"] .tab-bar { background:#111b14; border-color:rgba(255,255,255,.08); }
+    [data-theme="dark"] .tab-btn { color:rgba(245,240,232,.5); }
+    [data-theme="dark"] .tab-btn.active { color:var(--gold); }
+    [data-theme="dark"] .search-bar { background:#1c2b21; }
+    [data-theme="dark"] .search-input { background:#111b14; color:var(--dark); border-color:rgba(255,255,255,.1); }
+    [data-theme="dark"] .search-cancel { color:var(--gold); }
+    [data-theme="dark"] .search-results { background:#111b14; }
+    [data-theme="dark"] .search-result-item { border-color:rgba(255,255,255,.06); color:var(--dark); }
+    [data-theme="dark"] .login-card { background:#1c2b21; }
+    [data-theme="dark"] .login-input { background:#111b14; color:var(--dark); border-color:rgba(255,255,255,.1); }
+    [data-theme="dark"] .login-label { color:rgba(245,240,232,.5); }
+    [data-theme="dark"] .qa-btn { background:#1c2b21; border-color:rgba(255,255,255,.08); color:var(--dark); }
+    [data-theme="dark"] .quick-action { background:#1c2b21; }
+    [data-theme="dark"] .setup-choice { background:#1c2b21; color:var(--dark); border-color:rgba(255,255,255,.1); }
+    [data-theme="dark"] .cond-textarea { background:#111b14 !important; border-color:rgba(255,255,255,.1) !important; color:var(--dark) !important; }
+    [data-theme="dark"] .notif-slider { background:#2a3f2e; }
+    [data-theme="dark"] .sc-table, [data-theme="dark"] .se-tbl { background:#1c2b21; }
+    [data-theme="dark"] .sc-td { border-color:rgba(255,255,255,.06); color:var(--dark); }
+    [data-theme="dark"] .event-card { background:#1c2b21; }
+    [data-theme="dark"] .mem-result { background:#1c2b21; }
+    [data-theme="dark"] .staff-msg { background:#1c2b21; }
+    [data-theme="dark"] .partner-post { background:#1c2b21; }
+    [data-theme="dark"] .smi { background:#1c2b21; }
+    [data-theme="dark"] .ts-btn { background:#1c2b21; border-color:rgba(255,255,255,.1); color:var(--dark); }
+    [data-theme="dark"] .smi-edit { background:#243328; border-color:rgba(255,255,255,.12); color:rgba(245,240,232,.8); }
+    [data-theme="dark"] .smi { background:#1c2b21; }
+    [data-theme="dark"] #welcome-overlay .welcome-sheet { background:#1c2b21; }
+    [data-theme="dark"] .notif-row { border-color:rgba(255,255,255,.06); }
 
     /* ── SCORECARD ── */
     .sc-grid { display:grid; grid-template-columns:repeat(9,1fr); gap:4px; margin-bottom:8px; }
@@ -2085,13 +2114,14 @@
 <div class="modal-overlay" id="modal-menu-edit">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div class="modal-title">Edit Item</div>
+    <div class="modal-title" id="me-title">Edit Item</div>
     <input class="modal-input" id="me-name" type="text" placeholder="Item name">
     <input class="modal-input" id="me-desc" type="text" placeholder="Description (optional)">
     <input class="modal-input" id="me-price" type="text" placeholder="Price (e.g. $12) — leave blank to hide price">
     <input type="hidden" id="me-section">
     <input type="hidden" id="me-index">
     <div class="modal-row">
+      <button class="modal-btn secondary" id="me-delete-btn" onclick="deleteMenuItem()" style="background:#fee2e2;color:#991b1b;border:none;">Delete</button>
       <button class="modal-btn secondary" onclick="closeModal('modal-menu-edit')">Cancel</button>
       <button class="modal-btn primary" onclick="saveMenuEdit()">Save</button>
     </div>
@@ -4567,7 +4597,10 @@ function renderStaffMenus() {
   var orderedKeys = ['express','starters','lunchDesserts','sandwiches','lunchEntrees','cocktails','wine','postRound','quickBites'];
   orderedKeys.forEach(function(key) {
     var items = g[key] || [];
-    html += '<div class="menu-sec-title">' + MENU_SECTION_LABELS[key] + '</div>';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px;">' +
+      '<div class="menu-sec-title" style="margin:0;">' + MENU_SECTION_LABELS[key] + '</div>' +
+      '<button class="ts-btn" style="font-size:.65rem;padding:3px 8px;" onclick="openMenuAdd(\'' + key + '\')">+ Add</button>' +
+    '</div>';
     items.forEach(function(item, idx) {
       var is86 = list86.some(function(i){ return i.section === key && i.idx === idx; });
       html += '<div class="smi"' + (is86 ? ' style="opacity:.45;"' : '') + '>' +
@@ -4587,23 +4620,55 @@ function renderStaffMenus() {
 function openMenuEdit(section, idx) {
   var g    = menuLoad().grill;
   var item = g[section][idx];
+  document.getElementById('me-title').textContent = 'Edit Item';
   document.getElementById('me-name').value    = item.name;
   document.getElementById('me-desc').value    = item.desc || '';
   document.getElementById('me-price').value   = item.price || '';
   document.getElementById('me-section').value = section;
   document.getElementById('me-index').value   = idx;
+  document.getElementById('me-delete-btn').style.display = '';
   openModal('modal-menu-edit');
+}
+function openMenuAdd(section) {
+  document.getElementById('me-title').textContent = 'Add Item';
+  document.getElementById('me-name').value    = '';
+  document.getElementById('me-desc').value    = '';
+  document.getElementById('me-price').value   = '';
+  document.getElementById('me-section').value = section;
+  document.getElementById('me-index').value   = '-1';
+  document.getElementById('me-delete-btn').style.display = 'none';
+  openModal('modal-menu-edit');
+}
+function deleteMenuItem() {
+  var section = document.getElementById('me-section').value;
+  var idx     = parseInt(document.getElementById('me-index').value);
+  if (idx < 0) { closeModal('modal-menu-edit'); return; }
+  if (!confirm('Remove this item from the menu?')) return;
+  var data = menuLoad();
+  data.grill[section].splice(idx, 1);
+  menuSave(data);
+  closeModal('modal-menu-edit');
+  renderStaffMenus();
+  renderAppMenu();
 }
 
 function saveMenuEdit() {
   var section = document.getElementById('me-section').value;
   var idx     = parseInt(document.getElementById('me-index').value);
+  var name    = document.getElementById('me-name').value.trim();
+  if (!name) { showToast('Item name is required'); return; }
   var data    = menuLoad();
-  data.grill[section][idx] = {
-    name:  document.getElementById('me-name').value.trim(),
+  var newItem = {
+    name:  name,
     desc:  document.getElementById('me-desc').value.trim(),
     price: document.getElementById('me-price').value.trim()
   };
+  if (idx < 0) {
+    if (!data.grill[section]) data.grill[section] = [];
+    data.grill[section].push(newItem);
+  } else {
+    data.grill[section][idx] = newItem;
+  }
   menuSave(data);
   closeModal('modal-menu-edit');
   renderStaffMenus();
@@ -6214,10 +6279,12 @@ function renderRegsEventList() {
     });
     var cap = parseInt(ev.capacity) || 0;
     var capText = cap ? count + ' / ' + cap : count + ' registered';
+    var wlCount = (getWaitlist()[ev.title] || []).length;
+    var wlText = wlCount ? ' · <span style="color:#92400e;">⏳ ' + wlCount + ' waitlisted</span>' : '';
     return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--white);border-radius:var(--radius-sm);margin-bottom:8px;box-shadow:var(--shadow);">' +
       '<div>' +
         '<div style="font-size:.85rem;font-weight:700;color:var(--dark);">' + ev.title + '</div>' +
-        '<div style="font-size:.72rem;color:var(--muted);margin-top:2px;">' + ev.month + ' ' + ev.day + ' · ' + capText + '</div>' +
+        '<div style="font-size:.72rem;color:var(--muted);margin-top:2px;">' + ev.month + ' ' + ev.day + ' · ' + capText + wlText + '</div>' +
       '</div>' +
       '<button onclick="openEventRegs(' + i + ')" style="font-size:.72rem;background:var(--forest);color:var(--cream);border:none;padding:5px 12px;border-radius:20px;cursor:pointer;">View</button>' +
     '</div>';
@@ -6254,7 +6321,11 @@ function renderEventRegs(eventTitle) {
     return !regNorms.some(function(rn){ return rn && (rn === nn || nn.indexOf(rn.split(' ')[0]) !== -1); });
   });
 
-  if (!regs.length && !extraTsNames.length) {
+  // Waitlist for this event
+  var allWaitlist = getWaitlist();
+  var waitlistEmails = allWaitlist[eventTitle] || [];
+
+  if (!regs.length && !extraTsNames.length && !waitlistEmails.length) {
     el.innerHTML = '<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:16px 0;">No registrations yet.<br>Tap ↻ Sync to load from sheet.</div>';
     return;
   }
@@ -6294,6 +6365,19 @@ function renderEventRegs(eventTitle) {
         '</div>' +
       '</div>';
     }).join('');
+  }
+
+  // Waitlist section
+  if (waitlistEmails.length) {
+    html += '<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">';
+    html += '<div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#92400e;margin-bottom:6px;">⏳ Waitlist (' + waitlistEmails.length + ')</div>';
+    html += waitlistEmails.map(function(email) {
+      return '<div style="background:#fff8f0;border:1px solid #f0c080;border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">' +
+        '<div style="font-size:.82rem;color:var(--dark);">' + email + '</div>' +
+        '<span style="font-size:.68rem;color:#92400e;background:#fef3c7;padding:2px 8px;border-radius:20px;">Waitlisted</span>' +
+      '</div>';
+    }).join('');
+    html += '</div>';
   }
 
   el.innerHTML = html;

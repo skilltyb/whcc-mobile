@@ -273,8 +273,8 @@
     .wx-badge.poor    { background:rgba(220,70,70,.5);    color:#fff;    border:1px solid rgba(220,70,70,.7); }
     .wx-badge.cold    { background:rgba(180,210,255,.6);  color:#0a2060; border:1px solid rgba(180,210,255,.8); }
     .wx-badge.hot     { background:rgba(255,140,0,.5);    color:#5c2000; border:1px solid rgba(255,140,0,.7); }
-    .wx-stats { display:flex; gap:8px; margin-bottom:12px; }
-    .wx-stat { flex:1; background:rgba(255,255,255,.4); border-radius:8px; padding:8px 10px; backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.5); }
+    .wx-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:12px; }
+    .wx-stat { background:rgba(255,255,255,.4); border-radius:8px; padding:8px 10px; backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.5); }
     .wx-stat-lbl { font-size:.58rem; text-transform:uppercase; letter-spacing:.06em; color:#0e3a60; margin-bottom:3px; font-weight:600; }
     .wx-stat-val { font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:700; color:#0a2540; }
     .wx-divider { border:none; border-top:1px solid rgba(255,255,255,.4); margin:10px 0; }

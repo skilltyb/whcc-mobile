@@ -417,6 +417,52 @@
     .modal-btn { flex: 1; padding: 13px; border-radius: var(--radius-sm); font-size: .88rem; font-weight: 600; cursor: pointer; border: none; }
     .modal-btn.primary { background: var(--forest); color: var(--white); }
     .modal-btn.secondary { background: var(--sand); color: var(--dark); }
+
+    /* ── NETWORK BANNER ── */
+    #network-banner{position:fixed;top:0;left:0;right:0;z-index:501;display:flex;align-items:center;justify-content:center;gap:7px;font-size:.78rem;font-weight:600;height:0;overflow:hidden;transition:height .2s ease;}
+    #network-banner.nb-show{height:44px;padding-top:env(safe-area-inset-top);}
+    #network-banner.nb-offline{background:#c0392b;color:#fff;}
+    #network-banner.nb-online{background:var(--success);color:#fff;}
+
+    /* ── SYNC STATUS ── */
+    .sync-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0 8px;}
+    .sync-ts{font-size:.68rem;color:var(--muted);}
+    .sync-err{font-size:.72rem;color:#c0392b;display:none;}
+    .sync-retry{font-size:.68rem;background:none;border:1px solid var(--border);border-radius:12px;padding:3px 9px;cursor:pointer;color:var(--forest);display:none;}
+
+    /* ── NOTIFICATION TOGGLES ── */
+    .notif-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);}
+    .notif-row:last-child{border-bottom:none;}
+    .notif-info{flex:1;}
+    .notif-label{font-size:.84rem;font-weight:600;color:var(--dark);}
+    .notif-sub{font-size:.72rem;color:var(--muted);margin-top:2px;}
+    .notif-toggle{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;}
+    .notif-toggle input{opacity:0;width:0;height:0;position:absolute;}
+    .notif-slider{position:absolute;inset:0;background:#ccc;border-radius:24px;cursor:pointer;transition:.3s;}
+    .notif-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;}
+    .notif-toggle input:checked+.notif-slider{background:var(--forest);}
+    .notif-toggle input:checked+.notif-slider:before{transform:translateX(20px);}
+
+    /* ── WELCOME CARD ── */
+    #welcome-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;display:none;align-items:flex-end;}
+    #welcome-overlay.open{display:flex;}
+    .welcome-sheet{background:var(--white);border-radius:var(--radius) var(--radius) 0 0;padding:26px 20px calc(26px + var(--safe-b));width:100%;box-sizing:border-box;max-height:88vh;overflow-y:auto;}
+    .welcome-logo{width:54px;height:54px;background:var(--forest);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--gold);margin:0 auto 16px;}
+    .welcome-title{font-family:'Cormorant Garamond',serif;font-size:1.65rem;font-weight:700;color:var(--forest);text-align:center;margin-bottom:4px;}
+    .welcome-sub{font-size:.82rem;color:var(--muted);text-align:center;margin-bottom:22px;}
+    .wf-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;}
+    .wf-icon{font-size:1.2rem;width:38px;height:38px;background:var(--cream);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);}
+    .wf-text .wf-title{font-size:.86rem;font-weight:700;color:var(--dark);margin-bottom:2px;}
+    .wf-text .wf-desc{font-size:.74rem;color:var(--muted);line-height:1.45;}
+
+    /* ── TABLET / DESKTOP ── */
+    @media (min-width:600px){
+      body{background:#0c1a10;display:flex;justify-content:center;}
+      .screen,.app-screen{max-width:480px;width:100%;position:relative;box-shadow:0 0 80px rgba(0,0,0,.6);}
+      #network-banner,#ptr-indicator{max-width:480px;left:50%;right:auto;transform:translateX(-50%);}
+      .modal-overlay{justify-content:center;}
+      .modal-sheet{max-width:480px;}
+    }
   </style>
 </head>
 <body>
@@ -514,6 +560,8 @@
   <div class="ptr-spinner"></div>
   <span>Refreshing…</span>
 </div>
+<!-- Network status banner -->
+<div id="network-banner"></div>
 
 <div class="screen app-screen hidden" id="screen-member">
   <div class="app-header">
@@ -572,6 +620,12 @@
         <span class="pool-chip-status" style="font-size:.82rem;font-weight:700;"></span>
         <span class="pool-chip-note" style="font-size:.74rem;color:var(--muted);display:none;"></span>
         <span style="font-size:.72rem;color:var(--muted);margin-left:auto;">View →</span>
+      </div>
+      <!-- SYNC STATUS -->
+      <div class="sync-row">
+        <span class="sync-ts" id="sync-ts-label">Loading…</span>
+        <span class="sync-err" id="sync-err-label">⚠ Sync failed</span>
+        <button class="sync-retry" id="sync-retry-btn" onclick="manualSync()">↻ Retry</button>
       </div>
       <!-- MY UPCOMING -->
       <div class="card" id="m-upcoming-card" style="display:none;margin-bottom:14px;">
@@ -989,6 +1043,41 @@
         <div id="round-log-stats" style="display:flex;gap:0;margin-bottom:14px;border-radius:8px;overflow:hidden;border:1px solid var(--sand);"></div>
         <div id="round-log-list"></div>
       </div>
+      <!-- NOTIFICATION PREFERENCES -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-title" style="margin-bottom:12px;">🔔 Notifications</div>
+        <div class="notif-row">
+          <div class="notif-info">
+            <div class="notif-label">Course Conditions</div>
+            <div class="notif-sub">Email when conditions are updated</div>
+          </div>
+          <label class="notif-toggle">
+            <input type="checkbox" id="notif-conditions" onchange="saveNotifPrefs()">
+            <span class="notif-slider"></span>
+          </label>
+        </div>
+        <div class="notif-row">
+          <div class="notif-info">
+            <div class="notif-label">New Events</div>
+            <div class="notif-sub">Email when events are posted</div>
+          </div>
+          <label class="notif-toggle">
+            <input type="checkbox" id="notif-events" onchange="saveNotifPrefs()">
+            <span class="notif-slider"></span>
+          </label>
+        </div>
+        <div class="notif-row">
+          <div class="notif-info">
+            <div class="notif-label">Dining Specials</div>
+            <div class="notif-sub">Email when weekly specials are posted</div>
+          </div>
+          <label class="notif-toggle">
+            <input type="checkbox" id="notif-dining" onchange="saveNotifPrefs()">
+            <span class="notif-slider"></span>
+          </label>
+        </div>
+      </div>
+      <!-- CONTACT -->
       <div class="card">
         <div class="card-title" style="margin-bottom:10px;">Contact the Club</div>
         <div class="card-body" style="margin-bottom:10px;">📞 (573) 785-5253<br>📍 1 Birdie Ln, Poplar Bluff, MO</div>
@@ -2177,6 +2266,7 @@ function doLogin() {
 }
 
 function loginAs(acct, email) {
+  var isFirstLogin = !localStorage.getItem('wh_onboarded');
   currentUser = Object.assign({email: email}, acct);
   localStorage.setItem('wh_current_user', JSON.stringify(currentUser));
   if (acct.role === 'both') {
@@ -2185,14 +2275,20 @@ function loginAs(acct, email) {
     showScreen('screen-role-picker');
   } else if (acct.role === 'member') {
     initMember(); showScreen('screen-member');
+    if (isFirstLogin) setTimeout(maybeShowWelcome, 800);
   } else {
     initStaff(); showScreen('screen-staff');
   }
 }
 
 function enterPortalAs(role) {
-  if (role === 'member') { initMember(); showScreen('screen-member'); }
-  else                   { initStaff();  showScreen('screen-staff');  }
+  if (role === 'member') {
+    var isFirstLogin = !localStorage.getItem('wh_onboarded');
+    initMember(); showScreen('screen-member');
+    if (isFirstLogin) setTimeout(maybeShowWelcome, 800);
+  } else {
+    initStaff(); showScreen('screen-staff');
+  }
 }
 
 function switchView(to) {
@@ -2500,6 +2596,10 @@ function _initMemberUI() {
   syncRegistrationsFromSheets();
   if (window._regSyncInterval) clearInterval(window._regSyncInterval);
   window._regSyncInterval = setInterval(syncRegistrationsFromSheets, 3 * 60 * 1000);
+
+  // Sync status + notification prefs
+  updateSyncLabel();
+  loadNotifPrefs();
 }
 
 function greet() {
@@ -3060,7 +3160,10 @@ var WHCC_SYNC = {
     fetch(WHCC_SCRIPT_URL + '?action=get-all-ops')
       .then(function(r) { return r.json(); })
       .then(function(all) {
-        if (!all || typeof all !== 'object') { if (cb) cb(); return; }
+        if (!all || typeof all !== 'object') {
+          localStorage.setItem('wh_last_sync_failed', '1');
+          if (cb) cb(); return;
+        }
         var keyMap = {
           pool_guests:    'wh_pool_guests',
           pool_chem:      'wh_pool_chem',
@@ -3080,9 +3183,14 @@ var WHCC_SYNC = {
             try { localStorage.setItem(keyMap[serverKey], JSON.stringify(all[serverKey])); } catch(e) {}
           }
         });
+        localStorage.setItem('wh_last_sync_ts', Date.now());
+        localStorage.setItem('wh_last_sync_failed', '0');
         if (cb) cb(all);
       })
-      .catch(function() { if (cb) cb(); });
+      .catch(function() {
+        localStorage.setItem('wh_last_sync_failed', '1');
+        if (cb) cb();
+      });
   },
 
   saveLeagueReg: function(data, cb) {
@@ -5292,8 +5400,10 @@ document.getElementById('li-pin').addEventListener('keydown',   function(e){ if 
           var sub = document.getElementById('picker-sub');
           if (sub) sub.textContent = 'Welcome, ' + (u.name ? u.name.split(' ')[0] : 'back') + '!';
           showScreen('screen-role-picker');
-        } else if (u.role === 'member') { initMember(); showScreen('screen-member'); }
-        else                            { initStaff();  showScreen('screen-staff');  }
+        } else if (u.role === 'member') {
+          initMember(); showScreen('screen-member');
+          setTimeout(updateSyncLabel, 100);
+        } else { initStaff(); showScreen('screen-staff'); }
       }
     }
   } catch(e) {}
@@ -6112,6 +6222,173 @@ function submitLeagueReg() {
     showToast('You\'re signed up for ' + _lrLeague + ' · ' + _lrDate + '!');
   });
 }
+
+// ════════════════════════════════════════════════════════
+// NETWORK STATUS BANNER
+// ════════════════════════════════════════════════════════
+(function() {
+  var banner = null;
+  var hideTimer = null;
+
+  function getBanner() {
+    if (!banner) banner = document.getElementById('network-banner');
+    return banner;
+  }
+
+  function showBanner(offline) {
+    var b = getBanner();
+    if (!b) return;
+    clearTimeout(hideTimer);
+    b.textContent = offline ? '⚠ No connection — showing cached data' : '✓ Back online';
+    b.className   = offline ? 'nb-show nb-offline' : 'nb-show nb-online';
+    if (!offline) {
+      hideTimer = setTimeout(function() {
+        b.className = '';
+      }, 3000);
+    }
+  }
+
+  window.addEventListener('offline', function() { showBanner(true); });
+  window.addEventListener('online',  function() { showBanner(false); manualSync(); });
+
+  // Show immediately if already offline on load
+  if (!navigator.onLine) {
+    document.addEventListener('DOMContentLoaded', function() { showBanner(true); });
+  }
+})();
+
+// ════════════════════════════════════════════════════════
+// SYNC STATUS + RETRY
+// ════════════════════════════════════════════════════════
+function updateSyncLabel() {
+  var label = document.getElementById('sync-ts-label');
+  var err   = document.getElementById('sync-err-label');
+  var retry = document.getElementById('sync-retry-btn');
+  if (!label) return;
+  var ts = +localStorage.getItem('wh_last_sync_ts') || 0;
+  if (!ts) { label.textContent = 'Not yet synced'; return; }
+  var mins = Math.round((Date.now() - ts) / 60000);
+  if (mins < 1)       label.textContent = 'Updated just now';
+  else if (mins === 1) label.textContent = 'Updated 1 min ago';
+  else if (mins < 60)  label.textContent = 'Updated ' + mins + ' min ago';
+  else {
+    var hrs = Math.floor(mins / 60);
+    label.textContent = 'Updated ' + hrs + ' hr' + (hrs > 1 ? 's' : '') + ' ago';
+  }
+  var failed = localStorage.getItem('wh_last_sync_failed') === '1';
+  if (err)   err.style.display   = failed ? 'inline' : 'none';
+  if (retry) retry.style.display = failed ? 'inline-block' : 'none';
+}
+
+function manualSync() {
+  showToast('Syncing…');
+  WHCC_SYNC.fetchAllOps(function(data) {
+    if (!data) {
+      localStorage.setItem('wh_last_sync_failed', '1');
+      showToast('Sync failed — check your connection.');
+    } else {
+      localStorage.setItem('wh_last_sync_ts', Date.now());
+      localStorage.setItem('wh_last_sync_failed', '0');
+      showToast('Up to date');
+      _initMemberUI();
+    }
+    updateSyncLabel();
+  });
+}
+
+// Refresh label every 60 seconds while app is open
+setInterval(updateSyncLabel, 60000);
+
+// ════════════════════════════════════════════════════════
+// WELCOME CARD (shown once after first login)
+// ════════════════════════════════════════════════════════
+function maybeShowWelcome() {
+  if (localStorage.getItem('wh_onboarded') === '1') return;
+  var overlay = document.getElementById('welcome-overlay');
+  if (overlay) overlay.classList.add('open');
+}
+
+function dismissWelcome() {
+  localStorage.setItem('wh_onboarded', '1');
+  var overlay = document.getElementById('welcome-overlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+// ════════════════════════════════════════════════════════
+// NOTIFICATION PREFERENCES
+// ════════════════════════════════════════════════════════
+function loadNotifPrefs() {
+  var prefs = {};
+  try { prefs = JSON.parse(localStorage.getItem('wh_notif_prefs') || '{}'); } catch(e) {}
+  var fields = ['conditions', 'events', 'dining'];
+  fields.forEach(function(f) {
+    var el = document.getElementById('notif-' + f);
+    if (el) el.checked = !!prefs[f];
+  });
+}
+
+function saveNotifPrefs() {
+  var prefs = {
+    conditions: !!(document.getElementById('notif-conditions') || {}).checked,
+    events:     !!(document.getElementById('notif-events')     || {}).checked,
+    dining:     !!(document.getElementById('notif-dining')     || {}).checked
+  };
+  localStorage.setItem('wh_notif_prefs', JSON.stringify(prefs));
+  // Persist to server so staff can email subscribed members
+  if (currentUser && currentUser.email) {
+    WHCC_SYNC.opsPush('notif_prefs_' + currentUser.email.replace(/[^a-z0-9]/gi,'_'), prefs);
+  }
+  showToast('Notification preferences saved');
+}
+
+function getNotifPrefs() {
+  try { return JSON.parse(localStorage.getItem('wh_notif_prefs') || '{}'); } catch(e) { return {}; }
+}
 </script>
+
+<!-- WELCOME OVERLAY (shown once after first login) -->
+<div id="welcome-overlay">
+  <div class="welcome-sheet">
+    <div class="welcome-logo">W</div>
+    <div class="welcome-title">Welcome to WHCC</div>
+    <div class="welcome-sub">Your club, right in your pocket. Here's what you can do:</div>
+    <div class="wf-item">
+      <div class="wf-icon">⛳</div>
+      <div class="wf-text">
+        <div class="wf-title">Course Conditions</div>
+        <div class="wf-desc">Live conditions, weather, and cart rules updated daily by staff.</div>
+      </div>
+    </div>
+    <div class="wf-item">
+      <div class="wf-icon">📅</div>
+      <div class="wf-text">
+        <div class="wf-title">Events & Registration</div>
+        <div class="wf-desc">Browse upcoming tournaments and events — register right from the app.</div>
+      </div>
+    </div>
+    <div class="wf-item">
+      <div class="wf-icon">🍽</div>
+      <div class="wf-text">
+        <div class="wf-title">Dining Reservations</div>
+        <div class="wf-desc">Reserve a table at the Westwood Grille or Hoover's in seconds.</div>
+      </div>
+    </div>
+    <div class="wf-item">
+      <div class="wf-icon">🤝</div>
+      <div class="wf-text">
+        <div class="wf-title">Find a Game</div>
+        <div class="wf-desc">Post that you're looking for a round and connect with other members.</div>
+      </div>
+    </div>
+    <div class="wf-item">
+      <div class="wf-icon">🔔</div>
+      <div class="wf-text">
+        <div class="wf-title">Notifications</div>
+        <div class="wf-desc">Turn on email alerts for conditions, events, and dining specials in Account.</div>
+      </div>
+    </div>
+    <button onclick="dismissWelcome()" style="width:100%;padding:14px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius-sm);font-size:.9rem;font-weight:700;cursor:pointer;margin-top:8px;letter-spacing:.02em;">Get Started</button>
+  </div>
+</div>
 </body>
 </html>

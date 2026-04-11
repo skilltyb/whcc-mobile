@@ -79,10 +79,12 @@
     .staff-msg-text { font-size:.82rem; color:var(--dark); line-height:1.45; }
     .staff-msg-del { background:none; border:none; font-size:.75rem; color:var(--muted); cursor:pointer; padding:2px 4px; margin-left:6px; }
 
-    /* ── STAFF DASHBOARD 2-COL LAYOUT ── */
+    /* ── STAFF DASHBOARD / OPS 2-COL LAYOUT ── */
     .s-dash-cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 16px; align-items: start; }
     .s-dash-col  { display: flex; flex-direction: column; gap: 12px; }
     .s-dash-col .card { margin-bottom: 0; }
+    /* Events sub-view toggle bar: pill style */
+    .sev-toggle-btn.active { background: var(--forest) !important; color: #fff !important; border-color: var(--forest) !important; }
 
     /* ── INCIDENT LOG ── */
     .inc-row { border-radius:var(--radius-sm); padding:11px 13px; margin-bottom:8px; background:var(--white); box-shadow:var(--shadow); border-left:3px solid var(--muted); }
@@ -1338,8 +1340,19 @@
         <div id="s-dining-count" style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:right;"></div>
       </div>
 
+      <!-- MEMBER LOOKUP -->
+      <div class="card">
+        <div class="card-title" style="margin:0 0 10px;">🔍 Member Lookup</div>
+        <input id="member-search" class="cond-input" type="search" placeholder="Search by name…" oninput="memberSearch(this.value)" style="margin-bottom:8px;">
+        <div id="member-results"></div>
+      </div>
+
+      </div><!-- /s-dash-col left -->
+      <!-- RIGHT COL: conditions + team comms + logs -->
+      <div class="s-dash-col">
+
       <!-- COURSE CONDITIONS -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div class="card-title" style="margin-bottom:12px;">🌤 Course Conditions</div>
         <div class="cond-field">
           <label class="cond-label" for="cond-opens">Course Opens</label>
@@ -1393,17 +1406,6 @@
         </div>
         <button class="ev-reg-btn" style="width:100%;margin:0;" onclick="saveConditions()">Save Conditions</button>
       </div>
-
-      <!-- MEMBER LOOKUP -->
-      <div class="card">
-        <div class="card-title" style="margin:0 0 10px;">🔍 Member Lookup</div>
-        <input id="member-search" class="cond-input" type="search" placeholder="Search by name…" oninput="memberSearch(this.value)" style="margin-bottom:8px;">
-        <div id="member-results"></div>
-      </div>
-
-      </div><!-- /s-dash-col left -->
-      <!-- RIGHT COL: team comms + logs -->
-      <div class="s-dash-col">
 
       <!-- STAFF MESSAGE BOARD -->
       <div class="card">
@@ -1473,10 +1475,14 @@
     <div class="page">
       <div class="page-title">Operations</div>
       <div class="page-sub">Pool &amp; Grounds Management</div>
-      <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 12px;">🏊 Aquatics</div>
+
+      <div class="s-dash-cols">
+      <!-- LEFT: Aquatics -->
+      <div class="s-dash-col">
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 4px;">🏊 Aquatics</div>
 
       <!-- POOL STATUS -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div class="card-title" style="margin:0;">🏊 Pool Status</div>
           <div id="pool-status-badge" style="font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:20px;background:#dcfce7;color:#166534;">Open</div>
@@ -1489,7 +1495,7 @@
       </div>
 
       <!-- BATHER COUNT -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div class="card-title" style="margin-bottom:10px;">👥 Current Bathers</div>
         <div style="display:flex;align-items:center;gap:16px;">
           <button onclick="adjustBathers(-1)" style="width:40px;height:40px;border-radius:50%;border:1.5px solid var(--border);background:var(--cream);font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
@@ -1502,7 +1508,7 @@
       </div>
 
       <!-- POOL NOTICE -->
-      <div class="card" style="margin-bottom:12px;border-left:3px solid #3b82f6;">
+      <div class="card" style="border-left:3px solid #3b82f6;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div class="card-title" style="margin:0;">📣 Pool Notice</div>
           <button class="ts-btn" id="pool-notice-clear-btn" onclick="clearPoolNotice()" style="display:none;font-size:.65rem;">Clear</button>
@@ -1515,7 +1521,7 @@
       </div>
 
       <!-- GUEST LOG -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">🪪 Guest Log</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-pool-guest')">+ Add</button>
@@ -1524,24 +1530,27 @@
       </div>
 
       <!-- CHEMICAL LOG -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">🧪 Chemical Log</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-chem')">+ Reading</button>
         </div>
         <div id="pool-chem-list"><div class="ts-empty">No readings today — tap + Reading to log</div></div>
       </div>
-      <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 12px;">⛳ Grounds</div>
+      </div><!-- /s-dash-col left (Aquatics) -->
+      <!-- RIGHT: Grounds -->
+      <div class="s-dash-col">
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 4px;">⛳ Grounds</div>
 
       <!-- HOLE STATUS BOARD -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div class="card-title" style="margin-bottom:4px;">Hole Status Board</div>
         <div style="font-size:.74rem;color:var(--muted);margin-bottom:12px;">Tap a hole to cycle status. Members see alerts on the Course tab.</div>
         <div id="hole-status-board" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
       </div>
 
       <!-- WORK ORDERS -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">📋 Work Orders</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-wo')">+ Add</button>
@@ -1550,13 +1559,16 @@
       </div>
 
       <!-- SPRAY LOG -->
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">🌿 Spray / Chemical Log</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-spray')">+ Log</button>
         </div>
         <div id="spray-list"><div class="ts-empty">No applications logged</div></div>
       </div>
+
+      </div><!-- /s-dash-col right (Grounds) -->
+      </div><!-- /s-dash-cols -->
     </div>
   </div>
 

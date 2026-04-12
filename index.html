@@ -466,6 +466,12 @@
     [data-theme="dark"] .lf-status.unclaimed { background:rgba(184,150,62,.15); color:var(--gold-light,#d4ab50); }
     [data-theme="dark"] .ev-fee-row { background:rgba(255,255,255,.05); }
     [data-theme="dark"] select.modal-input { background-color:#111b14 !important; }
+    /* Dark mode: forest-background elements always need light text regardless of --white remapping */
+    [data-theme="dark"] .hdr-title { color:rgba(245,240,232,.92); }
+    [data-theme="dark"] .ev-reg-btn { color:rgba(245,240,232,.92) !important; }
+    [data-theme="dark"] .modal-btn.primary { color:rgba(245,240,232,.92); }
+    [data-theme="dark"] button[style*="background:var(--forest)"],
+    [data-theme="dark"] a[style*="background:var(--forest)"] { color:rgba(245,240,232,.92) !important; }
     /* Dark mode: tab bar, search overlay, stat cards, quick actions, login card */
     [data-theme="dark"] .tab-bar { background:#111b14; border-color:rgba(255,255,255,.08); }
     [data-theme="dark"] .tab-btn { color:rgba(245,240,232,.5); }
@@ -941,7 +947,7 @@
             <div class="card-title">⛳ Keep Score</div>
             <div class="card-body" style="margin:3px 0 0;">Track your round hole by hole</div>
           </div>
-          <button onclick="startScoring()" class="ev-reg-btn" style="margin:0;white-space:nowrap;flex-shrink:0;">Start Round</button>
+          <button onclick="startScoring()" class="ev-reg-btn" style="margin:0;white-space:nowrap;flex-shrink:0;width:auto;">Start Round</button>
         </div>
       </div>
       <div id="score-entry-section" style="display:none;margin-bottom:20px;"></div>
@@ -996,7 +1002,7 @@
       <div class="page-title">Dining</div>
       <!-- Venue toggle -->
       <div style="display:flex;gap:8px;margin-bottom:16px;">
-        <button id="dt-hoovers-btn" onclick="switchDiningView('hoovers')" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--forest);color:var(--white);font-size:.8rem;font-weight:700;cursor:pointer;">Hoover's</button>
+        <button id="dt-hoovers-btn" onclick="switchDiningView('hoovers')" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--forest);color:rgba(245,240,232,.92);font-size:.8rem;font-weight:700;cursor:pointer;">Hoover's</button>
         <button id="dt-grill-btn" onclick="switchDiningView('grill')" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;">Westwood Grill</button>
       </div>
 
@@ -1011,37 +1017,7 @@
           </div>
           <div style="font-size:.68rem;color:rgba(245,240,232,.4);margin-top:8px;font-style:italic;">Members only · Open to public 3rd Saturday by reservation</div>
         </div>
-        <div class="card" style="margin-bottom:10px;">
-          <div class="card-title" style="margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-size:1rem;letter-spacing:.05em;">Tapas</div>
-          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Asian Steak Bites</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Cubed filet bites marinated in bulgogi sauce, our special blend of spices from the far east</div></div>
-          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Chicken Loli's</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Chicken drumsticks prepared with savory spices, arranged with your choice of dipping sauce</div></div>
-          <div><div style="font-weight:600;font-size:.84rem;">Golden Seared Prawns</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Full body prawns seared and grilled to perfection in scampi sauce</div></div>
-        </div>
-        <div class="card" style="margin-bottom:10px;">
-          <div class="card-title" style="margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-size:1rem;letter-spacing:.05em;">Salad</div>
-          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Caprese</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Sliced mozzarella, tomatoes, sweet basil, balsamic glaze</div></div>
-          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Caesar</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Parmesan cheese, croutons, caesar dressing</div></div>
-          <div><div style="font-weight:600;font-size:.84rem;">Wedge</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Cherry tomatoes, bacon, diced red onion, and parmesan cheese</div></div>
-        </div>
-        <div class="card" style="margin-bottom:10px;">
-          <div class="card-title" style="margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-size:1rem;letter-spacing:.05em;">Entrées</div>
-          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Filet Oscar</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">8 oz. filet topped with fresh crab and Béarnaise sauce. Served with fondant potatoes and garlic butter mushrooms</div><div style="font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic;">Pairs with Pinot Noir, Bordeaux, or Cabernet</div></div>
-          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Ahi Steak</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Fresh caught Ahi tuna steak featuring a peppercorn crust and flat top grilled. Served with forbidden rice and smashed brussel sprouts</div><div style="font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic;">Pairs with Chardonnay or Pinot Noir</div></div>
-          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Veal Milanese</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Marinated veal cutlets breaded and cooked to golden perfection. Served over a bed of risotto and green bean almondine</div><div style="font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic;">Pairs with Pinot Noir, Cabernet, or Bordeaux</div></div>
-          <div><div style="font-weight:600;font-size:.84rem;">Chicken d'Hoover</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Seasoned chicken breast served over a bed of homemade gnocchi in a parmesan cream sauce</div><div style="font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic;">Pairs with Chianti or Pinot Noir</div></div>
-        </div>
-        <div class="card" style="margin-bottom:10px;">
-          <div class="card-title" style="margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-size:1rem;letter-spacing:.05em;">Dessert</div>
-          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Buried Treasure</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">A decadent chocolate covered strawberry encased in cheesecake</div></div>
-          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"><div style="font-weight:600;font-size:.84rem;">Chocolate Mousse Brownie</div></div>
-          <div><div style="font-weight:600;font-size:.84rem;">Sorbet of the Day</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Rotating flavors, inquire for details</div></div>
-        </div>
-        <div style="background:var(--forest);border-radius:12px;padding:18px;margin-bottom:12px;text-align:center;">
-          <div style="font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">House Specialty</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--cream);margin-bottom:6px;">Tomahawk Pork Chop</div>
-          <div style="font-size:.76rem;color:rgba(245,240,232,.55);line-height:1.5;">14 oz. Tomahawk Pork Chop served on a bed of pommes potatoes with a side of bacon wrapped asparagus</div>
-          <div style="font-size:.7rem;color:var(--gold);font-style:italic;margin-top:8px;">Pairs with Cabernet or Sauvignon Blanc</div>
-        </div>
+        <div id="hoovers-menu-content"></div>
       </div>
 
       <!-- WESTWOOD GRILL SECTION -->
@@ -1606,7 +1582,13 @@
     <div class="page">
       <div class="page-title">Menu Manager</div>
       <div class="page-sub">Tap any item to edit name, description, or price</div>
-      <!-- 86 LIST -->
+      <!-- VENUE TOGGLE -->
+      <div style="display:flex;gap:6px;margin-bottom:14px;">
+        <button class="sev-toggle-btn active" id="smv-grill-btn" onclick="setMenuVenue('grill')" style="flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:none;font-size:.72rem;font-weight:600;cursor:pointer;color:var(--forest);transition:background .15s;">🍔 Westwood Grill</button>
+        <button class="sev-toggle-btn"        id="smv-hoovers-btn" onclick="setMenuVenue('hoovers')" style="flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:none;font-size:.72rem;font-weight:600;cursor:pointer;color:var(--forest);transition:background .15s;">🍽️ Hoover's</button>
+      </div>
+      <!-- 86 LIST (Grill only) -->
+      <div id="s-86-wrapper">
       <div class="card" style="margin-bottom:12px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div class="card-title" style="margin:0;">🚫 86'd Today</div>
@@ -1626,6 +1608,7 @@
         <div id="kitchen-board-items"></div>
         <div id="kitchen-board-empty" style="display:none;text-align:center;padding:30px;font-size:1.1rem;color:var(--success);font-weight:700;">✅ All clear — nothing 86'd</div>
       </div>
+      </div><!-- /s-86-wrapper -->
       <div id="s-menu-sections"></div>
     </div>
   </div>
@@ -1950,7 +1933,7 @@
     <div class="modal-handle"></div>
     <div class="modal-title" id="md-title">Reserve at Westwood Grill</div>
     <div style="display:flex;gap:8px;margin-bottom:14px;">
-      <button id="md-venue-grill" onclick="setModalVenue('grille')" style="flex:1;padding:9px;border-radius:8px;border:none;background:var(--forest);color:var(--white);font-size:.78rem;font-weight:700;cursor:pointer;">Westwood Grill</button>
+      <button id="md-venue-grill" onclick="setModalVenue('grille')" style="flex:1;padding:9px;border-radius:8px;border:none;background:var(--forest);color:rgba(245,240,232,.92);font-size:.78rem;font-weight:700;cursor:pointer;">Westwood Grill</button>
       <button id="md-venue-hoovers" onclick="setModalVenue('hoovers')" style="flex:1;padding:9px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;">Hoover's</button>
     </div>
     <div id="md-venue-hint" style="display:none;font-size:.75rem;color:var(--gold);margin-bottom:10px;padding:8px 12px;background:rgba(184,151,106,.1);border-radius:8px;border-left:3px solid var(--gold);"></div>
@@ -2118,8 +2101,10 @@
     <input class="modal-input" id="me-name" type="text" placeholder="Item name">
     <input class="modal-input" id="me-desc" type="text" placeholder="Description (optional)">
     <input class="modal-input" id="me-price" type="text" placeholder="Price (e.g. $12) — leave blank to hide price">
+    <input class="modal-input" id="me-wine" type="text" placeholder="Wine pairing (optional — Hoover's only)">
     <input type="hidden" id="me-section">
     <input type="hidden" id="me-index">
+    <input type="hidden" id="me-venue">
     <div class="modal-row">
       <button class="modal-btn secondary" id="me-delete-btn" onclick="deleteMenuItem()" style="background:#fee2e2;color:#991b1b;border:none;">Delete</button>
       <button class="modal-btn secondary" onclick="closeModal('modal-menu-edit')">Cancel</button>
@@ -2357,7 +2342,7 @@ var DEFAULT_EVENTS = [
   {title:"Men's League — Aug 22", date:'2026-08-22', month:'AUG', day:'22', time:'5:00 PM', desc:"Week 16 of 16 — Men's League season finale.", fee:'Member Event', capacity:24, registeredCount:0, registered:false}
 ];
 
-var WH_MENU_VERSION = '3';
+var WH_MENU_VERSION = '4';
 var WH_MENU_DEFAULTS = {
   grill: {
     express: [
@@ -2427,6 +2412,32 @@ var WH_MENU_DEFAULTS = {
       {name:'Fries', desc:'Hand Cut or Traditional — included with sandwiches & entrees', price:''}
     ]
   },
+  hoovers: {
+    tapas: [
+      {name:'Asian Steak Bites', desc:'Cubed filet bites marinated in bulgogi sauce, our special blend of spices from the far east', price:'', wine:''},
+      {name:"Chicken Loli's", desc:'Chicken drumsticks prepared with savory spices, arranged with your choice of dipping sauce', price:'', wine:''},
+      {name:'Golden Seared Prawns', desc:'Full body prawns seared and grilled to perfection in scampi sauce', price:'', wine:''}
+    ],
+    salad: [
+      {name:'Caprese', desc:'Sliced mozzarella, tomatoes, sweet basil, balsamic glaze', price:'', wine:''},
+      {name:'Caesar', desc:'Parmesan cheese, croutons, caesar dressing', price:'', wine:''},
+      {name:'Wedge', desc:'Cherry tomatoes, bacon, diced red onion, and parmesan cheese', price:'', wine:''}
+    ],
+    entrees: [
+      {name:'Filet Oscar', desc:'8 oz. filet topped with fresh crab and Béarnaise sauce. Served with fondant potatoes and garlic butter mushrooms', price:'', wine:'Pinot Noir, Bordeaux, or Cabernet'},
+      {name:'Ahi Steak', desc:'Fresh caught Ahi tuna steak featuring a peppercorn crust and flat top grilled. Served with forbidden rice and smashed brussel sprouts', price:'', wine:'Chardonnay or Pinot Noir'},
+      {name:'Veal Milanese', desc:'Marinated veal cutlets breaded and cooked to golden perfection. Served over a bed of risotto and green bean almondine', price:'', wine:'Pinot Noir, Cabernet, or Bordeaux'},
+      {name:"Chicken d'Hoover", desc:'Seasoned chicken breast served over a bed of homemade gnocchi in a parmesan cream sauce', price:'', wine:'Chianti or Pinot Noir'}
+    ],
+    dessert: [
+      {name:'Buried Treasure', desc:'A decadent chocolate covered strawberry encased in cheesecake', price:'', wine:''},
+      {name:'Chocolate Mousse Brownie', desc:'', price:'', wine:''},
+      {name:'Sorbet of the Day', desc:'Rotating flavors, inquire for details', price:'', wine:''}
+    ],
+    specialty: [
+      {name:'Tomahawk Pork Chop', desc:'14 oz. Tomahawk Pork Chop served on a bed of pommes potatoes with a side of bacon wrapped asparagus', price:'', wine:'Cabernet or Sauvignon Blanc'}
+    ]
+  },
   courseMenu: {
     food: [
       {name:'Clubhouse Burger', desc:'Half-pound Angus, cheddar, lettuce, tomato, house pickles', price:'$14'},
@@ -2458,6 +2469,9 @@ var MENU_SECTION_LABELS = {
   sandwiches:'Sandwiches', lunchEntrees:'Signature Entrees',
   cocktails:'Cocktails', wine:'Wine by the Glass',
   postRound:'Sides', quickBites:'Kids Menu'
+};
+var HOOVERS_SECTION_LABELS = {
+  tapas:'Tapas', salad:'Salad', entrees:'Entrées', dessert:'Dessert', specialty:'House Specialty'
 };
 
 var appEvents = JSON.parse(localStorage.getItem('wh_app_events') || 'null') || JSON.parse(JSON.stringify(DEFAULT_EVENTS));
@@ -2822,6 +2836,7 @@ function _initMemberUI() {
   renderMemberEvents();
   renderHomeEvents();
   renderAppMenu();
+  renderHooversMenu();
   renderRoundLog();
   loadWeather();
   if (window._initHeroPhotos) window._initHeroPhotos();
@@ -4259,7 +4274,7 @@ function setModalVenue(v) {
   var titleEl    = document.getElementById('md-title');
   var timeInput  = document.getElementById('md-time');
   var hintEl     = document.getElementById('md-venue-hint');
-  var active = 'flex:1;padding:9px;border-radius:8px;border:none;background:var(--forest);color:var(--white);font-size:.78rem;font-weight:700;cursor:pointer;';
+  var active = 'flex:1;padding:9px;border-radius:8px;border:none;background:var(--forest);color:rgba(245,240,232,.92);font-size:.78rem;font-weight:700;cursor:pointer;';
   var inactive = 'flex:1;padding:9px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;';
   if (grillBtn)   grillBtn.style.cssText   = (v === 'grille'  ? active : inactive);
   if (hooversBtn) hooversBtn.style.cssText = (v === 'hoovers' ? active : inactive);
@@ -4428,8 +4443,9 @@ function switchDiningView(view) {
   if (view === 'hoovers') {
     hooversSection.style.display = 'block';
     grillSection.style.display = 'none';
+    renderHooversMenu();
     hooversBtn.style.background = 'var(--forest)';
-    hooversBtn.style.color = 'var(--white)';
+    hooversBtn.style.color = 'rgba(245,240,232,.92)';
     hooversBtn.style.border = 'none';
     grillBtn.style.background = 'transparent';
     grillBtn.style.color = 'var(--muted)';
@@ -4438,7 +4454,7 @@ function switchDiningView(view) {
     hooversSection.style.display = 'none';
     grillSection.style.display = 'block';
     grillBtn.style.background = 'var(--forest)';
-    grillBtn.style.color = 'var(--white)';
+    grillBtn.style.color = 'rgba(245,240,232,.92)';
     grillBtn.style.border = 'none';
     hooversBtn.style.background = 'transparent';
     hooversBtn.style.color = 'var(--muted)';
@@ -4452,7 +4468,11 @@ function switchDiningView(view) {
 function menuLoad() {
   try {
     var d = JSON.parse(localStorage.getItem('wh_menus'));
-    if (d && d._version === WH_MENU_VERSION) return d;
+    if (d && d._version === WH_MENU_VERSION) {
+      // Back-fill hoovers if somehow missing from a saved v4 record
+      if (!d.hoovers) d.hoovers = JSON.parse(JSON.stringify(WH_MENU_DEFAULTS.hoovers));
+      return d;
+    }
     return JSON.parse(JSON.stringify(WH_MENU_DEFAULTS));
   } catch(e) { return JSON.parse(JSON.stringify(WH_MENU_DEFAULTS)); }
 }
@@ -4588,72 +4608,158 @@ function remove86Item(id) {
   showToast('✅ Item restored to menu');
 }
 
+var staffMenuVenue = 'grill';
+
+function setMenuVenue(venue) {
+  staffMenuVenue = venue;
+  var grillBtn   = document.getElementById('smv-grill-btn');
+  var hooversBtn = document.getElementById('smv-hoovers-btn');
+  var wrapper86  = document.getElementById('s-86-wrapper');
+  if (grillBtn)   grillBtn.classList.toggle('active',   venue === 'grill');
+  if (hooversBtn) hooversBtn.classList.toggle('active', venue === 'hoovers');
+  if (wrapper86)  wrapper86.style.display = venue === 'grill' ? '' : 'none';
+  renderStaffMenus();
+}
+
 function renderStaffMenus() {
-  var g    = menuLoad().grill;
-  var el   = document.getElementById('s-menu-sections');
+  var el = document.getElementById('s-menu-sections');
   if (!el) return;
   var html = '';
-  var list86 = load86List();
-  var orderedKeys = ['express','starters','lunchDesserts','sandwiches','lunchEntrees','cocktails','wine','postRound','quickBites'];
-  orderedKeys.forEach(function(key) {
-    var items = g[key] || [];
-    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px;">' +
-      '<div class="menu-sec-title" style="margin:0;">' + MENU_SECTION_LABELS[key] + '</div>' +
-      '<button class="ts-btn" style="font-size:.65rem;padding:3px 8px;" onclick="openMenuAdd(\'' + key + '\')">+ Add</button>' +
-    '</div>';
-    items.forEach(function(item, idx) {
-      var is86 = list86.some(function(i){ return i.section === key && i.idx === idx; });
-      html += '<div class="smi"' + (is86 ? ' style="opacity:.45;"' : '') + '>' +
-        '<div class="smi-info">' +
-          '<div class="smi-name"' + (is86 ? ' style="text-decoration:line-through;"' : '') + '>' + item.name + (is86 ? ' <span style="font-size:.65rem;font-weight:700;color:#991b1b;background:#fee2e2;padding:1px 6px;border-radius:10px;">86\'d</span>' : '') + '</div>' +
-          '<div class="smi-price">' + (item.price || '(no price)') +
-            (item.desc ? ' · ' + item.desc.substring(0,32) + (item.desc.length > 32 ? '…' : '') : '') + '</div>' +
-        '</div>' +
-        '<button class="smi-edit" onclick="openMenuEdit(\'' + key + '\',' + idx + ')">Edit</button>' +
+  if (staffMenuVenue === 'hoovers') {
+    var h = menuLoad().hoovers || {};
+    var orderedKeys = ['tapas','salad','entrees','dessert','specialty'];
+    orderedKeys.forEach(function(key) {
+      var items = h[key] || [];
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px;">' +
+        '<div class="menu-sec-title" style="margin:0;">' + HOOVERS_SECTION_LABELS[key] + '</div>' +
+        '<button class="ts-btn" style="font-size:.65rem;padding:3px 8px;" onclick="openMenuAdd(\'' + key + '\')">+ Add</button>' +
       '</div>';
+      items.forEach(function(item, idx) {
+        html += '<div class="smi">' +
+          '<div class="smi-info">' +
+            '<div class="smi-name">' + item.name + '</div>' +
+            '<div class="smi-price">' + (item.price || '') +
+              (item.desc ? (item.price ? ' · ' : '') + item.desc.substring(0,36) + (item.desc.length > 36 ? '…' : '') : '') +
+              (item.wine ? ' <span style="color:var(--gold);font-style:italic;">· 🍷 ' + item.wine.substring(0,30) + (item.wine.length > 30 ? '…' : '') + '</span>' : '') +
+            '</div>' +
+          '</div>' +
+          '<button class="smi-edit" onclick="openMenuEdit(\'' + key + '\',' + idx + ')">Edit</button>' +
+        '</div>';
+      });
     });
+  } else {
+    var g = menuLoad().grill;
+    var list86 = load86List();
+    var orderedKeys = ['express','starters','lunchDesserts','sandwiches','lunchEntrees','cocktails','wine','postRound','quickBites'];
+    orderedKeys.forEach(function(key) {
+      var items = g[key] || [];
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px;">' +
+        '<div class="menu-sec-title" style="margin:0;">' + MENU_SECTION_LABELS[key] + '</div>' +
+        '<button class="ts-btn" style="font-size:.65rem;padding:3px 8px;" onclick="openMenuAdd(\'' + key + '\')">+ Add</button>' +
+      '</div>';
+      items.forEach(function(item, idx) {
+        var is86 = list86.some(function(i){ return i.section === key && i.idx === idx; });
+        html += '<div class="smi"' + (is86 ? ' style="opacity:.45;"' : '') + '>' +
+          '<div class="smi-info">' +
+            '<div class="smi-name"' + (is86 ? ' style="text-decoration:line-through;"' : '') + '>' + item.name + (is86 ? ' <span style="font-size:.65rem;font-weight:700;color:#991b1b;background:#fee2e2;padding:1px 6px;border-radius:10px;">86\'d</span>' : '') + '</div>' +
+            '<div class="smi-price">' + (item.price || '(no price)') +
+              (item.desc ? ' · ' + item.desc.substring(0,32) + (item.desc.length > 32 ? '…' : '') : '') + '</div>' +
+          '</div>' +
+          '<button class="smi-edit" onclick="openMenuEdit(\'' + key + '\',' + idx + ')">Edit</button>' +
+        '</div>';
+      });
+    });
+    render86List();
+  }
+  el.innerHTML = html;
+}
+
+function renderHooversMenu() {
+  var el = document.getElementById('hoovers-menu-content');
+  if (!el) return;
+  var h = menuLoad().hoovers || {};
+  var html = '';
+  var regularSections = ['tapas','salad','entrees','dessert'];
+  regularSections.forEach(function(key) {
+    var items = h[key] || [];
+    if (!items.length) return;
+    html += '<div class="card" style="margin-bottom:10px;">';
+    html += '<div class="card-title" style="margin-bottom:10px;font-family:\'Cormorant Garamond\',serif;font-size:1rem;letter-spacing:.05em;">' + HOOVERS_SECTION_LABELS[key] + '</div>';
+    items.forEach(function(item, idx) {
+      var isLast = idx === items.length - 1;
+      html += '<div' + (isLast ? '' : ' style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"') + '>';
+      html += '<div style="font-weight:600;font-size:.84rem;">' + item.name + '</div>';
+      if (item.desc) html += '<div style="font-size:.74rem;color:var(--muted);margin-top:2px;">' + item.desc + '</div>';
+      if (item.wine) html += '<div style="font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic;">Pairs with ' + item.wine + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  // Specialty section — rendered as dark card
+  var specialty = h.specialty || [];
+  specialty.forEach(function(item) {
+    html += '<div style="background:var(--forest);border-radius:12px;padding:18px;margin-bottom:12px;text-align:center;">';
+    html += '<div style="font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">House Specialty</div>';
+    html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.3rem;color:var(--cream);margin-bottom:6px;">' + item.name + '</div>';
+    if (item.desc) html += '<div style="font-size:.76rem;color:rgba(245,240,232,.55);line-height:1.5;">' + item.desc + '</div>';
+    if (item.wine) html += '<div style="font-size:.7rem;color:var(--gold);font-style:italic;margin-top:8px;">Pairs with ' + item.wine + '</div>';
+    html += '</div>';
   });
   el.innerHTML = html;
-  render86List();
 }
 
 function openMenuEdit(section, idx) {
-  var g    = menuLoad().grill;
-  var item = g[section][idx];
+  var venue = staffMenuVenue;
+  var data  = menuLoad();
+  var item  = venue === 'hoovers' ? (data.hoovers[section] || [])[idx] : data.grill[section][idx];
+  if (!item) return;
   document.getElementById('me-title').textContent = 'Edit Item';
   document.getElementById('me-name').value    = item.name;
   document.getElementById('me-desc').value    = item.desc || '';
   document.getElementById('me-price').value   = item.price || '';
+  document.getElementById('me-wine').value    = item.wine || '';
+  document.getElementById('me-wine').style.display = venue === 'hoovers' ? '' : 'none';
   document.getElementById('me-section').value = section;
   document.getElementById('me-index').value   = idx;
+  document.getElementById('me-venue').value   = venue;
   document.getElementById('me-delete-btn').style.display = '';
   openModal('modal-menu-edit');
 }
 function openMenuAdd(section) {
+  var venue = staffMenuVenue;
   document.getElementById('me-title').textContent = 'Add Item';
   document.getElementById('me-name').value    = '';
   document.getElementById('me-desc').value    = '';
   document.getElementById('me-price').value   = '';
+  document.getElementById('me-wine').value    = '';
+  document.getElementById('me-wine').style.display = venue === 'hoovers' ? '' : 'none';
   document.getElementById('me-section').value = section;
   document.getElementById('me-index').value   = '-1';
+  document.getElementById('me-venue').value   = venue;
   document.getElementById('me-delete-btn').style.display = 'none';
   openModal('modal-menu-edit');
 }
 function deleteMenuItem() {
   var section = document.getElementById('me-section').value;
+  var venue   = document.getElementById('me-venue').value || 'grill';
   var idx     = parseInt(document.getElementById('me-index').value);
   if (idx < 0) { closeModal('modal-menu-edit'); return; }
   if (!confirm('Remove this item from the menu?')) return;
   var data = menuLoad();
-  data.grill[section].splice(idx, 1);
+  if (venue === 'hoovers') {
+    if (data.hoovers && data.hoovers[section]) data.hoovers[section].splice(idx, 1);
+  } else {
+    data.grill[section].splice(idx, 1);
+  }
   menuSave(data);
   closeModal('modal-menu-edit');
   renderStaffMenus();
-  renderAppMenu();
+  if (venue === 'hoovers') renderHooversMenu(); else renderAppMenu();
 }
 
 function saveMenuEdit() {
   var section = document.getElementById('me-section').value;
+  var venue   = document.getElementById('me-venue').value || 'grill';
   var idx     = parseInt(document.getElementById('me-index').value);
   var name    = document.getElementById('me-name').value.trim();
   if (!name) { showToast('Item name is required'); return; }
@@ -4663,16 +4769,27 @@ function saveMenuEdit() {
     desc:  document.getElementById('me-desc').value.trim(),
     price: document.getElementById('me-price').value.trim()
   };
-  if (idx < 0) {
-    if (!data.grill[section]) data.grill[section] = [];
-    data.grill[section].push(newItem);
+  if (venue === 'hoovers') {
+    newItem.wine = document.getElementById('me-wine').value.trim();
+    if (!data.hoovers) data.hoovers = {};
+    if (idx < 0) {
+      if (!data.hoovers[section]) data.hoovers[section] = [];
+      data.hoovers[section].push(newItem);
+    } else {
+      data.hoovers[section][idx] = newItem;
+    }
   } else {
-    data.grill[section][idx] = newItem;
+    if (idx < 0) {
+      if (!data.grill[section]) data.grill[section] = [];
+      data.grill[section].push(newItem);
+    } else {
+      data.grill[section][idx] = newItem;
+    }
   }
   menuSave(data);
   closeModal('modal-menu-edit');
   renderStaffMenus();
-  renderAppMenu();
+  if (venue === 'hoovers') renderHooversMenu(); else renderAppMenu();
   showToast('✅ Menu item updated!');
 }
 

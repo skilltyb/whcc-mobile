@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
   <meta name="theme-color" content="#1a2b1f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1874,20 +1874,26 @@
   </div>
 </div>
 
-<!-- iOS install instructions -->
+<!-- iOS / Safari install instructions -->
 <div class="modal-overlay" id="modal-ios-install" style="display:none;">
   <div class="modal-box" style="text-align:center;">
     <div class="modal-title">Add to Home Screen</div>
-    <div style="font-size:2rem;margin:12px 0;">📲</div>
-    <p style="font-size:.84rem;color:var(--dark);line-height:1.6;margin-bottom:8px;">
-      To install the app on your iPhone:
-    </p>
-    <ol style="text-align:left;font-size:.82rem;color:var(--dark);line-height:2;padding-left:20px;margin-bottom:16px;">
-      <li>Tap the <strong>Share</strong> button <span style="font-size:1rem;">⬆️</span> at the bottom of Safari</li>
-      <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
-      <li>Tap <strong>Add</strong> in the top right</li>
-    </ol>
+    <div id="ios-install-icon" style="font-size:2rem;margin:12px 0;">📲</div>
+    <p id="ios-install-intro" style="font-size:.84rem;color:var(--dark);line-height:1.6;margin-bottom:8px;"></p>
+    <ol id="ios-install-steps" style="text-align:left;font-size:.82rem;color:var(--dark);line-height:2;padding-left:20px;margin-bottom:16px;"></ol>
     <button class="modal-btn primary" onclick="closeModal('modal-ios-install')">Got it</button>
+  </div>
+</div>
+
+<!-- iOS Chrome/Firefox — must use Safari -->
+<div class="modal-overlay" id="modal-ios-other-browser" style="display:none;">
+  <div class="modal-box" style="text-align:center;">
+    <div class="modal-title">Use Safari to Install</div>
+    <div style="font-size:2rem;margin:12px 0;">🧭</div>
+    <p style="font-size:.84rem;color:var(--dark);line-height:1.6;margin-bottom:16px;">
+      To add this app to your Home Screen, open it in <strong>Safari</strong> — your current browser doesn't support installation.
+    </p>
+    <button class="modal-btn primary" onclick="closeModal('modal-ios-other-browser')">Got it</button>
   </div>
 </div>
 
@@ -3575,35 +3581,101 @@ document.addEventListener('DOMContentLoaded', function() { WHCC_SYNC.fetchCounts
 // ── PWA INSTALL ──────────────────────────────────────────────
 var _installPrompt = null;
 
+function _pwaIsStandalone() {
+  return window.navigator.standalone === true ||
+         window.matchMedia('(display-mode: standalone)').matches;
+}
+
+function _pwaShowBtn() {
+  if (_pwaIsStandalone()) return; // already installed — never show
+  var btn = document.getElementById('btn-install-app');
+  if (btn) btn.style.display = 'block';
+}
+
+function _pwaHideBtn() {
+  var btn = document.getElementById('btn-install-app');
+  if (btn) btn.style.display = 'none';
+}
+
+// Chrome / Edge / Firefox on Android — native install prompt
 window.addEventListener('beforeinstallprompt', function(e) {
   e.preventDefault();
   _installPrompt = e;
-  // Show the install button in Account tab
-  var btn = document.getElementById('btn-install-app');
-  if (btn) btn.style.display = 'block';
+  _pwaShowBtn();
 });
 
 window.addEventListener('appinstalled', function() {
   _installPrompt = null;
-  var btn = document.getElementById('btn-install-app');
-  if (btn) btn.style.display = 'none';
+  _pwaHideBtn();
 });
 
+// iOS & macOS Safari — beforeinstallprompt never fires; show button manually
+(function() {
+  if (_pwaIsStandalone()) return;
+  var ua = navigator.userAgent;
+  // Safari on iOS or macOS (excludes Chrome/Firefox/Edge on iOS which use CriOS/FxiOS/EdgiOS)
+  var isAppleSafari = /safari/i.test(ua) &&
+                      !/chrome|crios|fxios|edgios|chromium|android/i.test(ua) &&
+                      /apple/i.test(navigator.vendor || '');
+  if (isAppleSafari) {
+    document.addEventListener('DOMContentLoaded', _pwaShowBtn);
+  }
+})();
+
 function triggerInstall() {
+  if (_pwaIsStandalone()) { _pwaHideBtn(); return; }
+
   if (_installPrompt) {
-    // Android / Chrome — use native prompt
+    // Chrome / Edge / Firefox on Android — native prompt
     _installPrompt.prompt();
     _installPrompt.userChoice.then(function(result) {
       if (result.outcome === 'accepted') {
         _installPrompt = null;
-        var btn = document.getElementById('btn-install-app');
-        if (btn) btn.style.display = 'none';
+        _pwaHideBtn();
       }
     });
-  } else {
-    // iOS Safari — show manual instructions
-    openModal('modal-ios-install');
+    return;
   }
+
+  // Determine which manual instructions to show
+  var ua = navigator.userAgent;
+
+  // iOS browsers that cannot install PWAs (must use Safari)
+  if (/crios|fxios|edgios/i.test(ua)) {
+    openModal('modal-ios-other-browser');
+    return;
+  }
+
+  // macOS Safari (desktop — no touch, no standalone nav.standalone)
+  var isMacSafari = /macintosh/i.test(ua) && navigator.maxTouchPoints === 0;
+  // iPad (reports as Macintosh in Safari 13+ with desktop mode)
+  var isIpad = /ipad/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+
+  var intro = document.getElementById('ios-install-intro');
+  var steps = document.getElementById('ios-install-steps');
+
+  if (isMacSafari) {
+    if (intro) intro.textContent = 'To install the app on your Mac:';
+    if (steps) steps.innerHTML =
+      '<li>In the Safari menu bar, click <strong>File</strong></li>' +
+      '<li>Select <strong>"Add to Dock…"</strong></li>' +
+      '<li>Click <strong>Add</strong> to confirm</li>';
+  } else if (isIpad) {
+    if (intro) intro.textContent = 'To install the app on your iPad:';
+    if (steps) steps.innerHTML =
+      '<li>Tap the <strong>Share</strong> button <span style="font-size:1rem;">⬆️</span> in the <strong>top</strong> toolbar</li>' +
+      '<li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>' +
+      '<li>Tap <strong>Add</strong> in the top right</li>';
+  } else {
+    // iPhone (default)
+    if (intro) intro.textContent = 'To install the app on your iPhone:';
+    if (steps) steps.innerHTML =
+      '<li>Tap the <strong>Share</strong> button <span style="font-size:1rem;">⬆️</span> at the <strong>bottom</strong> of Safari</li>' +
+      '<li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>' +
+      '<li>Tap <strong>Add</strong> in the top right</li>';
+  }
+
+  openModal('modal-ios-install');
 }
 
 // ── MOBILE TEE SHEET ──────────────────────────────────────────────────────────
@@ -6240,7 +6312,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js?v=10', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=11', { updateViaCache: 'none' })
       .then(function(reg) {
         reg.update(); // immediately check for a newer worker
         // Show update banner when a new SW is waiting

@@ -2,11 +2,12 @@
   "name": "Westwood Hills Country Club",
   "short_name": "WHCC",
   "description": "Member & Staff Portal for Westwood Hills Country Club",
-  "start_url": "./",
+  "lang": "en",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#1a2b1f",
   "theme_color": "#1a2b1f",
-  "id": "./",
+  "id": "/",
   "orientation": "any",
   "icons": [
     {

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#1a2b1f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -301,7 +301,7 @@
     .cond-field { margin-bottom:12px; }
     .cond-label { font-size:.72rem; font-weight:700; color:var(--dark); text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; display:block; }
     .cond-input { width:100%; padding:9px 10px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:.9rem; color:var(--dark); background:var(--white); box-sizing:border-box; }
-    .cond-select { width:100%; padding:9px 10px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:.9rem; color:var(--dark); background:var(--white); box-sizing:border-box; }
+    .cond-select { width:100%; padding:9px 10px 9px 10px; padding-right:32px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:.9rem; color:var(--dark); background:var(--white); box-sizing:border-box; -webkit-appearance:none; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1 1l5 5 5-5'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; cursor:pointer; }
     .cond-textarea { width:100%; padding:9px 10px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:.9rem; color:var(--dark); background:var(--white); box-sizing:border-box; min-height:60px; resize:none; }
     /* Conditions editor text inputs: dark bg + white text so they read clearly on all devices */
     #cond-card input[type="text"].cond-input {
@@ -597,6 +597,14 @@
     @supports (-webkit-touch-callout: none) {
       input, select, textarea { font-size: 16px !important; }
     }
+
+    /* ── MODAL BOX (centered dialog, used for iOS install instructions) ── */
+    .modal-box { background: var(--white); border-radius: var(--radius); padding: 26px 22px; width: calc(100% - 40px); max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+    /* Center box-style modals (vs bottom-sheet modals) */
+    .modal-overlay.modal-center { align-items: center; justify-content: center; }
+
+    /* Hide native iOS "×" clear button on search inputs — we have our own Cancel button */
+    input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
   </style>
 </head>
 <body>
@@ -1881,9 +1889,9 @@
 </div>
 
 <!-- iOS / Safari install instructions -->
-<div class="modal-overlay" id="modal-ios-install" style="display:none;">
+<div class="modal-overlay modal-center" id="modal-ios-install" role="dialog" aria-modal="true" aria-labelledby="ios-install-title">
   <div class="modal-box" style="text-align:center;">
-    <div class="modal-title">Add to Home Screen</div>
+    <div class="modal-title" id="ios-install-title">Add to Home Screen</div>
     <div id="ios-install-icon" style="font-size:2rem;margin:12px 0;">📲</div>
     <p id="ios-install-intro" style="font-size:.84rem;color:var(--dark);line-height:1.6;margin-bottom:8px;"></p>
     <ol id="ios-install-steps" style="text-align:left;font-size:.82rem;color:var(--dark);line-height:2;padding-left:20px;margin-bottom:16px;"></ol>
@@ -1892,9 +1900,9 @@
 </div>
 
 <!-- iOS Chrome/Firefox — must use Safari -->
-<div class="modal-overlay" id="modal-ios-other-browser" style="display:none;">
+<div class="modal-overlay modal-center" id="modal-ios-other-browser" role="dialog" aria-modal="true" aria-labelledby="ios-other-title">
   <div class="modal-box" style="text-align:center;">
-    <div class="modal-title">Use Safari to Install</div>
+    <div class="modal-title" id="ios-other-title">Use Safari to Install</div>
     <div style="font-size:2rem;margin:12px 0;">🧭</div>
     <p style="font-size:.84rem;color:var(--dark);line-height:1.6;margin-bottom:16px;">
       To add this app to your Home Screen, open it in <strong>Safari</strong> — your current browser doesn't support installation.
@@ -2450,7 +2458,7 @@ var HOOVERS_SECTION_LABELS = {
   tapas:'Tapas', salad:'Salad', entrees:'Entrées', dessert:'Dessert', specialty:'House Specialty'
 };
 
-var appEvents = JSON.parse(localStorage.getItem('wh_app_events') || 'null') || JSON.parse(JSON.stringify(DEFAULT_EVENTS));
+var appEvents; try { appEvents = JSON.parse(localStorage.getItem('wh_app_events') || 'null') || JSON.parse(JSON.stringify(DEFAULT_EVENTS)); } catch(e) { appEvents = JSON.parse(JSON.stringify(DEFAULT_EVENTS)); }
 // Merge any DEFAULT_EVENTS entries that aren't in the stored list (e.g. new season events added to the app)
 (function() {
   var storedTitles = {};
@@ -6261,12 +6269,36 @@ function loadWeather() {
 // ════════════════════════════════════
 // MODALS
 // ════════════════════════════════════
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+var _prevFocus = null;
+function openModal(id) {
+  _prevFocus = document.activeElement;
+  var el = document.getElementById(id);
+  el.classList.add('open');
+  // Move focus into the modal for screen readers
+  setTimeout(function() {
+    var first = el.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (first) first.focus();
+  }, 50);
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  if (_prevFocus) { _prevFocus.focus(); _prevFocus = null; }
+}
 
 document.querySelectorAll('.modal-overlay').forEach(function(m) {
   m.addEventListener('click', function(e){ if (e.target === m) closeModal(m.id); });
 });
+
+// ── Visual Viewport keyboard compensation (C-2) ──
+// When the software keyboard opens on iOS, push open modal sheets up so they aren't hidden behind it.
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', function() {
+    var kbHeight = Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop);
+    document.querySelectorAll('.modal-overlay.open .modal-sheet, .modal-overlay.open .modal-box').forEach(function(el) {
+      el.style.marginBottom = kbHeight > 50 ? kbHeight + 'px' : '';
+    });
+  });
+}
 
 // ════════════════════════════════════
 // TOAST
@@ -6318,7 +6350,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js?v=12', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=13', { updateViaCache: 'none' })
       .then(function(reg) {
         reg.update(); // immediately check for a newer worker
         // Show update banner when a new SW is waiting
@@ -7046,7 +7078,10 @@ function initPullToRefresh(el, onRefresh) {
   document.addEventListener('touchstart', function(e) {
     var screen = document.getElementById('screen-member');
     if (!screen || screen.classList.contains('hidden')) return;
-    if (window.scrollY === 0) { startY = e.touches[0].clientY; pulling = true; }
+    // Check the active scrollable tab container, not window (window.scrollY is always 0 in fixed layout)
+    var activeTab = screen.querySelector('.tab-content.active');
+    var atTop = activeTab ? activeTab.scrollTop === 0 : false;
+    if (atTop) { startY = e.touches[0].clientY; pulling = true; }
   }, { passive: true });
 
   document.addEventListener('touchend', function(e) {
@@ -7273,7 +7308,7 @@ function submitLeagueReg() {
     var b = getBanner();
     if (!b) return;
     clearTimeout(hideTimer);
-    b.textContent = offline ? '⚠ No connection — showing cached data' : '✓ Back online';
+    b.textContent = offline ? 'No connection — showing cached data' : 'Back online';
     b.className   = offline ? 'nb-show nb-offline' : 'nb-show nb-online';
     if (!offline) {
       hideTimer = setTimeout(function() {
@@ -7315,7 +7350,7 @@ function updateSyncLabel() {
 }
 
 function drainSyncQueue() {
-  var q = JSON.parse(localStorage.getItem('wh_sync_queue') || '[]');
+  var q; try { q = JSON.parse(localStorage.getItem('wh_sync_queue') || '[]'); } catch(e) { q = []; }
   if (!q.length) return;
   var remaining = [];
   q.forEach(function(item) {
@@ -7328,7 +7363,7 @@ function drainSyncQueue() {
       .then(function() { /* synced */ })
       .catch(function() { remaining.push(item); });
   });
-  localStorage.setItem('wh_sync_queue', JSON.stringify(remaining));
+  try { localStorage.setItem('wh_sync_queue', JSON.stringify(remaining)); } catch(e) {}
   if (q.length > remaining.length)
     showToast('✓ ' + (q.length - remaining.length) + ' queued item(s) synced');
 }
@@ -7337,11 +7372,13 @@ function manualSync() {
   showToast('Syncing…');
   WHCC_SYNC.fetchAllOps(function(data) {
     if (!data) {
-      localStorage.setItem('wh_last_sync_failed', '1');
+      try { localStorage.setItem('wh_last_sync_failed', '1'); } catch(e) {}
       showToast('Sync failed — check your connection.');
     } else {
-      localStorage.setItem('wh_last_sync_ts', Date.now());
-      localStorage.setItem('wh_last_sync_failed', '0');
+      try {
+        localStorage.setItem('wh_last_sync_ts', Date.now());
+        localStorage.setItem('wh_last_sync_failed', '0');
+      } catch(e) {}
       showToast('Up to date');
       _initMemberUI();
     }
@@ -7362,7 +7399,7 @@ function maybeShowWelcome() {
 }
 
 function dismissWelcome() {
-  localStorage.setItem('wh_onboarded', '1');
+  try { localStorage.setItem('wh_onboarded', '1'); } catch(e) {}
   var overlay = document.getElementById('welcome-overlay');
   if (overlay) overlay.classList.remove('open');
 }
@@ -7386,8 +7423,9 @@ function maybeOfferBiometric(email, acct) {
 
 function enrollBiometric(email, acct) {
   if (!bioSupported()) { showToast('Biometric login not supported on this device'); return; }
+  if (!window.crypto || !window.crypto.getRandomValues) { showToast('Biometric login not supported on this device'); return; }
   var challenge = new Uint8Array(32);
-  crypto.getRandomValues(challenge);
+  window.crypto.getRandomValues(challenge);
   var userId = new TextEncoder().encode(email);
   navigator.credentials.create({
     publicKey: {
@@ -7400,9 +7438,11 @@ function enrollBiometric(email, acct) {
     }
   }).then(function(cred) {
     // Store credential id for future authentication
-    localStorage.setItem('wh_bio_cred_' + email, btoa(String.fromCharCode.apply(null, new Uint8Array(cred.rawId))));
-    localStorage.setItem('wh_bio_enrolled_' + email, '1');
-    localStorage.setItem('wh_bio_email', email);
+    try {
+      localStorage.setItem('wh_bio_cred_' + email, btoa(String.fromCharCode.apply(null, new Uint8Array(cred.rawId))));
+      localStorage.setItem('wh_bio_enrolled_' + email, '1');
+      localStorage.setItem('wh_bio_email', email);
+    } catch(e) {}
     var btn = document.getElementById('bio-login-btn');
     if (btn) btn.style.display = 'block';
     showToast('Face / Touch ID enabled ✓');
@@ -7413,10 +7453,11 @@ function enrollBiometric(email, acct) {
 
 function doBiometricLogin() {
   if (!bioSupported()) { showToast('Biometric login not supported'); return; }
+  if (!window.crypto || !window.crypto.getRandomValues) { showToast('Biometric login not supported'); return; }
   var email = localStorage.getItem('wh_bio_email');
   if (!email) { showToast('No biometric account found — sign in with PIN first'); return; }
   var challenge = new Uint8Array(32);
-  crypto.getRandomValues(challenge);
+  window.crypto.getRandomValues(challenge);
   navigator.credentials.get({
     publicKey: {
       challenge: challenge,
@@ -7488,12 +7529,15 @@ function getNotifPrefs() {
 // ════════════════════════════════════════════════════════
 // GLOBAL SEARCH
 // ════════════════════════════════════════════════════════
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 function openSearch() {
   var overlay = document.getElementById('search-overlay');
   if (!overlay) return;
   overlay.classList.add('open');
   var inp = document.getElementById('search-input');
-  if (inp) { inp.value = ''; setTimeout(function(){ inp.focus(); }, 100); }
+  if (inp) { inp.value = ''; requestAnimationFrame(function(){ inp.focus(); }); }
   document.getElementById('search-results').innerHTML =
     '<div class="sr-section" style="padding-top:20px;text-align:center;color:var(--muted);font-size:.82rem;letter-spacing:0;text-transform:none;font-weight:400;">Type to search across events, menu &amp; members</div>';
 }
@@ -7520,8 +7564,8 @@ function globalSearch(q) {
     html += evResults.map(function(ev) {
       return '<div class="sr-item" onclick="goTab(\'member\',\'club\');closeSearch();">' +
         '<div class="sr-icon">📅</div>' +
-        '<div><div style="font-size:.84rem;font-weight:600;color:var(--dark);">' + ev.title + '</div>' +
-        '<div style="font-size:.72rem;color:var(--muted);">' + ev.month + ' ' + ev.day + ' · ' + (ev.time||'') + '</div></div>' +
+        '<div><div style="font-size:.84rem;font-weight:600;color:var(--dark);">' + escHtml(ev.title) + '</div>' +
+        '<div style="font-size:.72rem;color:var(--muted);">' + escHtml(ev.month) + ' ' + escHtml(ev.day) + ' · ' + escHtml(ev.time||'') + '</div></div>' +
         '</div>';
     }).join('');
   }
@@ -7548,8 +7592,8 @@ function globalSearch(q) {
     html += menuResults.map(function(item) {
       return '<div class="sr-item" onclick="goTab(\'member\',\'dining\');closeSearch();">' +
         '<div class="sr-icon">🍽</div>' +
-        '<div><div style="font-size:.84rem;font-weight:600;color:var(--dark);">' + item.name + '</div>' +
-        '<div style="font-size:.72rem;color:var(--muted);">' + item.venue + ' · ' + item.section + (item.desc ? ' — ' + item.desc.slice(0,35) : '') + '</div></div>' +
+        '<div><div style="font-size:.84rem;font-weight:600;color:var(--dark);">' + escHtml(item.name) + '</div>' +
+        '<div style="font-size:.72rem;color:var(--muted);">' + escHtml(item.venue) + ' · ' + escHtml(item.section) + (item.desc ? ' — ' + escHtml(item.desc.slice(0,35)) : '') + '</div></div>' +
         '</div>';
     }).join('');
   }
@@ -7565,14 +7609,14 @@ function globalSearch(q) {
       html += memResults.map(function(m) {
         return '<div class="sr-item">' +
           '<div class="sr-icon">👤</div>' +
-          '<div><div style="font-size:.84rem;font-weight:600;color:var(--dark);">' + m.name + '</div>' +
-          '<div style="font-size:.72rem;color:var(--muted);">' + (m.membership||'') + (m.handicap && m.handicap !== 'N/A' ? ' · HCP ' + m.handicap : '') + '</div></div>' +
+          '<div><div style="font-size:.84rem;font-weight:600;color:var(--dark);">' + escHtml(m.name) + '</div>' +
+          '<div style="font-size:.72rem;color:var(--muted);">' + escHtml(m.membership||'') + (m.handicap && m.handicap !== 'N/A' ? ' · HCP ' + escHtml(m.handicap) : '') + '</div></div>' +
           '</div>';
       }).join('');
     }
   }
   if (!html) {
-    html = '<div style="padding:30px 16px;text-align:center;color:var(--muted);font-size:.82rem;">No results for "<strong>' + q + '</strong>"</div>';
+    html = '<div style="padding:30px 16px;text-align:center;color:var(--muted);font-size:.82rem;">No results for "<strong>' + escHtml(q) + '</strong>"</div>';
   }
   el.innerHTML = html;
 }

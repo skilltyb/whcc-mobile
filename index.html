@@ -6,7 +6,8 @@
   <meta name="theme-color" content="#1a2b1f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="WHCC">
+  <meta name="apple-mobile-web-app-title" content="WHCC Mobile">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>Westwood Hills CC</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -54,7 +55,7 @@
     .pp-name { font-size:.84rem; font-weight:700; color:var(--dark); }
     .pp-detail { font-size:.74rem; color:var(--muted); margin-top:3px; }
     .pp-note { font-size:.76rem; color:var(--dark); margin-top:6px; font-style:italic; opacity:.8; }
-    .pp-contact { font-size:.75rem; color:var(--gold); font-weight:600; margin-top:8px; text-decoration:none; display:inline-block; }
+    .pp-contact { font-size:.75rem; color:var(--forest); font-weight:600; margin-top:8px; text-decoration:none; display:inline-block; }
 
     /* ── MEMBER LOOKUP ── */
     .mem-result { border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:8px; background:var(--cream); border-left:3px solid var(--forest); }
@@ -67,7 +68,7 @@
     .mem-pill.hcp { background:rgba(184,150,62,.15); color:#7a5c10; }
     .mem-pill.since { background:rgba(107,114,128,.1); color:var(--muted); }
     .mem-contact-row { display:flex; gap:10px; margin-top:8px; }
-    .mem-contact-btn { font-size:.72rem; font-weight:600; color:var(--gold); text-decoration:none; }
+    .mem-contact-btn { font-size:.72rem; font-weight:600; color:var(--forest); text-decoration:none; }
     .mem-empty { font-size:.8rem; color:var(--muted); text-align:center; padding:14px 0; }
 
     /* ── STAFF MESSAGE BOARD ── */
@@ -181,18 +182,18 @@
     .tab-btn.active { color: var(--forest); }
     .tab-btn.active::before { content: ''; position: absolute; top: 0; left: 28%; right: 28%; height: 2.5px; background: var(--gold); border-radius: 0 0 3px 3px; }
     .tab-btn svg { width: 21px; height: 21px; }
-    .tab-btn span { font-size: .62rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .tab-btn span { font-size: .66rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
     .tab-dot { display: none; }
 
     /* ── SCROLL CONTENT ── */
-    .tab-content { display: none; flex: 1; overflow-y: auto; background: var(--cream); -webkit-overflow-scrolling: touch; }
+    .tab-content { display: none; flex: 1; overflow-y: auto; background: var(--cream); -webkit-overflow-scrolling: touch; transition:opacity .15s ease; }
     .tab-content.active { display: block; }
 
     /* ── COMMON ── */
     .page { padding: 18px 15px 20px; }
     .page-title { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
-    .page-title::after { content: ''; display: block; width: 30px; height: 2px; background: var(--gold); border-radius: 1px; margin-top: 5px; }
-    .page-sub { font-size: .82rem; color: var(--muted); margin-bottom: 18px; margin-top: 4px; }
+    .page-title::after { content: ''; display: block; width: 44px; height: 2.5px; background: linear-gradient(90deg,var(--gold),transparent); border-radius: 1px; margin-top: 5px; }
+    .page-sub { font-size: .82rem; color: var(--muted); margin-bottom: 18px; margin-top: 7px; letter-spacing:.02em; }
     .card { background: var(--white); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom: 12px; }
     .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; color: var(--dark); margin-bottom: 3px; }
     .card-body { font-size: .84rem; color: var(--muted); line-height: 1.5; }
@@ -202,8 +203,8 @@
     .divider { height: 1px; background: var(--border); margin: 14px 0; }
     .info-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border); }
     .info-row:last-child { border-bottom: none; }
-    .ir-label { font-size: .78rem; color: var(--muted); font-weight: 500; }
-    .ir-val { font-size: .84rem; font-weight: 600; color: var(--dark); }
+    .ir-label { font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600; }
+    .ir-val { font-size: .88rem; font-weight: 600; color: var(--dark); }
 
     /* ── GREETING BANNER ── */
     .greeting-banner { background: linear-gradient(140deg, var(--forest) 0%, #2e4d35 60%, var(--forest-light) 100%); border-radius: var(--radius); padding: 22px 18px; margin-bottom: 14px; color: var(--white); position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(26,43,31,.25); }
@@ -224,6 +225,7 @@
     .quick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 18px; }
     .quick-action { background: var(--white); border-radius: var(--radius); padding: 18px 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 9px; border: none; cursor: pointer; box-shadow: var(--shadow); transition: transform .12s; text-align: left; }
     .quick-action:active { transform: scale(.96); }
+    .quick-action:hover { box-shadow:0 4px 18px rgba(26,43,31,.14); transform:translateY(-1px); }
     .qa-icon { width: 44px; height: 44px; background: linear-gradient(135deg, rgba(184,150,62,.14) 0%, rgba(26,43,31,.08) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; border: 1px solid rgba(184,150,62,.18); }
     .qa-label { font-size: .82rem; font-weight: 600; color: var(--dark); line-height: 1.3; }
 
@@ -254,17 +256,17 @@
     .se-val { min-width:24px; text-align:center; font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:700; }
     .se-eagle { color:#b8860b; } .se-birdie { color:#2a8a3e; } .se-par-score { color:var(--dark); } .se-bogey { color:#c36a00; } .se-dbl { color:#c33232; } .se-trip { color:#8b0000; }
     .se-totals-bar { display:flex; justify-content:space-around; background:var(--forest); color:var(--white); border-radius:var(--radius-sm); padding:10px 6px; margin-top:8px; text-align:center; }
-    .se-tot-lbl { font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; color:rgba(255,255,255,.5); margin-bottom:3px; }
+    .se-tot-lbl { font-size:.65rem; text-transform:uppercase; letter-spacing:.08em; color:rgba(255,255,255,.7); margin-bottom:3px; }
     .se-tot-val { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:700; color:var(--gold); }
     .se-tot-val.se-under { color:#6de89e; } .se-tot-val.se-over { color:#f5a623; } .se-tot-val.se-even { color:var(--white); }
     .rl-item { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--border); }
     .rl-item:last-child { border-bottom:none; }
     .rl-date { font-size:.75rem; color:var(--dark); font-weight:600; }
     .rl-holes { font-size:.68rem; color:var(--muted); margin-top:1px; }
-    .rl-score { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:700; color:var(--forest); }
+    .rl-score { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:700; color:var(--dark); }
     .rl-par { font-size:.7rem; margin-top:2px; text-align:right; }
     .rl-par.rl-under { color:#2a8a3e; font-weight:700; } .rl-par.rl-over { color:#c36a00; } .rl-par.rl-even { color:var(--muted); }
-    .setup-lbl { font-size:.72rem; font-weight:700; color:var(--forest); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
+    .setup-lbl { font-size:.72rem; font-weight:700; color:var(--dark); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
     .setup-choice { padding:9px 16px; border:1.5px solid var(--border); border-radius:20px; background:var(--white); color:var(--dark); font-size:.82rem; font-weight:600; cursor:pointer; }
     .setup-choice.active { background:var(--forest); color:var(--white); border-color:var(--forest); }
     .setup-choice.tee-btn { border-radius:var(--radius-sm); text-align:left; }
@@ -297,20 +299,32 @@
     .wx-loading { opacity:.5; font-size:.8rem; }
     /* ── STAFF CONDITIONS EDITOR ── */
     .cond-field { margin-bottom:12px; }
-    .cond-label { font-size:.72rem; font-weight:700; color:var(--forest); text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; display:block; }
+    .cond-label { font-size:.72rem; font-weight:700; color:var(--dark); text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; display:block; }
     .cond-input { width:100%; padding:9px 10px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:.9rem; color:var(--dark); background:var(--white); box-sizing:border-box; }
     .cond-select { width:100%; padding:9px 10px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:.9rem; color:var(--dark); background:var(--white); box-sizing:border-box; }
     .cond-textarea { width:100%; padding:9px 10px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:.9rem; color:var(--dark); background:var(--white); box-sizing:border-box; min-height:60px; resize:none; }
+    /* Conditions editor text inputs: dark bg + white text so they read clearly on all devices */
+    #cond-card input[type="text"].cond-input {
+      background: rgba(26,43,31,.88);
+      border-color: rgba(184,148,62,.4);
+      color: var(--white);
+      -webkit-text-fill-color: var(--white);
+    }
+    #cond-card input[type="text"].cond-input::placeholder {
+      color: rgba(245,240,232,.38);
+      -webkit-text-fill-color: rgba(245,240,232,.38);
+    }
 
     /* ── MENU ── */
     .menu-sec-title { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 700; color: var(--forest); border-bottom: 1px solid var(--border); padding-bottom: 7px; margin-bottom: 10px; margin-top: 18px; }
     .menu-sec-title:first-child { margin-top: 0; }
+    .menu-sec-title::before { content:''; display:inline-block; width:6px; height:6px; background:var(--gold); border-radius:50%; margin-right:8px; vertical-align:middle; }
     .mi-row { display: flex; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--border); gap: 8px; }
     .mi-row:last-child { border-bottom: none; }
     .mi-info { flex: 1; }
     .mi-name { font-size: .875rem; font-weight: 600; color: var(--dark); }
     .mi-desc { font-size: .76rem; color: var(--muted); margin-top: 2px; line-height: 1.4; }
-    .mi-price { font-family: 'Cormorant Garamond', serif; font-size: .98rem; font-weight: 600; color: var(--forest); flex-shrink: 0; }
+    .mi-price { font-family: 'Cormorant Garamond', serif; font-size: .98rem; font-weight: 600; color: var(--forest); flex-shrink: 0; min-width:48px; text-align:right; }
 
     /* ── EXPRESS BANNER ── */
     .express-app { background: var(--forest); border-radius: var(--radius); padding: 16px 16px 18px; margin-bottom: 12px; }
@@ -348,7 +362,7 @@
     /* ── ACCOUNT / PROFILE ── */
     .profile-card { background: linear-gradient(150deg, var(--forest) 0%, #2e4d35 55%, var(--forest-light) 100%); border-radius: var(--radius); padding: 28px 18px; text-align: center; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(26,43,31,.25); position: relative; overflow: hidden; }
     .profile-card::before { content: ''; position: absolute; bottom: -30px; left: -20px; width: 130px; height: 130px; background: rgba(184,150,62,.07); border-radius: 50%; }
-    .prof-avatar { width: 72px; height: 72px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--forest); margin: 0 auto 12px; box-shadow: 0 3px 12px rgba(0,0,0,.25); border: 2px solid rgba(255,255,255,.2); }
+    .prof-avatar { width: 72px; height: 72px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--forest); margin: 0 auto 12px; box-shadow: 0 3px 12px rgba(0,0,0,.25); border:2.5px solid rgba(184,150,62,.7); box-shadow:0 0 0 4px rgba(184,150,62,.15); }
     .prof-name { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--white); margin-bottom: 3px; }
     .prof-sub { font-size: .78rem; color: rgba(255,255,255,.5); margin-bottom: 11px; }
     .hcp-badge { display: inline-block; background: var(--gold); color: var(--forest); font-weight: 700; font-size: .95rem; padding: 5px 20px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
@@ -367,6 +381,7 @@
     .ts-actions { display:flex; gap:6px; flex-shrink:0; }
     .ts-btn { background:none; border:1px solid var(--border); border-radius:5px; padding:3px 8px; font-size:.68rem; font-weight:600; cursor:pointer; color:var(--forest); }
     .ts-btn.checkin { background:var(--forest); color:var(--white); border-color:var(--forest); }
+    .ts-btn.preset-active { background:#7a2020; color:#fff; border-color:#7a2020; }
     .ts-empty { text-align:center; padding:18px 0; font-size:.82rem; color:var(--muted); }
 
     /* ── DINING LOG ── */
@@ -386,6 +401,10 @@
     .qa-btn { display:flex; flex-direction:column; align-items:center; gap:4px; flex-shrink:0; background:var(--white); border:1.5px solid var(--border); border-radius:12px; padding:10px 14px; cursor:pointer; font-size:.68rem; font-weight:700; color:var(--dark); min-width:62px; text-transform:uppercase; letter-spacing:.03em; }
     .qa-btn .qa-icon { font-size:1.3rem; }
     .stat-card { background: var(--white); border-radius: var(--radius); padding: 16px 14px; box-shadow: var(--shadow); }
+    .stat-card:nth-child(1) { border-left:3px solid var(--forest); }
+    .stat-card:nth-child(2) { border-left:3px solid #e67e22; }
+    .stat-card:nth-child(3) { border-left:3px solid var(--gold); }
+    .stat-card:nth-child(4) { border-left:3px solid var(--success); }
     .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.1rem; font-weight: 700; color: var(--forest); line-height: 1; }
     .stat-label { font-size: .72rem; color: var(--muted); margin-top: 3px; font-weight: 500; }
 
@@ -411,6 +430,7 @@
 
     /* ── LIVE SCORING ── */
     @keyframes ls-pulse { 0%,100%{opacity:1;box-shadow:0 0 6px #4CAF50} 50%{opacity:.4;box-shadow:0 0 2px #4CAF50} }
+    @keyframes spin { to { transform:rotate(360deg); } }
 
     /* ── TOAST ── */
     .toast { position: fixed; bottom: calc(var(--tab-h) + var(--safe-b) + 20px); left: 50%; transform: translateX(-50%) translateY(16px); background: var(--dark); color: var(--white); padding: 11px 22px; border-radius: 30px; font-size: .84rem; font-weight: 500; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; white-space: nowrap; z-index: 999; }
@@ -421,7 +441,7 @@
     .modal-overlay.open { opacity: 1; pointer-events: all; }
     .modal-sheet { width: 100%; background: var(--white); border-radius: var(--radius) var(--radius) 0 0; padding: 22px 18px calc(22px + var(--safe-b)); transform: translateY(100%); transition: transform .28s cubic-bezier(.4,0,.2,1); }
     .modal-overlay.open .modal-sheet { transform: translateY(0); }
-    .modal-handle { width: 38px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 18px; }
+    .modal-handle { width: 38px; height: 4px; background: #d1d5db; border-radius: 2px; margin: 0 auto 18px; }
     .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 700; margin-bottom: 14px; }
     .modal-sub { font-size: .82rem; color: var(--muted); margin-top: -10px; margin-bottom: 14px; }
     .modal-input { width: 100%; padding: 12px 13px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: .9rem; font-family: 'Inter', sans-serif; outline: none; margin-bottom: 10px; background: var(--cream); -webkit-appearance: none; appearance: none; }
@@ -430,83 +450,14 @@
     .modal-row { display: flex; gap: 9px; margin-top: 4px; }
     .modal-btn { flex: 1; padding: 13px; border-radius: var(--radius-sm); font-size: .88rem; font-weight: 600; cursor: pointer; border: none; }
     .modal-btn.primary { background: var(--forest); color: var(--white); }
-    .modal-btn.secondary { background: var(--sand); color: var(--dark); }
+    .modal-btn.secondary { background:transparent; border:1.5px solid var(--border); color:var(--dark); }
 
     /* ── DARK MODE ── */
-    [data-theme="dark"] {
-      --white:  #1c2b21;
-      --cream:  #111b14;
-      --sand:   #182319;
-      --dark:   #e8f0e9;
-      --muted:  rgba(245,240,232,.45);
-      --border: rgba(255,255,255,.09);
-      --shadow: 0 2px 16px rgba(0,0,0,.45);
-    }
-    [data-theme="dark"] .wx-card { background:#1b3322 !important; color:var(--dark); }
-    [data-theme="dark"] .wx-cond-hdr { color:rgba(245,240,232,.6) !important; }
-    [data-theme="dark"] .wx-cond-lbl { color:rgba(245,240,232,.55) !important; }
-    [data-theme="dark"] .wx-cond-val { color:var(--dark) !important; }
-    [data-theme="dark"] .wx-notice   { background:rgba(255,220,100,.12); color:rgba(245,240,232,.85); }
-    [data-theme="dark"] .wx-stat-lbl { color:rgba(245,240,232,.5) !important; }
-    [data-theme="dark"] .wx-stat-val { color:var(--dark) !important; }
-    [data-theme="dark"] .wx-divider  { border-color:rgba(255,255,255,.08); }
-    [data-theme="dark"] .skel        { background:linear-gradient(90deg,#1c2b21 25%,#243328 50%,#1c2b21 75%);background-size:200% 100%; }
-    [data-theme="dark"] .modal-sheet { background:#1a2820; }
-    [data-theme="dark"] .modal-input,.cond-input,[data-theme="dark"] .cond-input,[data-theme="dark"] .cond-select { background:#111b14 !important; border-color:rgba(255,255,255,.1) !important; color:var(--dark) !important; }
-    [data-theme="dark"] .hole-tile.open   { background:#0e2e18; border-color:#2d6040; }
-    [data-theme="dark"] .hole-tile.temp   { background:#2e1e08; border-color:#8a6020; }
-    [data-theme="dark"] .hole-tile.closed { background:#2e0808; border-color:#8a2020; }
-    [data-theme="dark"] .chem-badge.good  { background:#0e2e18; color:#4ade80; }
-    [data-theme="dark"] .chem-badge.warn  { background:#2e1e08; color:#fbbf24; }
-    [data-theme="dark"] .chem-badge.bad   { background:#2e0808; color:#f87171; }
-    [data-theme="dark"] .inc-badge.urgent { background:#2e0808; color:#f87171; }
-    [data-theme="dark"] .inc-badge.medium { background:#2e1808; color:#fbbf24; }
-    [data-theme="dark"] .inc-badge.low    { background:#0e2e18; color:#4ade80; }
-    [data-theme="dark"] .inc-badge.resolved { background:#1c2b21; color:var(--muted); }
-    [data-theme="dark"] .lf-status.unclaimed { background:rgba(184,150,62,.15); color:var(--gold-light,#d4ab50); }
-    [data-theme="dark"] .ev-fee-row { background:rgba(255,255,255,.05); }
-    [data-theme="dark"] select.modal-input { background-color:#111b14 !important; }
-    /* Dark mode: forest-background elements always need light text regardless of --white remapping */
-    [data-theme="dark"] .hdr-title { color:rgba(245,240,232,.92); }
-    [data-theme="dark"] .ev-reg-btn { color:rgba(245,240,232,.92) !important; }
-    [data-theme="dark"] .modal-btn.primary { color:rgba(245,240,232,.92); }
-    [data-theme="dark"] button[style*="background:var(--forest)"],
-    [data-theme="dark"] a[style*="background:var(--forest)"] { color:rgba(245,240,232,.92) !important; }
-    /* Dark mode: tab bar, search overlay, stat cards, quick actions, login card */
-    [data-theme="dark"] .tab-bar { background:#111b14; border-color:rgba(255,255,255,.08); }
-    [data-theme="dark"] .tab-btn { color:rgba(245,240,232,.5); }
-    [data-theme="dark"] .tab-btn.active { color:var(--gold); }
-    [data-theme="dark"] .search-bar { background:#1c2b21; }
-    [data-theme="dark"] .search-input { background:#111b14; color:var(--dark); border-color:rgba(255,255,255,.1); }
-    [data-theme="dark"] .search-cancel { color:var(--gold); }
-    [data-theme="dark"] .search-results { background:#111b14; }
-    [data-theme="dark"] .search-result-item { border-color:rgba(255,255,255,.06); color:var(--dark); }
-    [data-theme="dark"] .login-card { background:#1c2b21; }
-    [data-theme="dark"] .login-input { background:#111b14; color:var(--dark); border-color:rgba(255,255,255,.1); }
-    [data-theme="dark"] .login-label { color:rgba(245,240,232,.5); }
-    [data-theme="dark"] .qa-btn { background:#1c2b21; border-color:rgba(255,255,255,.08); color:var(--dark); }
-    [data-theme="dark"] .quick-action { background:#1c2b21; }
-    [data-theme="dark"] .setup-choice { background:#1c2b21; color:var(--dark); border-color:rgba(255,255,255,.1); }
-    [data-theme="dark"] .cond-textarea { background:#111b14 !important; border-color:rgba(255,255,255,.1) !important; color:var(--dark) !important; }
-    [data-theme="dark"] .notif-slider { background:#2a3f2e; }
-    [data-theme="dark"] .sc-table, [data-theme="dark"] .se-tbl { background:#1c2b21; }
-    [data-theme="dark"] .sc-td { border-color:rgba(255,255,255,.06); color:var(--dark); }
-    [data-theme="dark"] .event-card { background:#1c2b21; }
-    [data-theme="dark"] .mem-result { background:#1c2b21; }
-    [data-theme="dark"] .staff-msg { background:#1c2b21; }
-    [data-theme="dark"] .partner-post { background:#1c2b21; }
-    [data-theme="dark"] .smi { background:#1c2b21; }
-    [data-theme="dark"] .ts-btn { background:#1c2b21; border-color:rgba(255,255,255,.1); color:var(--dark); }
-    [data-theme="dark"] .smi-edit { background:#243328; border-color:rgba(255,255,255,.12); color:rgba(245,240,232,.8); }
-    [data-theme="dark"] .smi { background:#1c2b21; }
-    [data-theme="dark"] #welcome-overlay .welcome-sheet { background:#1c2b21; }
-    [data-theme="dark"] .notif-row { border-color:rgba(255,255,255,.06); }
-
     /* ── SCORECARD ── */
     .sc-grid { display:grid; grid-template-columns:repeat(9,1fr); gap:4px; margin-bottom:8px; }
     .sc-hole { text-align:center; }
-    .sc-hole-num { font-size:.6rem; font-weight:700; color:var(--muted); margin-bottom:2px; }
-    .sc-hole-par { font-size:.55rem; color:var(--gold); margin-bottom:3px; }
+    .sc-hole-num { font-size:.68rem; font-weight:700; color:var(--muted); margin-bottom:2px; }
+    .sc-hole-par { font-size:.65rem; color:var(--gold); margin-bottom:3px; }
     .sc-hole-in  { width:100%; padding:5px 2px; border:1.5px solid var(--border); border-radius:6px; font-size:.82rem; font-weight:600; text-align:center; background:var(--white); color:var(--dark); box-sizing:border-box; }
     .sc-hole-in:focus { border-color:var(--forest); outline:none; }
     .sc-vs { font-size:.5rem; font-weight:700; margin-top:2px; }
@@ -516,7 +467,7 @@
     .sc-totals { display:flex; gap:12px; padding:10px 14px; background:var(--forest); border-radius:var(--radius-sm); color:var(--white); font-size:.8rem; }
     .sc-tot-item { text-align:center; flex:1; }
     .sc-tot-num  { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:700; }
-    .sc-tot-lbl  { font-size:.6rem; opacity:.6; text-transform:uppercase; letter-spacing:.06em; }
+    .sc-tot-lbl  { font-size:.68rem; opacity:.75; text-transform:uppercase; letter-spacing:.06em; }
 
     /* ── HOLE GUIDE ── */
     .hg-row { display:grid; grid-template-columns:28px 24px 24px 1fr; gap:0; align-items:center; padding:6px 0; border-bottom:1px solid var(--border); font-size:.78rem; }
@@ -544,7 +495,7 @@
     .search-input:focus { border-color:var(--forest); }
     .search-cancel { background:none; border:none; font-size:.84rem; font-weight:600; color:var(--forest); cursor:pointer; }
     .search-results { flex:1; overflow-y:auto; background:var(--cream); }
-    .sr-section { padding:10px 16px 4px; font-size:.62rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+    .sr-section { padding:10px 16px 4px; font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
     .sr-item  { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; background:var(--white); }
     .sr-item:active { background:var(--cream); }
     .sr-icon  { font-size:1.1rem; width:36px; text-align:center; flex-shrink:0; }
@@ -795,10 +746,10 @@
           </div>
 
           <div class="quick-grid">
-            <button class="quick-action" onclick="goTab('member','golf')"><div class="qa-icon">⛳</div><div class="qa-label">Course & Golf</div></button>
-            <button class="quick-action" onclick="openDiningRes('grille')"><div class="qa-icon">🍽</div><div class="qa-label">Dining Reservation</div></button>
-            <button class="quick-action" onclick="goTab('member','club')"><div class="qa-icon">📅</div><div class="qa-label">Club Events</div></button>
-            <button class="quick-action" onclick="goTab('member','club');clubSection('pool');"><div class="qa-icon">🏊</div><div class="qa-label">Pool Info</div></button>
+            <button class="quick-action" onclick="goTab('member','club')"><div class="qa-icon">📅</div><div class="qa-label">Golf Events</div></button>
+            <button class="quick-action" onclick="openDiningRes('grille')"><div class="qa-icon">🍽</div><div class="qa-label">Dining</div></button>
+            <button class="quick-action" onclick="goTab('member','golf');golfSection('course');"><div class="qa-icon">⛳</div><div class="qa-label">Conditions</div></button>
+            <button class="quick-action" onclick="goTab('member','golf');golfSection('score');"><div class="qa-icon">🏌️</div><div class="qa-label">Score</div></button>
           </div>
         </div>
 
@@ -947,7 +898,7 @@
             <div class="card-title">⛳ Keep Score</div>
             <div class="card-body" style="margin:3px 0 0;">Track your round hole by hole</div>
           </div>
-          <button onclick="startScoring()" class="ev-reg-btn" style="margin:0;white-space:nowrap;flex-shrink:0;width:auto;">Start Round</button>
+          <button onclick="startScoring()" class="ev-reg-btn" style="margin:0;white-space:nowrap;flex-shrink:0;width:auto;background:var(--gold);color:var(--forest);">Start Round</button>
         </div>
       </div>
       <div id="score-entry-section" style="display:none;margin-bottom:20px;"></div>
@@ -1002,8 +953,8 @@
       <div class="page-title">Dining</div>
       <!-- Venue toggle -->
       <div style="display:flex;gap:8px;margin-bottom:16px;">
-        <button id="dt-hoovers-btn" onclick="switchDiningView('hoovers')" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--forest);color:rgba(245,240,232,.92);font-size:.8rem;font-weight:700;cursor:pointer;">Hoover's</button>
-        <button id="dt-grill-btn" onclick="switchDiningView('grill')" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;">Westwood Grill</button>
+        <button id="dt-hoovers-btn" onclick="switchDiningView('hoovers')" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--forest);color:rgba(245,240,232,.92);font-size:.8rem;font-weight:700;cursor:pointer;">🍷 Hoover's</button>
+        <button id="dt-grill-btn" onclick="switchDiningView('grill')" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;">🍔 Westwood Grill</button>
       </div>
 
       <!-- HOOVER'S SECTION -->
@@ -1099,6 +1050,12 @@
       </div>
 
       <div id="m-events-list"><div style="padding:8px 0;"><div class="skel skel-line" style="height:80px;margin-bottom:10px;border-radius:10px;"></div><div class="skel skel-line" style="height:80px;margin-bottom:10px;border-radius:10px;"></div><div class="skel skel-line" style="height:80px;border-radius:10px;"></div></div></div>
+
+      <!-- FIND A GAME — Golf Member Directory -->
+      <div class="card" style="margin-top:4px;">
+        <div class="card-title" style="margin-bottom:10px;">🤝 Find a Game</div>
+        <div id="m-find-game-list"><div style="font-size:.8rem;color:var(--muted);text-align:center;padding:12px 0;">Member directory updates when connected</div></div>
+      </div>
     </div>
     <!-- Pool section -->
     <div id="club-sec-pool" style="display:none;">
@@ -1201,7 +1158,8 @@
       </div>
       <div class="card" id="round-log-section" style="display:none;">
         <div class="card-title" style="margin-bottom:10px;">Round History</div>
-        <div id="round-log-stats" style="display:flex;gap:0;margin-bottom:14px;border-radius:8px;overflow:hidden;border:1px solid var(--sand);"></div>
+        <div id="round-log-stats" style="display:flex;gap:0;margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--sand);"></div>
+        <div id="hcp-estimate" style="margin-bottom:12px;"></div>
         <div id="round-log-list"></div>
       </div>
       <!-- NOTIFICATION PREFERENCES -->
@@ -1234,19 +1192,6 @@
           </div>
           <label class="notif-toggle">
             <input type="checkbox" id="notif-dining" onchange="saveNotifPrefs()">
-            <span class="notif-slider"></span>
-          </label>
-        </div>
-      </div>
-      <!-- DARK MODE -->
-      <div class="card" style="margin-bottom:12px;">
-        <div class="notif-row">
-          <div class="notif-info">
-            <div class="notif-label">🌙 Dark Mode</div>
-            <div class="notif-sub">Easier on the eyes at night</div>
-          </div>
-          <label class="notif-toggle">
-            <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode(this.checked)">
             <span class="notif-slider"></span>
           </label>
         </div>
@@ -1331,7 +1276,7 @@
           <div class="card-title" style="margin:0;">⛳ On the Course</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-tee')">+ Check In</button>
         </div>
-        <div id="s-tee-list"><div class="ts-empty">No one checked in yet</div></div>
+        <div id="s-tee-list"><div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">⛳</div>No one checked in yet</div></div>
         <div id="s-tee-count" style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:right;"></div>
       </div>
 
@@ -1341,7 +1286,7 @@
           <div class="card-title" style="margin:0;">🍽 Dining Reservations</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-res')">+ Add</button>
         </div>
-        <div id="s-dining-list"><div class="ts-empty">No reservations yet</div></div>
+        <div id="s-dining-list"><div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🍽</div>No reservations yet</div></div>
         <div id="s-dining-count" style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:right;"></div>
       </div>
 
@@ -1357,8 +1302,27 @@
       <div class="s-dash-col">
 
       <!-- COURSE CONDITIONS -->
-      <div class="card">
+      <div class="card" id="cond-card">
         <div class="card-title" style="margin-bottom:12px;">🌤 Course Conditions</div>
+        <div id="quick-cond-bar" style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;padding:12px 0 16px;border-bottom:1px solid var(--border);margin-bottom:16px;">
+          <div style="flex:1;min-width:90px;">
+            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px;">Opens</div>
+            <input id="qc-opens" class="cond-input" type="text" placeholder="9:00 AM" style="width:100%;padding:7px 10px;box-sizing:border-box;">
+          </div>
+          <div style="flex:1;min-width:90px;">
+            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px;">Carts</div>
+            <input id="qc-carts" class="cond-input" type="text" placeholder="Off Path" style="width:100%;padding:7px 10px;box-sizing:border-box;">
+          </div>
+          <div style="flex:1;min-width:90px;">
+            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px;">Range</div>
+            <select id="qc-range" class="cond-input" style="width:100%;padding:7px 10px;box-sizing:border-box;">
+              <option>Open — Grass</option>
+              <option>Open — Mats Only</option>
+              <option>Closed</option>
+            </select>
+          </div>
+          <button onclick="quickSaveConditions()" style="background:var(--forest);color:rgba(245,240,232,.95);border:none;border-radius:var(--radius-sm);padding:9px 16px;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">Save ↑</button>
+        </div>
         <div class="cond-field">
           <label class="cond-label" for="cond-opens">Course Opens</label>
           <input class="cond-input" id="cond-opens" type="text" placeholder="e.g. 9:00 AM">
@@ -1402,11 +1366,11 @@
         <div style="margin-bottom:12px;">
           <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Quick Presets</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="ts-btn" onclick="condPreset('normal')" style="font-size:.7rem;padding:6px 10px;">Normal Day</button>
-            <button class="ts-btn" onclick="condPreset('frost')" style="font-size:.7rem;padding:6px 10px;">Frost Delay</button>
-            <button class="ts-btn" onclick="condPreset('cartpath')" style="font-size:.7rem;padding:6px 10px;">Cart Path Only</button>
-            <button class="ts-btn" onclick="condPreset('tournament')" style="font-size:.7rem;padding:6px 10px;">Tournament Day</button>
-            <button class="ts-btn" onclick="condPreset('closed')" style="font-size:.7rem;padding:6px 10px;background:#7a2020;color:#fff;">Course Closed</button>
+            <button class="ts-btn" data-preset="normal" onclick="condPreset('normal')" style="font-size:.7rem;padding:6px 10px;">Normal Day</button>
+            <button class="ts-btn" data-preset="frost" onclick="condPreset('frost')" style="font-size:.7rem;padding:6px 10px;">Frost Delay</button>
+            <button class="ts-btn" data-preset="cartpath" onclick="condPreset('cartpath')" style="font-size:.7rem;padding:6px 10px;">Cart Path Only</button>
+            <button class="ts-btn" data-preset="tournament" onclick="condPreset('tournament')" style="font-size:.7rem;padding:6px 10px;">Tournament Day</button>
+            <button class="ts-btn" data-preset="closed" onclick="condPreset('closed')" style="font-size:.7rem;padding:6px 10px;">Course Closed</button>
           </div>
         </div>
         <button class="ev-reg-btn" style="width:100%;margin:0;" onclick="saveConditions()">Save Conditions</button>
@@ -1453,7 +1417,7 @@
           <div class="card-title" style="margin:0;">🎒 Lost &amp; Found</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-lf')">+ Add</button>
         </div>
-        <div id="s-lf-list"><div class="ts-empty">No items logged — tap + Add to log a found item.</div></div>
+        <div id="s-lf-list"><div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🔍</div>No items logged — tap + Add to log a found item.</div></div>
       </div>
 
       <!-- INCIDENT / MAINTENANCE LOG -->
@@ -1462,7 +1426,7 @@
           <div class="card-title" style="margin:0;">🔧 Incident Log</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-incident')">+ Log</button>
         </div>
-        <div id="s-incident-list"><div class="ts-empty">No incidents logged — tap + Log to report an issue.</div></div>
+        <div id="s-incident-list"><div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">📋</div>No incidents logged — tap + Log to report an issue.</div></div>
       </div>
 
       </div><!-- /s-dash-col right -->
@@ -1531,7 +1495,7 @@
           <div class="card-title" style="margin:0;">🪪 Guest Log</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-pool-guest')">+ Add</button>
         </div>
-        <div id="pool-guest-list"><div class="ts-empty">No guests logged today</div></div>
+        <div id="pool-guest-list"><div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🏊</div>No guests logged today</div></div>
       </div>
 
       <!-- CHEMICAL LOG -->
@@ -1540,7 +1504,7 @@
           <div class="card-title" style="margin:0;">🧪 Chemical Log</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-chem')">+ Reading</button>
         </div>
-        <div id="pool-chem-list"><div class="ts-empty">No readings today — tap + Reading to log</div></div>
+        <div id="pool-chem-list"><div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🧪</div>No readings today — tap + Reading to log</div></div>
       </div>
       </div><!-- /s-dash-col left (Aquatics) -->
       <!-- RIGHT: Grounds -->
@@ -1560,7 +1524,7 @@
           <div class="card-title" style="margin:0;">📋 Work Orders</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-wo')">+ Add</button>
         </div>
-        <div id="wo-list"><div class="ts-empty">No open work orders</div></div>
+        <div id="wo-list"><div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🔧</div>No open work orders</div></div>
       </div>
 
       <!-- SPRAY LOG -->
@@ -1569,7 +1533,7 @@
           <div class="card-title" style="margin:0;">🌿 Spray / Chemical Log</div>
           <button class="ts-btn checkin" onclick="openModal('modal-add-spray')">+ Log</button>
         </div>
-        <div id="spray-list"><div class="ts-empty">No applications logged</div></div>
+        <div id="spray-list"><div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🌿</div>No applications logged</div></div>
       </div>
 
       </div><!-- /s-dash-col right (Grounds) -->
@@ -2580,7 +2544,7 @@ function goTab(role, tab) {
   document.querySelectorAll('#screen-' + role + ' .tab-btn').forEach(function(b){ b.classList.remove('active'); });
   var tc  = document.getElementById(pre + '-tab-' + tab);
   var btn = document.getElementById(pre + '-btn-' + tab);
-  if (tc)  tc.classList.add('active');
+  if (tc)  { tc.classList.add('active'); tc.style.opacity = '0'; requestAnimationFrame(function() { tc.style.transition = 'opacity .15s ease'; tc.style.opacity = '1'; }); }
   if (btn) btn.classList.add('active');
   if (tab === 'golf') golfSection('course');
   if (tab === 'club') clubSection('events');
@@ -2612,7 +2576,7 @@ function clubSection(s) {
       btn.style.color = sec === s ? 'var(--forest)' : 'var(--muted)';
     }
   });
-  if (s === 'events') { mLoadLiveScoring(); mLeagueShow('mens'); }
+  if (s === 'events') { mLoadLiveScoring(); mLeagueShow('mens'); renderFindAGame(); }
   if (s === 'pool') renderMemberPool();
 }
 
@@ -2861,9 +2825,6 @@ function _initMemberUI() {
   // Sync status + notification prefs
   updateSyncLabel();
   loadNotifPrefs();
-  // Restore dark mode toggle state
-  var dmToggle = document.getElementById('dark-mode-toggle');
-  if (dmToggle) dmToggle.checked = localStorage.getItem('wh_dark_mode') === '1';
 }
 
 function greet() {
@@ -2968,12 +2929,65 @@ function syncRegistrationsFromSheets() {
 }
 
 function logRound() {
-  var key   = 'wh_extra_rounds_' + currentUser.email;
-  var extra = parseInt(localStorage.getItem(key) || '0') + 1;
-  localStorage.setItem(key, extra);
+  var modal = document.getElementById('modal-log-round');
+  if (!modal) return;
+  // Pre-fill today's date and last-used tee
+  var today = new Date();
+  var yyyy = today.getFullYear(), mm = String(today.getMonth()+1).padStart(2,'0'), dd = String(today.getDate()).padStart(2,'0');
+  document.getElementById('lr-date').value  = yyyy + '-' + mm + '-' + dd;
+  document.getElementById('lr-tee').value   = activeTee || 'White';
+  document.getElementById('lr-holes').value = '18';
+  document.getElementById('lr-gross').value = '';
+  document.getElementById('lr-gross-err').textContent = '';
+  modal.style.display = 'flex';
+  setTimeout(function(){ var g = document.getElementById('lr-gross'); if(g) g.focus(); }, 120);
+}
+function closeLogRound() {
+  var m = document.getElementById('modal-log-round');
+  if (m) m.style.display = 'none';
+}
+function submitLogRound() {
+  var grossVal = document.getElementById('lr-gross').value.trim();
+  var gross    = parseInt(grossVal, 10);
+  var date     = document.getElementById('lr-date').value;
+  var tee      = document.getElementById('lr-tee').value;
+  var holes    = document.getElementById('lr-holes').value;
+  var errEl    = document.getElementById('lr-gross-err');
+  var minScore = holes === '9' ? 27 : 54;
+  if (!gross || gross < minScore || gross > 180) {
+    errEl.textContent = 'Enter a valid gross score (' + minScore + '–180).';
+    return;
+  }
+  errEl.textContent = '';
+  // Calculate differential and vs-par
+  var fullPar  = HOLE_PARS.reduce(function(a,b){return a+b;},0); // 72
+  var par      = holes === '9' ? Math.round(fullPar / 2) : fullPar;
+  var slopeMap = { Black:122, Blue:119, White:117, Red:116 };
+  var ratingMap= { Black:72.1, Blue:71.3, White:70.5, Red:69.8 };
+  var slope    = slopeMap[tee]  || 117;
+  var rating   = ratingMap[tee] || 70.5;
+  if (holes === '9') rating = Math.round(rating / 2 * 10) / 10;
+  var diff     = Math.round((gross - rating) * 113 / slope * 10) / 10;
+  var vsPar    = gross - par;
+  // Save round object
+  var key    = 'wh_rounds_' + currentUser.email;
+  var rounds = JSON.parse(localStorage.getItem(key) || '[]');
+  // Format date nicely for display
+  var parts   = date.split('-');
+  var months  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var dispDate = parts.length === 3 ? (months[parseInt(parts[1],10)-1] + ' ' + parseInt(parts[2],10) + ', ' + parts[0]) : date;
+  rounds.push({ date: dispDate, gross: gross, net: null, vsParNet: vsPar, holes: holes + ' holes', tee: tee, diff: diff });
+  localStorage.setItem(key, JSON.stringify(rounds));
+  // Bump yearly counter
+  var cKey  = 'wh_extra_rounds_' + currentUser.email;
+  var extra = parseInt(localStorage.getItem(cKey) || '0') + 1;
+  localStorage.setItem(cKey, extra);
   var total = (currentUser.rounds || 0) + extra;
-  document.getElementById('m-rounds').textContent = total;
-  showToast('✅ Round logged! Total: ' + total + ' this year.');
+  var roundsEl = document.getElementById('m-rounds');
+  if (roundsEl) roundsEl.textContent = total;
+  closeLogRound();
+  renderRoundLog();
+  showToast('✅ Round logged! ' + gross + ' gross (' + (vsPar >= 0 ? '+' : '') + vsPar + ' vs par)');
 }
 
 // ════════════════════════════════════
@@ -3171,14 +3185,21 @@ function submitRound() {
   var t = calcTotals(), hasHCP = activeCourseHCP > 0;
   var holesLabel = activeHoles.length === 18 ? '18 holes' : (activeHoles[0] === 0 ? 'Front 9' : 'Back 9');
   var dateStr = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  // Compute USGA differential for handicap
+  var slopeMap  = { Black:122, Blue:119, White:117, Red:116 };
+  var ratingMap = { Black:72.1, Blue:71.3, White:70.5, Red:69.8 };
+  var slope  = slopeMap[activeTee]  || 117;
+  var rating = ratingMap[activeTee] || 70.5;
+  if (activeHoles.length === 9) rating = Math.round(rating / 2 * 10) / 10;
+  var diff = Math.round((t.gross - rating) * 113 / slope * 10) / 10;
   var entry = {
     date: dateStr, gross: t.gross, vsPar: t.vpGross,
     net: hasHCP ? t.net : null, vsParNet: hasHCP ? t.vpNet : null,
-    tee: activeTee, holes: holesLabel
+    tee: activeTee, holes: holesLabel, diff: diff
   };
   var rKey = 'wh_rounds_' + currentUser.email;
   var rounds = JSON.parse(localStorage.getItem(rKey) || '[]');
-  rounds.unshift(entry);
+  rounds.push(entry);
   localStorage.setItem(rKey, JSON.stringify(rounds));
 
   var eKey = 'wh_extra_rounds_' + currentUser.email;
@@ -3198,7 +3219,18 @@ function renderRoundLog() {
   var stats   = document.getElementById('round-log-stats');
   if (!section || !list || !currentUser) return;
   var rounds = JSON.parse(localStorage.getItem('wh_rounds_' + currentUser.email) || '[]');
-  if (rounds.length === 0) { section.style.display = 'none'; return; }
+  if (rounds.length === 0) {
+    section.style.display = 'block';
+    if (stats) stats.innerHTML = '';
+    var hcpElEmpty = document.getElementById('hcp-estimate');
+    if (hcpElEmpty) hcpElEmpty.innerHTML = '';
+    list.innerHTML = '<div style="text-align:center;padding:24px 0 8px;color:var(--muted);font-size:.82rem;">' +
+      '<div style="font-size:2rem;margin-bottom:8px;">⛳</div>' +
+      '<div style="font-weight:600;color:var(--dark);margin-bottom:4px;">No rounds yet</div>' +
+      '<div>Tap <strong>+ Log Round</strong> above after your next round.</div>' +
+      '</div>';
+    return;
+  }
   section.style.display = 'block';
 
   // Stats bar
@@ -3230,7 +3262,38 @@ function renderRoundLog() {
     }).join('');
   }
 
-  list.innerHTML = rounds.map(function(r) {
+  // ── Handicap estimate ──
+  var hcpEl = document.getElementById('hcp-estimate');
+  if (hcpEl) {
+    // USGA lookup: # rounds → # differentials to use
+    var hcpTable = [0,0,0,1,1,1,2,2,2,3,3,4,4,5,5,6,6,7,7,8,8];
+    var diffs    = rounds.filter(function(r){ return r.diff != null; })
+                         .slice(-20)
+                         .map(function(r){ return r.diff; });
+    var take = hcpTable[Math.min(diffs.length, 20)] || 0;
+    if (take > 0) {
+      var sorted   = diffs.slice().sort(function(a,b){return a-b;});
+      var best     = sorted.slice(0, take);
+      var avgDiff  = best.reduce(function(a,b){return a+b;},0) / best.length;
+      var hcpIdx   = Math.floor(avgDiff * 0.96 * 10) / 10;
+      hcpEl.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--sand);border-radius:8px;margin-bottom:4px;">' +
+          '<div>' +
+            '<div style="font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Est. Handicap Index</div>' +
+            '<div style="font-size:.68rem;color:var(--muted);margin-top:2px;">Best ' + take + ' of ' + diffs.length + ' differential' + (diffs.length !== 1 ? 's' : '') + ' × 0.96</div>' +
+          '</div>' +
+          '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;font-weight:700;color:var(--forest);">' + hcpIdx + '</div>' +
+        '</div>';
+    } else {
+      var need = 3 - rounds.length;
+      hcpEl.innerHTML = need > 0
+        ? '<div style="font-size:.72rem;color:var(--muted);text-align:center;padding:6px 0 2px;">Log ' + need + ' more round' + (need > 1 ? 's' : '') + ' to unlock handicap estimate</div>'
+        : '';
+    }
+  }
+
+  list.innerHTML = rounds.slice().reverse().map(function(r, i) {
+    var actualIdx = rounds.length - 1 - i;
     var gross = r.gross != null ? r.gross : r.score;
     var vp    = r.vsParNet != null ? r.vsParNet : r.vsPar;
     var vpTxt = vp === 0 ? 'Even' : (vp > 0 ? '+'+vp : ''+vp);
@@ -3242,9 +3305,28 @@ function renderRoundLog() {
       : '<div class="rl-score">' + gross + '</div>';
     return '<div class="rl-item">' +
       '<div><div class="rl-date">' + r.date + '</div><div class="rl-holes">' + sub + '</div></div>' +
-      '<div style="text-align:right;">' + scoreHtml + '<div class="rl-par ' + vpC + '">' + vpTxt + '</div></div>' +
+      '<div style="display:flex;align-items:center;gap:4px;">' +
+        '<div style="text-align:right;">' + scoreHtml + '<div class="rl-par ' + vpC + '">' + vpTxt + '</div></div>' +
+        '<button onclick="deleteRound(' + actualIdx + ')" style="background:none;border:none;color:var(--muted);font-size:.9rem;cursor:pointer;padding:4px 8px;flex-shrink:0;" title="Delete">✕</button>' +
+      '</div>' +
       '</div>';
   }).join('');
+}
+
+function deleteRound(idx) {
+  if (!currentUser) return;
+  var key = 'wh_rounds_' + currentUser.email;
+  var rounds = JSON.parse(localStorage.getItem(key) || '[]');
+  rounds.splice(idx, 1);
+  localStorage.setItem(key, JSON.stringify(rounds));
+  // Recalculate yearly count
+  var cKey = 'wh_extra_rounds_' + currentUser.email;
+  var extra = Math.max(0, parseInt(localStorage.getItem(cKey) || '0') - 1);
+  localStorage.setItem(cKey, extra);
+  var el = document.getElementById('m-rounds');
+  if (el) el.textContent = Math.max(0, (currentUser.rounds || 0) + extra);
+  renderRoundLog();
+  showToast('Round removed.');
 }
 
 // ═══════════════════════════════════════
@@ -3820,20 +3902,31 @@ function mTeeSheetRender() {
       if (!byHole[h]) { byHole[h] = []; holeOrder.push(h); }
       byHole[h].push({ g: g, idx: idx });
     });
+    var _lgMemberFirst = currentUser ? (currentUser.name || '').toLowerCase().split(' ')[0] : '';
     holeOrder.forEach(function(h) {
+      // Count total players on this hole
+      var holePlayers = byHole[h].reduce(function(sum, entry) { return sum + ((entry.g.team && entry.g.team.players ? entry.g.team.players : (entry.g.players || [])).length); }, 0);
       html += '<div style="background:#1e3323;border-radius:10px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.35);">';
-      html += '<div style="background:#152618;padding:8px 14px;display:flex;align-items:center;gap:10px;">';
+      html += '<div style="background:#152618;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;">';
       html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.25rem;font-weight:700;color:#d4b483;">Hole ' + h + '</div>';
+      if (holePlayers) html += '<span style="font-size:.68rem;background:rgba(184,151,106,.15);border:1px solid rgba(184,151,106,.25);border-radius:10px;padding:2px 8px;color:rgba(184,151,106,.8);">' + holePlayers + ' player' + (holePlayers === 1 ? '' : 's') + '</span>';
       html += '</div>';
       byHole[h].forEach(function(entry, gi) {
         var g = entry.g, idx = entry.idx;
         var players = (g.team && g.team.players) ? g.team.players : (g.players ? g.players : []);
         var teeLabel = g.teeTime ? g.teeTime : seqTime(idx);
         var score = g.scores ? g.scores['r' + mTeeSheetRound] : null;
+        var iAmHereLg = _lgMemberFirst && players.some(function(tp) {
+          var n = (tp.player ? tp.player.name : (tp.name || '')).toLowerCase();
+          return n && n.indexOf(_lgMemberFirst) !== -1;
+        });
         var topBorder = gi > 0 ? 'border-top:1px solid rgba(255,255,255,.06);' : '';
-        html += '<div style="' + topBorder + '">';
+        html += '<div style="' + topBorder + (iAmHereLg ? 'background:rgba(184,151,106,.06);' : '') + '">';
         html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 14px 4px 14px;background:rgba(0,0,0,.15);">';
-        html += '<div style="font-size:.72rem;color:#d4b483;font-weight:700;">' + teeLabel + '</div>';
+        html += '<div>';
+        html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:.95rem;color:#d4b483;font-weight:700;">' + teeLabel + '</div>';
+        if (iAmHereLg) html += '<div style="font-size:.6rem;color:#d4b483;letter-spacing:.04em;">✓ You\'re registered</div>';
+        html += '</div>';
         if (score != null) html += '<div style="font-size:.68rem;color:#d4b483;">' + score + '</div>';
         html += '</div>';
         players.forEach(function(tp, pi) {
@@ -3852,14 +3945,24 @@ function mTeeSheetRender() {
 
   // ── SHOTGUN FORMAT ──
   } else if (isShotgun) {
+    var _sgMemberFirst = currentUser ? (currentUser.name || '').toLowerCase().split(' ')[0] : '';
     sheet.groups.forEach(function(g, idx) {
       var players = (g.team && g.team.players) ? g.team.players : (g.players ? g.players : []);
       var hole = g.hole ? g.hole : (((startHole - 1 + idx) % 18) + 1);
       var score = g.scores ? g.scores['r' + mTeeSheetRound] : null;
-      html += '<div style="background:#fff;border-radius:8px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.25);">';
+      var iAmHereSg = _sgMemberFirst && players.some(function(tp) {
+        var n = (tp.player ? tp.player.name : (tp.name || '')).toLowerCase();
+        return n && n.indexOf(_sgMemberFirst) !== -1;
+      });
+      html += '<div style="background:#fff;border-radius:8px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.25);' + (iAmHereSg ? 'border:2px solid #b8963e;' : '') + '">';
       html += '<div style="background:#1a2b1f;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">';
-      html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.2rem;font-weight:700;color:#d4b483;line-height:1;">Hole ' + hole + '</div>';
-      html += '<div style="text-align:right;"><div style="font-size:.65rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em;">Simultaneous start</div>';
+      html += '<div>';
+      html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.3rem;font-weight:700;color:#d4b483;line-height:1;">Hole ' + hole + '</div>';
+      if (iAmHereSg) html += '<div style="font-size:.62rem;color:#d4b483;margin-top:3px;letter-spacing:.04em;">✓ You\'re registered</div>';
+      html += '</div>';
+      html += '<div style="text-align:right;">';
+      html += '<div style="font-size:.65rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em;">Simultaneous start</div>';
+      if (players.length) html += '<div style="font-size:.68rem;background:rgba(184,151,106,.2);border:1px solid rgba(184,151,106,.3);border-radius:10px;padding:2px 8px;color:#d4b483;margin-top:4px;display:inline-block;">' + players.length + ' player' + (players.length === 1 ? '' : 's') + '</div>';
       if (score != null) html += '<div style="font-size:.72rem;color:#d4b483;font-weight:700;margin-top:2px;">' + score + '</div>';
       html += '</div></div>';
       html += playerRows(players);
@@ -3868,15 +3971,25 @@ function mTeeSheetRender() {
 
   // ── SEQUENTIAL FORMAT ──
   } else {
+    var _memberFirst = currentUser ? (currentUser.name || '').toLowerCase().split(' ')[0] : '';
     sheet.groups.forEach(function(g, idx) {
       var players = (g.team && g.team.players) ? g.team.players : (g.players ? g.players : []);
       var teeLabel = g.teeTime ? g.teeTime : seqTime(idx);
       var hole = g.hole ? g.hole : (((startHole - 1 + idx) % 18) + 1);
       var score = g.scores ? g.scores['r' + mTeeSheetRound] : null;
-      html += '<div style="background:#fff;border-radius:8px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.25);">';
+      var iAmHere = _memberFirst && players.some(function(tp) {
+        var n = (tp.player ? tp.player.name : (tp.name || '')).toLowerCase();
+        return n && n.indexOf(_memberFirst) !== -1;
+      });
+      html += '<div style="background:#fff;border-radius:8px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.25);' + (iAmHere ? 'border:2px solid #b8963e;' : '') + '">';
       html += '<div style="background:#1a2b1f;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">';
-      html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.2rem;font-weight:700;color:#d4b483;line-height:1;">' + teeLabel + '</div>';
-      html += '<div style="text-align:right;"><div style="font-size:.65rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em;">Hole ' + hole + '</div>';
+      html += '<div>';
+      html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.3rem;font-weight:700;color:#d4b483;line-height:1;">' + teeLabel + '</div>';
+      if (iAmHere) html += '<div style="font-size:.62rem;color:#d4b483;margin-top:3px;letter-spacing:.04em;">✓ You\'re registered</div>';
+      html += '</div>';
+      html += '<div style="text-align:right;">';
+      html += '<div style="font-size:.65rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em;">Hole ' + hole + '</div>';
+      if (players.length) html += '<div style="font-size:.68rem;background:rgba(184,151,106,.2);border:1px solid rgba(184,151,106,.3);border-radius:10px;padding:2px 8px;color:#d4b483;margin-top:4px;display:inline-block;">' + players.length + ' player' + (players.length === 1 ? '' : 's') + '</div>';
       if (score != null) html += '<div style="font-size:.72rem;color:#d4b483;font-weight:700;margin-top:2px;">' + score + '</div>';
       html += '</div></div>';
       html += playerRows(players);
@@ -3934,6 +4047,46 @@ function openAppReg(eventTitle, eventMeta, isTeam) {
   openModal('modal-app-reg');
 }
 
+function openEventDetail(ev) {
+  var regCount = WHCC_SYNC.getCount(ev.title);
+  var cap = parseInt(ev.capacity) || 0;
+  var isFull = cap > 0 && regCount >= cap;
+  document.getElementById('ed-title').textContent = ev.title;
+  var metaParts = [ev.month + ' ' + ev.day];
+  if (ev.time) metaParts.push(ev.time);
+  if (ev.fee) metaParts.push(ev.fee);
+  document.getElementById('ed-meta').textContent = metaParts.join(' · ');
+  var bodyHtml = '';
+  if (ev.desc) bodyHtml += '<div style="font-size:.86rem;color:var(--dark);line-height:1.6;margin-bottom:14px;">' + ev.desc + '</div>';
+  var format = WHCC_EVENTS[ev.title];
+  if (format) {
+    bodyHtml += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">';
+    bodyHtml += '<span style="background:var(--sand);border-radius:14px;padding:4px 12px;font-size:.74rem;font-weight:600;color:var(--forest);">Format: ' + (format.type === 'single' ? 'Individual' : format.type === 'twosome' ? '2-Person Team' : '4-Person Team') + '</span>';
+    if (cap > 0) bodyHtml += '<span style="background:var(--sand);border-radius:14px;padding:4px 12px;font-size:.74rem;font-weight:600;color:var(--forest);">Capacity: ' + cap + '</span>';
+    if (regCount > 0) bodyHtml += '<span style="background:var(--sand);border-radius:14px;padding:4px 12px;font-size:.74rem;font-weight:600;color:' + (isFull ? 'var(--danger)' : 'var(--forest)') + ';">' + regCount + ' registered</span>';
+    bodyHtml += '</div>';
+  }
+  if (ev.registered) {
+    bodyHtml += '<div style="background:#e8f5ec;border-radius:8px;padding:10px 14px;font-size:.8rem;color:var(--success);font-weight:600;margin-bottom:14px;">✓ You\'re registered for this event</div>';
+  }
+  document.getElementById('ed-body').innerHTML = bodyHtml;
+  var regBtn = document.getElementById('ed-reg-btn');
+  if (ev.registered) {
+    regBtn.textContent = 'Already Registered';
+    regBtn.style.background = 'var(--success)';
+    regBtn.onclick = function() { closeModal('modal-event-detail'); };
+  } else if (isFull) {
+    regBtn.textContent = 'Event Full';
+    regBtn.style.background = 'var(--muted)';
+    regBtn.onclick = null;
+  } else {
+    regBtn.textContent = 'Register Now →';
+    regBtn.style.background = 'var(--forest)';
+    regBtn.onclick = function() { closeModal('modal-event-detail'); openAppReg(ev.title, ev.time, /scramble|invitational|2-man|2 man|best ball|powder puff|sweet treat|ucan|three rivers|mules/i.test(ev.title + ' ' + (ev.desc||''))); };
+  }
+  openModal('modal-event-detail');
+}
+
 function submitAppReg() {
   var fname = document.getElementById('app-reg-fname').value.trim();
   var lname = document.getElementById('app-reg-lname').value.trim();
@@ -3965,11 +4118,17 @@ function submitAppReg() {
   } catch(e) {}
   // POST to Google Apps Script
   try {
-    fetch(WHCC_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify(reg),
-      headers: { 'Content-Type': 'text/plain' }
-    }).catch(function() {});
+    if (!navigator.onLine) {
+      var q = JSON.parse(localStorage.getItem('wh_sync_queue') || '[]');
+      q.push({ type: 'registration', data: reg, ts: Date.now() });
+      localStorage.setItem('wh_sync_queue', JSON.stringify(q));
+    } else {
+      fetch(WHCC_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(reg),
+        headers: { 'Content-Type': 'text/plain' }
+      }).catch(function() {});
+    }
   } catch(e) {}
   // Mark event as registered in appEvents so tee sheet + card update
   var evTitle = reg.event;
@@ -3984,7 +4143,8 @@ function submitAppReg() {
   document.getElementById('app-reg-form-wrap').style.display = 'none';
   document.getElementById('app-reg-success').style.display = 'block';
   document.getElementById('app-reg-success-msg').textContent =
-    'You\'re signed up for ' + reg.event + '. We\'ll confirm within 24 hours.';
+    'You\'re signed up for ' + reg.event + '. We\'ll confirm within 24 hours.' +
+    (!navigator.onLine ? ' (Offline — will sync when reconnected.)' : '');
   showToast('Registered for ' + reg.event + '!');
 }
 
@@ -4021,11 +4181,14 @@ function eventCardHTML(ev, idx, isStaff) {
         var spotsLeft = cap > 0 ? cap - regCount : null;
         var isFull = cap > 0 && regCount >= cap;
         var capacityBadge = '';
-        if (cap > 0) {
+        if (cap > 0 && regCount > 0) {
+          var pct = regCount / cap;
           if (isFull) {
-            capacityBadge = '<span style="display:inline-block;margin-bottom:8px;padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700;background:#fee2e2;color:#b91c1c;">Full</span>';
-          } else if (spotsLeft <= 5) {
-            capacityBadge = '<span style="display:inline-block;margin-bottom:8px;padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700;background:#fef9c3;color:#854d0e;">' + spotsLeft + ' spot' + (spotsLeft === 1 ? '' : 's') + ' left</span>';
+            capacityBadge = '<div style="margin-bottom:8px;font-size:.74rem;">⛔ Full — join waitlist</div>';
+          } else if (pct >= 0.80) {
+            capacityBadge = '<div style="margin-bottom:8px;font-size:.74rem;color:var(--danger);">🔴 Almost full</div>';
+          } else if (pct >= 0.50) {
+            capacityBadge = '<div style="margin-bottom:8px;font-size:.74rem;color:' + (getComputedStyle ? '#b45309' : '#b45309') + ';">🔶 Filling up</div>';
           }
         }
         var regBtn = ev.registered
@@ -4037,7 +4200,7 @@ function eventCardHTML(ev, idx, isStaff) {
             ? (isOnWaitlist(ev.title)
                 ? '<button class="ev-reg-btn" style="background:#6b7280;cursor:default;" disabled>✓ On Waitlist</button>'
                 : '<button class="ev-reg-btn" style="background:#92400e;" onclick="joinWaitlist(\'' + ev.title.replace(/'/g,"\\'") + '\')">Join Waitlist</button>')
-            : '<button class="ev-reg-btn" onclick="openAppReg(\'' + ev.title.replace(/'/g,"\\'") + '\',\'' + (ev.time||'').replace(/'/g,"\\'") + '\',' + isTeam + ')">Register</button>';
+            : '<button class="ev-reg-btn" onclick="openEventDetail(upcomingEvents()[' + idx + '])">Register</button>';
         return capacityBadge + regBtn + '<button class="ts-btn" style="font-size:.72rem;margin-top:6px;width:100%;" onclick="openMemberTeeSheet(' + idx + ')">Tee Sheet</button>';
       })();
   var metaRows = '';
@@ -4106,10 +4269,42 @@ function renderMemberEvents() {
     : '<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:.85rem;">No upcoming events</div>';
 }
 
+function renderFindAGame() {
+  var el = document.getElementById('m-find-game-list');
+  if (!el) return;
+  var dir = (MEMBER_DIRECTORY && MEMBER_DIRECTORY.length)
+    ? MEMBER_DIRECTORY
+    : (function(){ try { return JSON.parse(localStorage.getItem('wh_member_dir') || '[]'); } catch(e) { return []; } })();
+  var golfers = dir.filter(function(m) {
+    var mem = (m.membership || m.type || '').toLowerCase();
+    return mem.indexOf('golf') !== -1 || mem === '' || !m.membership;
+  });
+  if (!golfers.length) {
+    el.innerHTML = '<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:12px 0;">Member directory updates when connected</div>';
+    return;
+  }
+  el.innerHTML = golfers.slice(0, 20).map(function(m) {
+    var hcp = m.handicap !== undefined ? m.handicap : (m.hcp !== undefined ? m.hcp : null);
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">' +
+      '<div style="font-size:.86rem;font-weight:600;color:var(--dark);">' + (m.name || m.firstName + ' ' + m.lastName).trim() + '</div>' +
+      (hcp !== null ? '<span style="font-size:.72rem;font-weight:600;color:#7a5c10;background:rgba(184,150,62,.12);padding:2px 8px;border-radius:10px;">HCP ' + hcp + '</span>' : '') +
+    '</div>';
+  }).join('') + (golfers.length > 20 ? '<div style="font-size:.72rem;color:var(--muted);text-align:center;padding:8px 0;">+ ' + (golfers.length - 20) + ' more members</div>' : '');
+}
+
 function renderHomeEvents() {
   var el = document.getElementById('m-home-events');
   if (!el) return;
-  el.innerHTML = upcomingEvents().slice(0, 2).map(function(ev) {
+  var evs = upcomingEvents().slice(0, 2);
+  if (!evs.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px 16px;">' +
+      '<div style="font-size:1.6rem;margin-bottom:8px;">⛳</div>' +
+      '<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1rem;color:var(--dark);margin-bottom:4px;">No upcoming events</div>' +
+      '<div style="font-size:.75rem;color:var(--muted);">Check back soon or contact the Pro Shop</div>' +
+      '</div>';
+    return;
+  }
+  el.innerHTML = evs.map(function(ev) {
     return '<div class="card" style="display:flex;align-items:center;gap:12px;">' +
       '<div class="ev-date-box" style="background:var(--forest);border-radius:8px;padding:7px 10px;text-align:center;">' +
         '<div class="edb-mo" style="color:rgba(255,255,255,.6);">' + ev.month + '</div>' +
@@ -4227,7 +4422,7 @@ function renderEventTeeSheet(idx) {
   var slots = JSON.parse(localStorage.getItem(key) || '[]').sort(function(a,b){ return a.time.localeCompare(b.time); });
   var el = document.getElementById('ets-list');
   if (!slots.length) {
-    el.innerHTML = '<div class="ts-empty">No tee times added yet</div>';
+    el.innerHTML = '<div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">⛳</div>No tee times added yet</div>';
     return;
   }
   el.innerHTML = slots.map(function(s) {
@@ -4280,11 +4475,11 @@ function setModalVenue(v) {
   if (hooversBtn) hooversBtn.style.cssText = (v === 'hoovers' ? active : inactive);
   if (titleEl)    titleEl.textContent = (v === 'hoovers') ? "Reserve at Hoover's" : 'Reserve at Westwood Grill';
   if (v === 'hoovers') {
-    if (timeInput) { timeInput.min = '17:00'; timeInput.max = '20:00'; if (timeInput.value < '17:00' || timeInput.value > '20:00') timeInput.value = '18:00'; }
-    if (hintEl) { hintEl.textContent = "Hoover's is open Thursday, Friday & Saturday, 5–8 PM last reservation."; hintEl.style.display = 'block'; }
+    if (timeInput) { timeInput.min = '17:30'; timeInput.max = '21:00'; if (timeInput.value < '17:30' || timeInput.value > '21:00') timeInput.value = '18:00'; }
+    if (hintEl) { hintEl.textContent = "Hoover's is open Thursday, Friday & Saturday. Dinner only: 5:30–9 PM (last reservation)."; hintEl.style.display = 'block'; }
   } else {
-    if (timeInput) { timeInput.min = '11:00'; timeInput.max = '20:00'; if (timeInput.value < '11:00' || timeInput.value > '20:00') timeInput.value = '12:00'; }
-    if (hintEl) { hintEl.textContent = 'Westwood Grill is open Tuesday–Sunday, 11 AM–8 PM last reservation. Closed Mondays.'; hintEl.style.display = 'block'; }
+    if (timeInput) { timeInput.min = '11:00'; timeInput.max = '21:00'; if (timeInput.value < '11:00' || timeInput.value > '21:00') timeInput.value = '12:00'; }
+    if (hintEl) { hintEl.textContent = 'Westwood Grill: Lunch 11 AM–2 PM, Dinner 5–9 PM. Closed Mondays.'; hintEl.style.display = 'block'; }
   }
 }
 
@@ -4304,21 +4499,23 @@ function confirmDining() {
   var notes = document.getElementById('md-notes').value;
   if (!date || !party) { showToast('Please fill in date and party size.'); return; }
 
-  // Hoover's: Thursday, Friday & Saturday only, 5–8 PM last reservation
+  // Hoover's: Thursday, Friday & Saturday only, 5:30–9 PM (dinner only)
   if (_activeDiningVenue === 'hoovers') {
     var dow = new Date(date + 'T12:00:00').getDay(); // 0=Sun … 4=Thu, 5=Fri, 6=Sat
     if (dow !== 4 && dow !== 5 && dow !== 6) {
       showToast("Hoover's is only open Thursday, Friday & Saturday. Please select a valid date.");
       return;
     }
-    var hh = parseInt((time || '').split(':')[0]);
-    if (!time || hh < 17 || hh > 20) {
-      showToast("Hoover's reservations are available 5–8 PM only.");
+    var timeParts = (time || '').split(':');
+    var hh = parseInt(timeParts[0]), mm = parseInt(timeParts[1] || 0);
+    var timeMin = hh * 60 + mm;
+    if (!time || timeMin < 17 * 60 + 30 || timeMin > 21 * 60) {
+      showToast("Hoover's reservations are available 5:30–9 PM only.");
       return;
     }
   }
 
-  // Westwood Grill: closed Mondays, 11 AM–8 PM last reservation
+  // Westwood Grill: closed Mondays, Lunch 11 AM–2 PM, Dinner 5–9 PM
   if (_activeDiningVenue === 'grille') {
     var dowG = new Date(date + 'T12:00:00').getDay(); // 1=Monday
     if (dowG === 1) {
@@ -4326,8 +4523,8 @@ function confirmDining() {
       return;
     }
     var hhG = parseInt((time || '').split(':')[0]);
-    if (!time || hhG < 11 || hhG > 20) {
-      showToast('Westwood Grill reservations are available 11 AM–8 PM only.');
+    if (!time || hhG < 11 || hhG > 21) {
+      showToast('Westwood Grill reservations are available 11 AM–9 PM only.');
       return;
     }
   }
@@ -4374,24 +4571,30 @@ function confirmDining() {
   }).catch(function() {});
 
   // Also push to Dining Reservations sheet (website staff portal)
-  fetch(WHCC_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({
-      action:      'dining-reservation',
-      id:          res.id,
-      date:        res.isoDate,
-      time24:      res.time24,
-      timeDisplay: res.timeDisplay,
-      name:        res.name,
-      email:       currentUser ? currentUser.email : '',
-      party:       res.party,
-      note:        res.note,
-      venue:       _activeDiningVenue,
-      source:      'mobile',
-      submitted:   new Date().toISOString()
-    })
-  }).catch(function() {});
+  var _diningPayload = {
+    id:          res.id,
+    date:        res.isoDate,
+    time24:      res.time24,
+    timeDisplay: res.timeDisplay,
+    name:        res.name,
+    email:       currentUser ? currentUser.email : '',
+    party:       res.party,
+    note:        res.note,
+    venue:       _activeDiningVenue,
+    source:      'mobile',
+    submitted:   new Date().toISOString()
+  };
+  if (!navigator.onLine) {
+    var q = JSON.parse(localStorage.getItem('wh_sync_queue') || '[]');
+    q.push({ type: 'dining', data: _diningPayload, ts: Date.now() });
+    localStorage.setItem('wh_sync_queue', JSON.stringify(q));
+  } else {
+    fetch(WHCC_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(Object.assign({ action: 'dining-reservation' }, _diningPayload))
+    }).catch(function() {});
+  }
 
 
   // Send confirmation email via Apps Script
@@ -4428,7 +4631,8 @@ function confirmDining() {
     '</div>' +
     '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.1rem;font-weight:700;margin-bottom:4px;">' + dateStr + '</div>' +
     '<div style="font-size:.8rem;color:rgba(245,240,232,.75);">' + timeDisplay + ' · Party of ' + party + (notes ? ' · ' + notes : '') + '</div>' +
-    '<div style="font-size:.7rem;color:rgba(245,240,232,.5);margin-top:8px;">We look forward to seeing you! Call (573) 785-5253 for changes.</div>';
+    '<div style="font-size:.7rem;color:rgba(245,240,232,.5);margin-top:8px;">We look forward to seeing you! Call (573) 785-5253 for changes.</div>' +
+    (!navigator.onLine ? '<div style="font-size:.7rem;color:rgba(255,220,100,.8);margin-top:6px;">📶 Offline — reservation saved and will sync when you reconnect.</div>' : '');
 
   goTab('member', 'dining');
   showToast('✅ Reservation confirmed!');
@@ -4640,7 +4844,7 @@ function renderStaffMenus() {
             '<div class="smi-name">' + item.name + '</div>' +
             '<div class="smi-price">' + (item.price || '') +
               (item.desc ? (item.price ? ' · ' : '') + item.desc.substring(0,36) + (item.desc.length > 36 ? '…' : '') : '') +
-              (item.wine ? ' <span style="color:var(--gold);font-style:italic;">· 🍷 ' + item.wine.substring(0,30) + (item.wine.length > 30 ? '…' : '') + '</span>' : '') +
+              (item.wine ? ' <span style="color:#7a6030;font-style:italic;">· 🍷 Pairs well with ' + item.wine.substring(0,30) + (item.wine.length > 30 ? '…' : '') + '</span>' : '') +
             '</div>' +
           '</div>' +
           '<button class="smi-edit" onclick="openMenuEdit(\'' + key + '\',' + idx + ')">Edit</button>' +
@@ -4690,7 +4894,7 @@ function renderHooversMenu() {
       html += '<div' + (isLast ? '' : ' style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"') + '>';
       html += '<div style="font-weight:600;font-size:.84rem;">' + item.name + '</div>';
       if (item.desc) html += '<div style="font-size:.74rem;color:var(--muted);margin-top:2px;">' + item.desc + '</div>';
-      if (item.wine) html += '<div style="font-size:.7rem;color:var(--gold);margin-top:4px;font-style:italic;">Pairs with ' + item.wine + '</div>';
+      if (item.wine) html += '<div style="font-size:.7rem;color:#7a6030;margin-top:4px;font-style:italic;">🍷 Pairs well with ' + item.wine + '</div>';
       html += '</div>';
     });
     html += '</div>';
@@ -4702,7 +4906,7 @@ function renderHooversMenu() {
     html += '<div style="font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">House Specialty</div>';
     html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.3rem;color:var(--cream);margin-bottom:6px;">' + item.name + '</div>';
     if (item.desc) html += '<div style="font-size:.76rem;color:rgba(245,240,232,.55);line-height:1.5;">' + item.desc + '</div>';
-    if (item.wine) html += '<div style="font-size:.7rem;color:var(--gold);font-style:italic;margin-top:8px;">Pairs with ' + item.wine + '</div>';
+    if (item.wine) html += '<div style="font-size:.7rem;color:var(--gold);font-style:italic;margin-top:8px;">🍷 Pairs well with ' + item.wine + '</div>';
     html += '</div>';
   });
   el.innerHTML = html;
@@ -4867,7 +5071,7 @@ function renderPoolGuests() {
   var el = document.getElementById('pool-guest-list');
   if (!el) return;
   var list = poolGuestLoad();
-  if (!list.length) { el.innerHTML = '<div class="ts-empty">No guests logged today</div>'; return; }
+  if (!list.length) { el.innerHTML = '<div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🏊</div>No guests logged today</div>'; return; }
   var total = list.reduce(function(s,g){ return s+g.count; }, 0);
   el.innerHTML = list.map(function(g) {
     return '<div class="ts-row"><div class="ts-info"><div class="ts-name">'+g.member+'</div><div class="ts-detail">'+g.count+' guest'+(g.count>1?'s':'')+'</div></div><button class="ts-btn" onclick="removePoolGuest(\''+g.id+'\')">✕</button></div>';
@@ -4900,7 +5104,7 @@ function renderChemLog() {
   var el = document.getElementById('pool-chem-list');
   if (!el) return;
   var list = chemLoad().slice().sort(function(a,b){ return b.logged-a.logged; });
-  if (!list.length) { el.innerHTML = '<div class="ts-empty">No readings today — tap + Reading to log</div>'; return; }
+  if (!list.length) { el.innerHTML = '<div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🧪</div>No readings today — tap + Reading to log</div>'; return; }
   el.innerHTML = list.map(function(r) {
     var d = new Date(r.logged);
     var t = d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
@@ -4933,6 +5137,8 @@ function renderPoolChip() {
   if (!el) return;
   var d = poolLoad();
   el.style.display = 'flex';
+  el.style.borderLeft = d.open ? '3px solid var(--success)' : '3px solid var(--danger)';
+  el.style.background = d.open ? 'rgba(45,106,79,.06)' : 'rgba(192,57,43,.06)';
   el.querySelector('.pool-chip-status').textContent = d.open ? '🏊 Pool Open' : '🚫 Pool Closed';
   el.querySelector('.pool-chip-status').style.color = d.open ? '#166534' : '#991b1b';
   var noteEl = el.querySelector('.pool-chip-note');
@@ -5036,7 +5242,7 @@ function renderWorkOrders() {
     var p = {urgent:0,medium:1,low:2};
     return (p[a.priority]||1)-(p[b.priority]||1);
   });
-  if (!list.length) { el.innerHTML='<div class="ts-empty">No open work orders</div>'; return; }
+  if (!list.length) { el.innerHTML='<div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🔧</div>No open work orders</div>'; return; }
   el.innerHTML = list.map(function(w) {
     var priCls = w.done ? '' : w.priority;
     var priBadge = {urgent:'🔴 Urgent',medium:'🟡 Medium',low:'🟢 Low'}[w.priority]||'';
@@ -5077,7 +5283,7 @@ function renderSprayLog() {
   var el = document.getElementById('spray-list');
   if (!el) return;
   var list = sprayLoad().slice().sort(function(a,b){ return b.logged-a.logged; });
-  if (!list.length) { el.innerHTML='<div class="ts-empty">No applications logged</div>'; return; }
+  if (!list.length) { el.innerHTML='<div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🌿</div>No applications logged</div>'; return; }
   el.innerHTML = list.map(function(s) {
     var d = new Date(s.logged);
     var dateStr = d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
@@ -5194,7 +5400,7 @@ function renderStaffMessages() {
   if (!el) return;
   var msgs = staffMsgLoad();
   if (!msgs.length) {
-    el.innerHTML = '<div class="ts-empty">No messages yet — be the first to leave a note.</div>';
+    el.innerHTML = '<div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">📢</div>No messages yet — be the first to leave a note.</div>';
     return;
   }
   // newest first
@@ -5279,7 +5485,7 @@ function renderLostFound() {
     return b.logged - a.logged;
   });
   if (!list.length) {
-    el.innerHTML = '<div class="ts-empty">No items logged — tap + Add to log a found item.</div>';
+    el.innerHTML = '<div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🔍</div>No items logged — tap + Add to log a found item.</div>';
     return;
   }
   el.innerHTML = list.map(function(item) {
@@ -5344,7 +5550,7 @@ function renderIncidents() {
   if (!el) return;
   var list = incidentLoad().slice().sort(function(a,b){ return b.logged - a.logged; });
   if (!list.length) {
-    el.innerHTML = '<div class="ts-empty">No incidents logged — tap + Log to report an issue.</div>';
+    el.innerHTML = '<div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">📋</div>No incidents logged — tap + Log to report an issue.</div>';
     return;
   }
   var priorityOrder = {urgent:0, medium:1, low:2};
@@ -5465,6 +5671,7 @@ function pushMemberNotice() {
   var data  = Object.assign({}, WH_COND_DEFAULTS, JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {});
   data.notice = text;
   localStorage.setItem('wh_conditions', JSON.stringify(data));
+  localStorage.setItem('wh_conditions_ts', Date.now().toString());
   renderNoticeCard();
   renderConditionsUI(data);
   loadConditionsEditor();
@@ -5478,6 +5685,7 @@ function clearMemberNotice() {
   var data  = Object.assign({}, WH_COND_DEFAULTS, JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {});
   data.notice = '';
   localStorage.setItem('wh_conditions', JSON.stringify(data));
+  localStorage.setItem('wh_conditions_ts', Date.now().toString());
   renderNoticeCard();
   renderConditionsUI(data);
   loadConditionsEditor();
@@ -5547,7 +5755,7 @@ function renderDiningLog() {
   var cnt = document.getElementById('s-dining-count');
   if (!el) return;
   if (!list.length) {
-    el.innerHTML = '<div class="ts-empty">No reservations yet — tap + Add</div>';
+    el.innerHTML = '<div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🍽</div>No reservations yet — tap + Add</div>';
     if (cnt) cnt.textContent = '';
     return;
   }
@@ -5627,7 +5835,7 @@ function renderTeeSheet() {
   var cnt = document.getElementById('s-tee-count');
   if (!el) return;
   if (!list.length) {
-    el.innerHTML = '<div class="ts-empty">No one checked in yet</div>';
+    el.innerHTML = '<div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">⛳</div>No one checked in yet</div>';
     if (cnt) cnt.textContent = '';
     return;
   }
@@ -5727,18 +5935,45 @@ function loadConditions() {
     .then(function(fresh) {
       if (fresh && typeof fresh === 'object' && fresh.courseOpens) {
         localStorage.setItem('wh_conditions', JSON.stringify(fresh));
+        localStorage.setItem('wh_conditions_ts', Date.now().toString());
         renderConditionsUI(fresh);
         loadConditionsEditor();
       }
     }).catch(function(){});
 }
+function condValColor(key, val) {
+  if (!val || val === '—') return 'var(--muted)';
+  var v = val.toLowerCase();
+  if (key === 'carts') {
+    if (v.indexOf('off path') >= 0 || v.indexOf('no restrict') >= 0 || v.indexOf('unrestrict') >= 0) return 'var(--success)';
+    if (v.indexOf('path only') >= 0 || v.indexOf('90') >= 0) return '#b45309';
+    if (v.indexOf('no cart') >= 0 || v.indexOf('closed') >= 0) return 'var(--danger)';
+    return 'var(--dark)';
+  }
+  if (key === 'range') {
+    if (v.indexOf('closed') >= 0) return 'var(--danger)';
+    if (v.indexOf('mats') >= 0) return '#b45309';
+    return 'var(--success)';
+  }
+  if (key === 'opens') return 'var(--dark)';
+  return 'var(--dark)';
+}
 function renderConditionsUI(data) {
   var el = document.getElementById('wx-conditions');
   if (!el) return;
   var html =
-    '<div class="wx-cond-row"><span class="wx-cond-lbl">Opens</span><span class="wx-cond-val">' + (data.courseOpens||'—') + '</span></div>' +
-    '<div class="wx-cond-row"><span class="wx-cond-lbl">Carts</span><span class="wx-cond-val">' + (data.cartRules||'—') + '</span></div>' +
-    '<div class="wx-cond-row"><span class="wx-cond-lbl">Range</span><span class="wx-cond-val">' + (data.range||'Open') + '</span></div>';
+    '<div class="wx-cond-row"><span class="wx-cond-lbl">Opens</span><span class="wx-cond-val" style="color:' + condValColor('opens', data.courseOpens) + ';">' + (data.courseOpens||'—') + '</span></div>' +
+    '<div class="wx-cond-row"><span class="wx-cond-lbl">Carts</span><span class="wx-cond-val" style="color:' + condValColor('carts', data.cartRules) + ';">' + (data.cartRules||'—') + '</span></div>' +
+    '<div class="wx-cond-row"><span class="wx-cond-lbl">Range</span><span class="wx-cond-val" style="color:' + condValColor('range', data.rangeStatus||data.range) + ';">' + (data.rangeStatus||data.range||'Open') + '</span></div>';
+  if (data.rangeHours && data.rangeHours.trim())
+    html += '<div class="wx-cond-row"><span class="wx-cond-lbl">Range Hrs</span><span class="wx-cond-val">' + data.rangeHours + '</span></div>';
+  if (data.puttingGreen && data.puttingGreen.trim())
+    html += '<div class="wx-cond-row"><span class="wx-cond-lbl">Putting Green</span><span class="wx-cond-val">' + data.puttingGreen + '</span></div>';
+  if (data.proShop && data.proShop.trim())
+    html += '<div class="wx-cond-row"><span class="wx-cond-lbl">Pro Shop</span><span class="wx-cond-val">' + data.proShop + '</span></div>';
+  var ts = localStorage.getItem('wh_conditions_ts');
+  var tsStr = ts ? 'Updated ' + new Date(parseInt(ts)).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
+  if (tsStr) html += '<div style="font-size:.65rem;color:var(--muted);margin-top:8px;text-align:right;">' + tsStr + '</div>';
   if (data.notice && data.notice.trim()) html += '<div class="wx-notice">⚠️ ' + data.notice + '</div>';
   el.innerHTML = html;
   // Also show notice banner on home tab if active
@@ -5765,6 +6000,32 @@ function loadConditionsEditor() {
   e = document.getElementById('cond-putting');      if(e) e.value = data.puttingGreen || '';
   e = document.getElementById('cond-proshop');      if(e) e.value = data.proShop      || '';
   e = document.getElementById('cond-notice');       if(e) e.value = data.notice       || '';
+  e = document.getElementById('qc-opens'); if(e) e.value = data.courseOpens || '';
+  e = document.getElementById('qc-carts'); if(e) e.value = data.cartRules  || '';
+  e = document.getElementById('qc-range'); if(e) e.value = data.rangeStatus || 'Open — Mats Only';
+}
+
+function quickSaveConditions() {
+  var opens = document.getElementById('qc-opens').value.trim();
+  var carts = document.getElementById('qc-carts').value.trim();
+  var range = document.getElementById('qc-range').value;
+  // Load current full conditions, patch only the 3 fields
+  var data = JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {};
+  if (opens) data.courseOpens = opens;
+  if (carts) data.cartRules = carts;
+  if (range) data.rangeStatus = range;
+  localStorage.setItem('wh_conditions', JSON.stringify(data));
+  localStorage.setItem('wh_conditions_ts', Date.now().toString());
+  // Sync to server
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ action: 'save-conditions', data: data })
+  }).catch(function(){});
+  // Update member view
+  renderConditionsUI(data);
+  showToast('✅ Conditions updated!');
+  // Also refresh full form
+  loadConditionsEditor();
 }
 
 function saveConditions() {
@@ -5778,6 +6039,7 @@ function saveConditions() {
     notice:       document.getElementById('cond-notice').value.trim()
   };
   localStorage.setItem('wh_conditions', JSON.stringify(data));
+  localStorage.setItem('wh_conditions_ts', Date.now().toString());
   loadConditions();
   // Sync to Apps Script so all members see the update
   fetch(WHCC_SCRIPT_URL, {
@@ -5804,6 +6066,10 @@ function condPreset(type) {
   e = document.getElementById('cond-putting');      if(e) e.value = d.puttingGreen;
   e = document.getElementById('cond-proshop');      if(e) e.value = d.proShop;
   e = document.getElementById('cond-notice');       if(e) e.value = d.notice;
+  // Highlight the selected preset button
+  document.querySelectorAll('[data-preset]').forEach(function(btn) {
+    btn.classList.toggle('preset-active', btn.dataset.preset === type);
+  });
 }
 
 function degToCardinal(d) {
@@ -5974,7 +6240,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js?v=4', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=10', { updateViaCache: 'none' })
       .then(function(reg) {
         reg.update(); // immediately check for a newer worker
         // Show update banner when a new SW is waiting
@@ -6658,8 +6924,28 @@ function completeSetup() {
 })();
 
 // ── PULL TO REFRESH ──────────────────────────────────────────────────────────
+function initPullToRefresh(el, onRefresh) {
+  var startY = 0, pulling = false, lastRefresh = 0;
+  var THRESHOLD = 65, THROTTLE_MS = 10000;
+  el.addEventListener('touchstart', function(e) {
+    if (el.scrollTop === 0) { startY = e.touches[0].clientY; pulling = true; }
+  }, { passive: true });
+  el.addEventListener('touchend', function(e) {
+    if (!pulling) return;
+    var dy = e.changedTouches[0].clientY - startY;
+    pulling = false;
+    if (dy > THRESHOLD) {
+      var now = Date.now();
+      if (now - lastRefresh < THROTTLE_MS) return;
+      lastRefresh = now;
+      onRefresh();
+    }
+  }, { passive: true });
+}
+
 (function() {
   var startY = 0, pulling = false, indicator = null;
+  var lastRefresh = 0, THROTTLE_MS = 10000;
   var THRESHOLD = 65;
 
   function refreshCurrentTab() {
@@ -6689,7 +6975,12 @@ function completeSetup() {
     if (!pulling) return;
     var dy = e.changedTouches[0].clientY - startY;
     pulling = false;
-    if (dy > THRESHOLD) refreshCurrentTab();
+    if (dy > THRESHOLD) {
+      var now = Date.now();
+      if (now - lastRefresh < THROTTLE_MS) return;
+      lastRefresh = now;
+      refreshCurrentTab();
+    }
   }, { passive: true });
 })();
 
@@ -6914,7 +7205,7 @@ function submitLeagueReg() {
   }
 
   window.addEventListener('offline', function() { showBanner(true); });
-  window.addEventListener('online',  function() { showBanner(false); manualSync(); });
+  window.addEventListener('online',  function() { showBanner(false); manualSync(); drainSyncQueue(); });
 
   // Show immediately if already offline on load
   if (!navigator.onLine) {
@@ -6943,6 +7234,25 @@ function updateSyncLabel() {
   var failed = localStorage.getItem('wh_last_sync_failed') === '1';
   if (err)   err.style.display   = failed ? 'inline' : 'none';
   if (retry) retry.style.display = failed ? 'inline-block' : 'none';
+}
+
+function drainSyncQueue() {
+  var q = JSON.parse(localStorage.getItem('wh_sync_queue') || '[]');
+  if (!q.length) return;
+  var remaining = [];
+  q.forEach(function(item) {
+    var url = WHCC_SCRIPT_URL;
+    var body;
+    if (item.type === 'registration') body = JSON.stringify(item.data);
+    else if (item.type === 'dining') body = JSON.stringify(Object.assign({ action: 'dining-reservation' }, item.data));
+    else { remaining.push(item); return; }
+    fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body })
+      .then(function() { /* synced */ })
+      .catch(function() { remaining.push(item); });
+  });
+  localStorage.setItem('wh_sync_queue', JSON.stringify(remaining));
+  if (q.length > remaining.length)
+    showToast('✓ ' + (q.length - remaining.length) + ' queued item(s) synced');
 }
 
 function manualSync() {
@@ -6979,23 +7289,6 @@ function dismissWelcome() {
   if (overlay) overlay.classList.remove('open');
 }
 
-// ════════════════════════════════════════════════════════
-// ════════════════════════════════════════════════════════
-// DARK MODE
-// ════════════════════════════════════════════════════════
-function applyDarkMode(on) {
-  document.body.setAttribute('data-theme', on ? 'dark' : '');
-  var toggle = document.getElementById('dark-mode-toggle');
-  if (toggle) toggle.checked = !!on;
-}
-function toggleDarkMode(on) {
-  localStorage.setItem('wh_dark_mode', on ? '1' : '0');
-  applyDarkMode(on);
-}
-(function() {
-  // Apply on page load before first paint
-  if (localStorage.getItem('wh_dark_mode') === '1') applyDarkMode(true);
-})();
 
 // ════════════════════════════════════════════════════════
 // BIOMETRIC LOGIN (WebAuthn Passkey)
@@ -7154,24 +7447,31 @@ function globalSearch(q) {
         '</div>';
     }).join('');
   }
-  // ── Menu items ──
+  // ── Menu items (Grill + Hoover's) ──
   var menu = menuLoad();
   var menuResults = [];
   Object.keys(menu.grill || {}).forEach(function(sec) {
     (menu.grill[sec] || []).forEach(function(item) {
       if ((item.name||'').toLowerCase().indexOf(term) >= 0 || (item.desc||'').toLowerCase().indexOf(term) >= 0) {
-        menuResults.push({ name: item.name, desc: item.desc, section: MENU_SECTION_LABELS[sec] || sec });
+        menuResults.push({ name: item.name, desc: item.desc, venue: 'Grill', section: MENU_SECTION_LABELS[sec] || sec });
       }
     });
   });
-  menuResults = menuResults.slice(0, 5);
+  Object.keys(menu.hoovers || {}).forEach(function(sec) {
+    (menu.hoovers[sec] || []).forEach(function(item) {
+      if ((item.name||'').toLowerCase().indexOf(term) >= 0 || (item.desc||'').toLowerCase().indexOf(term) >= 0) {
+        menuResults.push({ name: item.name, desc: item.desc, venue: "Hoover's", section: HOOVERS_SECTION_LABELS[sec] || sec });
+      }
+    });
+  });
+  menuResults = menuResults.slice(0, 6);
   if (menuResults.length) {
     html += '<div class="sr-section">Menu</div>';
     html += menuResults.map(function(item) {
       return '<div class="sr-item" onclick="goTab(\'member\',\'dining\');closeSearch();">' +
         '<div class="sr-icon">🍽</div>' +
         '<div><div style="font-size:.84rem;font-weight:600;color:var(--dark);">' + item.name + '</div>' +
-        '<div style="font-size:.72rem;color:var(--muted);">' + item.section + (item.desc ? ' · ' + item.desc.slice(0,40) : '') + '</div></div>' +
+        '<div style="font-size:.72rem;color:var(--muted);">' + item.venue + ' · ' + item.section + (item.desc ? ' — ' + item.desc.slice(0,35) : '') + '</div></div>' +
         '</div>';
     }).join('');
   }
@@ -7219,44 +7519,99 @@ document.addEventListener('keydown', function(e) {
 <div id="welcome-overlay">
   <div class="welcome-sheet">
     <div class="welcome-logo">W</div>
-    <div class="welcome-title">Welcome to WHCC</div>
-    <div class="welcome-sub">Your club, right in your pocket. Here's what you can do:</div>
-    <div class="wf-item">
-      <div class="wf-icon">⛳</div>
-      <div class="wf-text">
-        <div class="wf-title">Course Conditions</div>
-        <div class="wf-desc">Live conditions, weather, and cart rules updated daily by staff.</div>
-      </div>
-    </div>
+    <div class="welcome-title">Welcome to WHCC Mobile</div>
+    <div class="welcome-sub">Your Westwood Hills Country Club app</div>
     <div class="wf-item">
       <div class="wf-icon">📅</div>
       <div class="wf-text">
-        <div class="wf-title">Events & Registration</div>
+        <div class="wf-title">Events &amp; Registration</div>
         <div class="wf-desc">Browse upcoming tournaments and events — register right from the app.</div>
       </div>
     </div>
     <div class="wf-item">
       <div class="wf-icon">🍽</div>
       <div class="wf-text">
-        <div class="wf-title">Dining Reservations</div>
-        <div class="wf-desc">Reserve a table at the Westwood Grille or Hoover's in seconds.</div>
+        <div class="wf-title">Dining — Grill &amp; Hoover's</div>
+        <div class="wf-desc">Reserve a table at the Westwood Grill or Hoover's. Call us at (573) 785-5253.</div>
       </div>
     </div>
     <div class="wf-item">
-      <div class="wf-icon">🤝</div>
+      <div class="wf-icon">⛳</div>
       <div class="wf-text">
-        <div class="wf-title">Find a Game</div>
-        <div class="wf-desc">Post that you're looking for a round and connect with other members.</div>
+        <div class="wf-title">Course Conditions</div>
+        <div class="wf-desc">Live conditions, weather, cart rules, and range status updated daily by staff.</div>
       </div>
     </div>
     <div class="wf-item">
-      <div class="wf-icon">🔔</div>
+      <div class="wf-icon">🏌️</div>
       <div class="wf-text">
-        <div class="wf-title">Notifications</div>
-        <div class="wf-desc">Turn on email alerts for conditions, events, and dining specials in Account.</div>
+        <div class="wf-title">Score Tracking</div>
+        <div class="wf-desc">Log rounds, track your handicap, and follow live tournament scoring.</div>
       </div>
     </div>
-    <button onclick="dismissWelcome()" style="width:100%;padding:14px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius-sm);font-size:.9rem;font-weight:700;cursor:pointer;margin-top:8px;letter-spacing:.02em;">Get Started</button>
+    <div class="wf-item">
+      <div class="wf-icon">🔑</div>
+      <div class="wf-text">
+        <div class="wf-title">Staff Portal</div>
+        <div class="wf-desc">Role-based access for staff: manage check-ins, dining, events, conditions, and more.</div>
+      </div>
+    </div>
+    <button onclick="dismissWelcome()" style="width:100%;padding:14px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius-sm);font-size:.9rem;font-weight:700;cursor:pointer;margin-top:8px;letter-spacing:.02em;">Get Started →</button>
+  </div>
+</div>
+
+<!-- Log Round Modal -->
+<div id="modal-log-round" onclick="if(event.target===this)closeLogRound()" style="display:none;position:fixed;inset:0;z-index:450;background:rgba(0,0,0,.55);align-items:flex-end;">
+  <div style="background:var(--white);border-radius:var(--radius) var(--radius) 0 0;padding:24px 20px calc(24px + var(--safe-b));width:100%;box-sizing:border-box;max-height:92vh;overflow-y:auto;">
+    <div style="width:36px;height:4px;background:rgba(0,0,0,.18);border-radius:2px;margin:0 auto 18px;"></div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;color:var(--dark);margin-bottom:18px;">Log a Round</div>
+
+    <div class="modal-field">
+      <label class="modal-label">Date</label>
+      <input class="modal-input" id="lr-date" type="date">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Holes Played</label>
+      <select class="modal-input" id="lr-holes">
+        <option value="18">18 holes</option>
+        <option value="9">9 holes</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Tee Box</label>
+      <select class="modal-input" id="lr-tee">
+        <option value="Black">Black</option>
+        <option value="Blue">Blue</option>
+        <option value="White" selected>White</option>
+        <option value="Red">Red</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Gross Score *</label>
+      <input class="modal-input" id="lr-gross" type="number" min="27" max="180" placeholder="e.g. 88" inputmode="numeric">
+      <div id="lr-gross-err" style="color:var(--danger);font-size:.75rem;margin-top:4px;min-height:16px;"></div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button onclick="closeLogRound()" style="flex:1;padding:13px;background:var(--cream);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.9rem;font-weight:600;cursor:pointer;color:var(--dark);">Cancel</button>
+      <button onclick="submitLogRound()" style="flex:2;padding:13px;background:var(--forest);color:rgba(245,240,232,.95);border:none;border-radius:var(--radius-sm);font-size:.9rem;font-weight:700;cursor:pointer;">Save Round</button>
+    </div>
+  </div>
+</div>
+
+<!-- Event Detail Modal -->
+<div id="modal-event-detail" onclick="if(event.target===this)closeModal('modal-event-detail')" class="modal-overlay" style="z-index:450;">
+  <div class="modal-sheet" style="max-height:90vh;overflow-y:auto;">
+    <div class="modal-handle"></div>
+    <div id="ed-header" style="background:var(--forest);margin:-20px -20px 16px;padding:24px 20px 20px;border-radius:var(--radius) var(--radius) 0 0;">
+      <div id="ed-title" style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:rgba(245,240,232,.95);margin-bottom:6px;"></div>
+      <div id="ed-meta" style="font-size:.78rem;color:rgba(245,240,232,.65);"></div>
+    </div>
+    <div id="ed-body"></div>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button onclick="closeModal('modal-event-detail')" style="flex:1;padding:13px;background:var(--cream);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.9rem;font-weight:600;cursor:pointer;color:var(--dark);">Close</button>
+      <button id="ed-reg-btn" style="flex:2;padding:13px;background:var(--forest);color:rgba(245,240,232,.95);border:none;border-radius:var(--radius-sm);font-size:.9rem;font-weight:700;cursor:pointer;"></button>
+    </div>
   </div>
 </div>
 </body>

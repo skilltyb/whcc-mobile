@@ -1,4 +1,4 @@
-var CACHE_NAME = 'whcc-mobile-v11';
+var CACHE_NAME = 'whcc-mobile-v12';
 var ASSETS = [
   './',
   './index.html',
@@ -24,6 +24,11 @@ self.addEventListener('activate', function(e) {
     })
   );
   self.clients.claim();
+});
+
+// Allow the page to trigger SW activation (used by "Update Now" banner)
+self.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 // Network-first: always try the network, fall back to cache only when offline

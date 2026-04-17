@@ -257,7 +257,7 @@
     .se-tbl .se-total-row td { background:var(--sand); font-weight:700; }
     .se-hole-num { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:.92rem; color:var(--forest); }
     .se-stepper { display:flex; align-items:center; justify-content:center; gap:6px; }
-    .se-btn { background:none; border:1px solid var(--border); border-radius:4px; width:24px; height:24px; font-size:1rem; cursor:pointer; color:var(--dark); display:flex; align-items:center; justify-content:center; line-height:1; padding:0; }
+    .se-btn { background:none; border:1px solid var(--border); border-radius:4px; width:40px; height:40px; font-size:1rem; cursor:pointer; color:var(--dark); display:flex; align-items:center; justify-content:center; line-height:1; padding:0; }
     .se-val { min-width:24px; text-align:center; font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:700; }
     .se-eagle { color:#b8860b; } .se-birdie { color:#2a8a3e; } .se-par-score { color:var(--dark); } .se-bogey { color:#c36a00; } .se-dbl { color:#c33232; } .se-trip { color:#8b0000; }
     .se-totals-bar { display:flex; justify-content:space-around; background:var(--forest); color:var(--white); border-radius:var(--radius-sm); padding:10px 6px; margin-top:8px; text-align:center; }
@@ -499,7 +499,7 @@
     .search-input { flex:1; padding:10px 14px; border:1.5px solid var(--border); border-radius:24px; font-size:.9rem; outline:none; background:var(--cream); color:var(--dark); }
     .search-input:focus { border-color:var(--forest); }
     .search-cancel { background:none; border:none; font-size:.84rem; font-weight:600; color:var(--forest); cursor:pointer; }
-    .search-results { flex:1; overflow-y:auto; background:var(--cream); }
+    .search-results { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; background:var(--cream); }
     .sr-section { padding:10px 16px 4px; font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
     .sr-item  { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; background:var(--white); }
     .sr-item:active { background:var(--cream); }
@@ -536,7 +536,7 @@
     /* ── WELCOME CARD ── */
     #welcome-overlay{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.55);z-index:400;display:none;align-items:flex-end;}
     #welcome-overlay.open{display:flex;}
-    .welcome-sheet{background:var(--white);border-radius:var(--radius) var(--radius) 0 0;padding:26px 20px calc(26px + var(--safe-b));width:100%;box-sizing:border-box;max-height:88vh;overflow-y:auto;}
+    .welcome-sheet{background:var(--white);border-radius:var(--radius) var(--radius) 0 0;padding:26px 20px calc(26px + var(--safe-b));width:100%;box-sizing:border-box;max-height:88vh;max-height:88svh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
     .welcome-logo{width:54px;height:54px;background:var(--forest);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--gold);margin:0 auto 16px;}
     .welcome-title{font-family:'Cormorant Garamond',serif;font-size:1.65rem;font-weight:700;color:var(--forest);text-align:center;margin-bottom:4px;}
     .welcome-sub{font-size:.82rem;color:var(--muted);text-align:center;margin-bottom:22px;}
@@ -2104,7 +2104,7 @@
 
 <!-- Add event (staff) -->
 <div class="modal-overlay" id="modal-event-teesheet" onclick="if(event.target===this)closeModal('modal-event-teesheet')">
-  <div class="modal-sheet" style="max-height:80vh;overflow-y:auto;">
+  <div class="modal-sheet" style="max-height:80vh;max-height:80svh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="modal-handle"></div>
     <div class="modal-title" id="ets-title">Event Tee Sheet</div>
     <div id="ets-list" style="margin-bottom:12px;"></div>
@@ -2126,7 +2126,7 @@
 </div>
 
 <div class="modal-overlay" id="modal-event-regs" onclick="if(event.target===this)closeModal('modal-event-regs')">
-  <div class="modal-sheet" style="max-height:82vh;overflow-y:auto;">
+  <div class="modal-sheet" style="max-height:82vh;max-height:82svh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="modal-handle"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
       <div class="modal-title" id="er-title" style="margin:0;">Registrations</div>
@@ -2193,7 +2193,7 @@
 
 <!-- Event Registration Sheet -->
 <div class="modal-overlay" id="modal-app-reg" onclick="if(event.target===this)closeModal('modal-app-reg')">
-  <div class="modal-sheet" style="max-height:90vh;overflow-y:auto;">
+  <div class="modal-sheet" style="max-height:90vh;max-height:90svh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="modal-handle"></div>
     <div id="app-reg-form-wrap">
       <div class="modal-title" id="app-reg-title">Register</div>
@@ -6280,11 +6280,13 @@ function loadWeather() {
 // MODALS
 // ════════════════════════════════════
 var _prevFocus = null;
+var _modalDepth = 0;
 function openModal(id) {
   _prevFocus = document.activeElement;
   var el = document.getElementById(id);
   el.classList.add('open');
-  // Move focus into the modal for screen readers
+  _modalDepth++;
+  if (_modalDepth === 1) document.body.style.overflow = 'hidden';
   setTimeout(function() {
     var first = el.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
     if (first) first.focus();
@@ -6292,6 +6294,8 @@ function openModal(id) {
 }
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
+  _modalDepth = Math.max(0, _modalDepth - 1);
+  if (_modalDepth === 0) document.body.style.overflow = '';
   if (_prevFocus) { _prevFocus.focus(); _prevFocus = null; }
 }
 
@@ -7694,7 +7698,7 @@ document.addEventListener('keydown', function(e) {
 
 <!-- Log Round Modal -->
 <div id="modal-log-round" class="modal-overlay" style="z-index:450;" role="dialog" aria-modal="true" aria-labelledby="lr-title">
-  <div class="modal-sheet" style="max-height:92vh;overflow-y:auto;">
+  <div class="modal-sheet" style="max-height:92vh;max-height:92svh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="modal-handle"></div>
     <div class="modal-title" id="lr-title">Log a Round</div>
 
@@ -7733,7 +7737,7 @@ document.addEventListener('keydown', function(e) {
 
 <!-- Event Detail Modal -->
 <div id="modal-event-detail" onclick="if(event.target===this)closeModal('modal-event-detail')" class="modal-overlay" style="z-index:450;">
-  <div class="modal-sheet" style="max-height:90vh;overflow-y:auto;">
+  <div class="modal-sheet" style="max-height:90vh;max-height:90svh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="modal-handle"></div>
     <div id="ed-header" style="background:var(--forest);margin:-20px -20px 16px;padding:24px 20px 20px;border-radius:var(--radius) var(--radius) 0 0;">
       <div id="ed-title" style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:rgba(245,240,232,.95);margin-bottom:6px;"></div>

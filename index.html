@@ -11,7 +11,9 @@
   <title>Westwood Hills CC</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="color-scheme" content="light">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,7 +38,10 @@
       --hdr-h: 58px;
       --safe-b: env(safe-area-inset-bottom, 0px);
     }
-    html, body { height: 100%; width: 100%; font-family: 'Inter', sans-serif; background: var(--forest); color: var(--dark); overflow: hidden; }
+    html, body { height: 100%; width: 100%; font-family: 'Inter', sans-serif; background: var(--forest); color: var(--dark); overflow: hidden; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; color-scheme: light; }
+    /* Keyboard focus ring for non-input interactive elements */
+    :focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; border-radius: 2px; }
+    input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; }
 
     /* ── SCREENS ── */
     .screen { position: fixed; top: 0; right: 0; bottom: 0; left: 0; display: flex; flex-direction: column; transition: opacity .22s, transform .22s; }
@@ -488,7 +493,7 @@
     .k86-restore { background:rgba(255,255,255,.2); border:none; border-radius:20px; color:#fff; font-size:.75rem; font-weight:600; padding:6px 14px; cursor:pointer; flex-shrink:0; }
 
     /* ── GLOBAL SEARCH ── */
-    #search-overlay { position:fixed; inset:0; z-index:350; background:rgba(0,0,0,.5); display:none; }
+    #search-overlay { position:fixed; top:0; right:0; bottom:0; left:0; z-index:350; background:rgba(0,0,0,.5); display:none; }
     #search-overlay.open { display:flex; flex-direction:column; }
     .search-bar  { background:var(--white); padding:12px 16px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
     .search-input { flex:1; padding:10px 14px; border:1.5px solid var(--border); border-radius:24px; font-size:.9rem; outline:none; background:var(--cream); color:var(--dark); }
@@ -523,13 +528,13 @@
     .notif-sub{font-size:.72rem;color:var(--muted);margin-top:2px;}
     .notif-toggle{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;}
     .notif-toggle input{opacity:0;width:0;height:0;position:absolute;}
-    .notif-slider{position:absolute;inset:0;background:#ccc;border-radius:24px;cursor:pointer;transition:.3s;}
+    .notif-slider{position:absolute;top:0;right:0;bottom:0;left:0;background:#ccc;border-radius:24px;cursor:pointer;transition:.3s;}
     .notif-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;}
     .notif-toggle input:checked+.notif-slider{background:var(--forest);}
     .notif-toggle input:checked+.notif-slider:before{transform:translateX(20px);}
 
     /* ── WELCOME CARD ── */
-    #welcome-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;display:none;align-items:flex-end;}
+    #welcome-overlay{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.55);z-index:400;display:none;align-items:flex-end;}
     #welcome-overlay.open{display:flex;}
     .welcome-sheet{background:var(--white);border-radius:var(--radius) var(--radius) 0 0;padding:26px 20px calc(26px + var(--safe-b));width:100%;box-sizing:border-box;max-height:88vh;overflow-y:auto;}
     .welcome-logo{width:54px;height:54px;background:var(--forest);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--gold);margin:0 auto 16px;}
@@ -620,7 +625,7 @@
     <label class="login-label" for="li-email">Email Address</label>
     <input class="login-input" id="li-email" type="email" placeholder="you@example.com" autocomplete="email">
     <label class="login-label" for="li-pin">PIN</label>
-    <input class="login-input" id="li-pin" type="password" placeholder="4-digit PIN" maxlength="4" pattern="[0-9]*" inputmode="numeric">
+    <input class="login-input" id="li-pin" type="password" placeholder="4-digit PIN" maxlength="4" pattern="[0-9]*" inputmode="numeric" autocomplete="current-password">
     <div class="login-error" id="li-error"></div>
     <button class="login-btn" onclick="doLogin()">Sign In</button>
     <button class="login-btn" id="bio-login-btn" onclick="doBiometricLogin()" style="display:none;background:var(--gold);margin-top:-8px;">🔐 Use Face / Touch ID</button>
@@ -658,9 +663,9 @@
         <div style="font-size:.78rem;color:var(--muted);">Choose a 4-digit PIN for your account</div>
       </div>
       <label class="login-label" for="su-pin">New PIN</label>
-      <input class="login-input" id="su-pin" type="password" placeholder="4 digits" maxlength="4" pattern="[0-9]*" inputmode="numeric">
+      <input class="login-input" id="su-pin" type="password" placeholder="4 digits" maxlength="4" pattern="[0-9]*" inputmode="numeric" autocomplete="new-password">
       <label class="login-label" for="su-pin2">Confirm PIN</label>
-      <input class="login-input" id="su-pin2" type="password" placeholder="Re-enter PIN" maxlength="4" pattern="[0-9]*" inputmode="numeric">
+      <input class="login-input" id="su-pin2" type="password" placeholder="Re-enter PIN" maxlength="4" pattern="[0-9]*" inputmode="numeric" autocomplete="new-password">
       <div class="login-error" id="su-error2"></div>
       <button class="login-btn" id="su-create-btn" onclick="completeSetup()">Create PIN &amp; Sign In</button>
       <p style="text-align:center;font-size:.75rem;color:var(--muted);cursor:pointer;" onclick="setupBack()">← Back</p>
@@ -721,8 +726,8 @@
       <!-- Staff notice banner — shown when staff pushes a notice -->
       <div id="m-notice-banner" style="display:none;background:#b45309;color:#fff;padding:11px 16px;font-size:.82rem;font-weight:600;border-radius:6px;margin-bottom:10px;line-height:1.4;"></div>
       <div class="greeting-banner" id="m-hero-banner" style="position:relative;overflow:hidden;min-height:110px;">
-        <div id="m-hero-bg" style="position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1s ease;z-index:0;"></div>
-        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(13,26,17,.75) 0%,rgba(26,74,38,.6) 100%);z-index:1;"></div>
+        <div id="m-hero-bg" style="position:absolute;top:0;right:0;bottom:0;left:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1s ease;z-index:0;"></div>
+        <div style="position:absolute;top:0;right:0;bottom:0;left:0;background:linear-gradient(135deg,rgba(13,26,17,.75) 0%,rgba(26,74,38,.6) 100%);z-index:1;"></div>
         <div style="position:relative;z-index:2;">
           <div class="greeting-name" id="m-greet-name">Welcome back!</div>
           <div class="greeting-detail" id="m-greet-detail">Westwood Hills Country Club</div>
@@ -778,7 +783,7 @@
           <!-- SYNC STATUS -->
           <div class="sync-row">
             <span class="sync-ts" id="sync-ts-label">Loading…</span>
-            <span class="sync-err" id="sync-err-label">⚠ Sync failed</span>
+            <span class="sync-err" id="sync-err-label">Sync failed</span>
             <button class="sync-retry" id="sync-retry-btn" onclick="manualSync()">↻ Retry</button>
           </div>
           <!-- MY UPCOMING -->
@@ -2249,6 +2254,15 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// ── Global localStorage safety patch ──────────────────────────────────────────
+// Makes setItem silently fail instead of throwing in private browsing / quota exceeded.
+(function() {
+  try {
+    var _set = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(k, v) { try { _set.call(this, k, v); } catch(e) {} };
+  } catch(e) {}
+})();
+
 // ════════════════════════════════════
 // DATA & STATE
 // ════════════════════════════════════
@@ -2949,8 +2963,6 @@ function syncRegistrationsFromSheets() {
 }
 
 function logRound() {
-  var modal = document.getElementById('modal-log-round');
-  if (!modal) return;
   // Pre-fill today's date and last-used tee
   var today = new Date();
   var yyyy = today.getFullYear(), mm = String(today.getMonth()+1).padStart(2,'0'), dd = String(today.getDate()).padStart(2,'0');
@@ -2959,12 +2971,10 @@ function logRound() {
   document.getElementById('lr-holes').value = '18';
   document.getElementById('lr-gross').value = '';
   document.getElementById('lr-gross-err').textContent = '';
-  modal.style.display = 'flex';
-  setTimeout(function(){ var g = document.getElementById('lr-gross'); if(g) g.focus(); }, 120);
+  openModal('modal-log-round');
 }
 function closeLogRound() {
-  var m = document.getElementById('modal-log-round');
-  if (m) m.style.display = 'none';
+  closeModal('modal-log-round');
 }
 function submitLogRound() {
   var grossVal = document.getElementById('lr-gross').value.trim();
@@ -6350,7 +6360,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js?v=13', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=14', { updateViaCache: 'none' })
       .then(function(reg) {
         reg.update(); // immediately check for a newer worker
         // Show update banner when a new SW is waiting
@@ -7683,10 +7693,10 @@ document.addEventListener('keydown', function(e) {
 </div>
 
 <!-- Log Round Modal -->
-<div id="modal-log-round" onclick="if(event.target===this)closeLogRound()" style="display:none;position:fixed;inset:0;z-index:450;background:rgba(0,0,0,.55);align-items:flex-end;">
-  <div style="background:var(--white);border-radius:var(--radius) var(--radius) 0 0;padding:24px 20px calc(24px + var(--safe-b));width:100%;box-sizing:border-box;max-height:92vh;overflow-y:auto;">
-    <div style="width:36px;height:4px;background:rgba(0,0,0,.18);border-radius:2px;margin:0 auto 18px;"></div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;color:var(--dark);margin-bottom:18px;">Log a Round</div>
+<div id="modal-log-round" class="modal-overlay" style="z-index:450;" role="dialog" aria-modal="true" aria-labelledby="lr-title">
+  <div class="modal-sheet" style="max-height:92vh;overflow-y:auto;">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="lr-title">Log a Round</div>
 
     <div class="modal-field">
       <label class="modal-label">Date</label>

@@ -2281,10 +2281,6 @@ var MEMBER_DIRECTORY = [
 ];
 
 var DEFAULT_EVENTS = [
-  {title:"St. Patty's Shootout", date:'2026-03-14', month:'MAR', day:'14', time:'10:30 AM – 2:30 PM', desc:'Fun format to kick off the season. All members welcome.', fee:'Member Event', capacity:60, registeredCount:22, registered:false},
-  {title:"Ladies Opening Day", date:'2026-04-07', month:'APR', day:'7', time:'9:00 AM – 1:00 PM', desc:'Kick off the season with our ladies opening day event.', fee:'Member Event', capacity:40, registeredCount:18, registered:false},
-  {title:"Men's Golf Master Dinner", date:'2026-04-08', month:'APR', day:'8', time:'6:30 – 9:30 PM', desc:'Annual Masters watch party & dinner. Great food, great company.', fee:'$45/person', capacity:50, registeredCount:31, registered:false},
-  {title:"Poplar Bluff Mules Invitational", date:'2026-04-13', month:'APR', day:'13', time:'9:00 AM – 2:00 PM', desc:'Supporting Poplar Bluff athletics. Open to invited teams.', fee:'$80/team', capacity:72, registeredCount:48, registered:false},
   {title:"MGA Opening Day Draft", date:'2026-04-17', month:'APR', day:'17', time:'6:00 – 10:00 PM', desc:"Men's Golf Association season draft night. Sign up for your league team.", fee:'Member Event', capacity:64, registeredCount:40, registered:false},
   {title:"Men's Opening Day", date:'2026-04-18', month:'APR', day:'18', time:'9:30 AM – 2:00 PM', desc:'Registration deadline April 16 at 5:00 PM. All members welcome.', fee:'Member Event', capacity:72, registeredCount:55, registered:false},
   {title:"Ozark Invitational", date:'2026-04-25', month:'APR', day:'25', time:'2-Day · Apr 25–26', desc:"Westwood Hills' signature invitational event. 2-day tournament format.", fee:'$150/team', capacity:96, registeredCount:64, registered:false},
@@ -6364,7 +6360,7 @@ if ('serviceWorker' in navigator) {
     window.location.reload();
   });
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js?v=15', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=16', { updateViaCache: 'none' })
       .then(function(reg) {
         reg.update(); // immediately check for a newer worker
         // Show update banner when a new SW is waiting

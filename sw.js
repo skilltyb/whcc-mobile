@@ -1,4 +1,4 @@
-var CACHE_NAME = 'whcc-mobile-v18';
+var CACHE_NAME = 'whcc-mobile-v19';
 var ASSETS = [
   './',
   './index.html',

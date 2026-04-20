@@ -775,7 +775,7 @@
         <!-- RIGHT: status + upcoming + events -->
         <div class="home-col-right">
           <!-- POOL STATUS CHIP -->
-          <div id="m-pool-chip" onclick="goTab('member','club');clubSection('pool');" style="display:none;background:var(--white);border-radius:var(--radius);padding:11px 14px;box-shadow:var(--shadow);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+          <div id="m-pool-chip" onclick="goTab('member','club');clubSection('pool');" style="background:var(--white);border-radius:var(--radius);padding:11px 14px;box-shadow:var(--shadow);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
             <span class="pool-chip-status" style="font-size:.82rem;font-weight:700;"></span>
             <span class="pool-chip-note" style="font-size:.74rem;color:var(--muted);display:none;"></span>
             <span style="font-size:.72rem;color:var(--muted);margin-left:auto;">View →</span>
@@ -983,7 +983,7 @@
           <div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:var(--cream);letter-spacing:.06em;">Hoover's</div>
           <div style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">at Westwood Hills</div>
           <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
-            <div style="text-align:center;"><div style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.5);margin-bottom:2px;">Thu – Sat</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">5 PM – 9 PM</div></div>
+            <div style="text-align:center;"><div style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.5);margin-bottom:2px;">Thu – Sat</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">5:30 PM – 9 PM</div></div>
           </div>
           <div style="font-size:.68rem;color:rgba(245,240,232,.4);margin-top:8px;font-style:italic;">Members only · Open to public 3rd Saturday by reservation</div>
         </div>
@@ -1039,7 +1039,7 @@
         <div id="m-ls-date" style="font-size:.72rem;color:rgba(245,240,232,.55);margin-bottom:14px;"></div>
         <div id="m-ls-links" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
       </div>
-      <div id="m-ls-inactive" style="display:none;background:rgba(26,74,38,.07);border:1px solid rgba(26,74,38,.15);border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+      <div id="m-ls-inactive" style="background:rgba(26,74,38,.07);border:1px solid rgba(26,74,38,.15);border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
         <span style="font-size:1.3rem;">🏆</span>
         <div>
           <div style="font-size:.8rem;font-weight:600;color:var(--forest);">No tournament in progress</div>
@@ -2986,7 +2986,7 @@ function submitLogRound() {
   }
   errEl.textContent = '';
   // Calculate differential and vs-par
-  var fullPar  = HOLE_PARS.reduce(function(a,b){return a+b;},0); // 72
+  var fullPar  = HOLE_PARS.reduce(function(a,b){return a+b;},0); // 71
   var par      = holes === '9' ? Math.round(fullPar / 2) : fullPar;
   var slopeMap = { Black:122, Blue:119, White:117, Red:116 };
   var ratingMap= { Black:72.1, Blue:71.3, White:70.5, Red:69.8 };
@@ -5727,7 +5727,7 @@ function refreshGlance() {
   var dow  = now.getDay(); // 0=Sun
   var mon  = new Date(now); mon.setDate(now.getDate() - ((dow + 6) % 7)); mon.setHours(0,0,0,0);
   var sun  = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
-  var events = JSON.parse(localStorage.getItem('wh_events') || 'null') || DEFAULT_EVENTS;
+  var events = appEvents || DEFAULT_EVENTS;
   var evCount = events.filter(function(e){
     var d = new Date(e.date + 'T00:00:00');
     return d >= mon && d <= sun;

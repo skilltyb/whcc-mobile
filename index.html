@@ -6482,17 +6482,17 @@ function msRenderGroups() {
   var el = document.getElementById('mts-groups-list');
   if (!el) return;
   if (!msTeeGroups.length) {
-    el.innerHTML = '<div style="text-align:center;color:rgba(245,240,232,.3);font-size:.8rem;padding:20px 0;">No groups yet — add groups or load from sheet</div>';
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:.8rem;padding:20px 0;">No groups yet — tap <strong>+ Add Group</strong> to begin</div>';
     return;
   }
   el.innerHTML = msTeeGroups.map(function(g) {
-    return '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:rgba(255,255,255,.03);">' +
-        '<div style="font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:.06em;">GROUP ' + g.id + '</div>' +
-        '<button onclick="msRemoveGroup(' + g.id + ')" style="background:none;border:none;color:rgba(245,240,232,.3);font-size:.9rem;cursor:pointer;padding:0 4px;line-height:1;">✕</button>' +
+    return '<div style="background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:rgba(26,43,31,.06);">' +
+        '<div style="font-size:.68rem;font-weight:700;color:var(--forest);letter-spacing:.06em;">GROUP ' + g.id + '</div>' +
+        '<button onclick="msRemoveGroup(' + g.id + ')" style="background:none;border:none;color:var(--muted);font-size:.9rem;cursor:pointer;padding:0 4px;line-height:1;">✕</button>' +
       '</div>' +
       '<textarea id="mts-grp-' + g.id + '" placeholder="One player per line…" ' +
-        'style="width:100%;box-sizing:border-box;background:transparent;border:none;border-top:1px solid var(--border);padding:10px 12px;color:var(--cream);font-size:.82rem;resize:vertical;min-height:68px;outline:none;font-family:inherit;" ' +
+        'style="width:100%;box-sizing:border-box;background:transparent;border:none;border-top:1px solid var(--border);padding:10px 12px;color:var(--forest);font-size:.82rem;resize:vertical;min-height:68px;outline:none;font-family:inherit;" ' +
         'onblur="mtsGroupBlur(' + g.id + ')">' + (g.text || '') + '</textarea>' +
     '</div>';
   }).join('');
@@ -6584,12 +6584,12 @@ function msTsRenderOutput() {
     '</tr></thead><tbody>' +
     msTeeSheet.map(function(entry) {
       var players = entry.players.map(function(p) {
-        return '<div style="font-size:.82rem;padding:1px 0;color:var(--cream);">' + p.name + '</div>';
+        return '<div style="font-size:.82rem;padding:1px 0;color:var(--forest);">' + p.name + '</div>';
       }).join('');
       return '<tr>' +
-        '<td style="padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--gold);font-weight:600;font-size:.8rem;white-space:nowrap;">' + entry.teeTime + '</td>' +
-        '<td style="padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--muted);font-size:.8rem;white-space:nowrap;">' + (cfg.format === 'shotgun' ? 'H' : '#') + entry.hole + '</td>' +
-        '<td style="padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.05);">' + players + '</td>' +
+        '<td style="padding:7px 6px;border-bottom:1px solid var(--border);color:var(--gold);font-weight:600;font-size:.8rem;white-space:nowrap;">' + entry.teeTime + '</td>' +
+        '<td style="padding:7px 6px;border-bottom:1px solid var(--border);color:var(--muted);font-size:.8rem;white-space:nowrap;">' + (cfg.format === 'shotgun' ? 'H' : '#') + entry.hole + '</td>' +
+        '<td style="padding:7px 6px;border-bottom:1px solid var(--border);">' + players + '</td>' +
       '</tr>';
     }).join('') +
     '</tbody></table>';

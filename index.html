@@ -6491,9 +6491,10 @@ function msRenderGroups() {
         '<div style="font-size:.68rem;font-weight:700;color:var(--forest);letter-spacing:.06em;">GROUP ' + g.id + '</div>' +
         '<button onclick="msRemoveGroup(' + g.id + ')" style="background:none;border:none;color:var(--muted);font-size:.9rem;cursor:pointer;padding:0 4px;line-height:1;">✕</button>' +
       '</div>' +
-      '<textarea id="mts-grp-' + g.id + '" placeholder="One player per line…" ' +
-        'style="width:100%;box-sizing:border-box;background:transparent;border:none;border-top:1px solid var(--border);padding:10px 12px;color:var(--forest);font-size:.82rem;resize:vertical;min-height:68px;outline:none;font-family:inherit;" ' +
+      '<textarea id="mts-grp-' + g.id + '" placeholder="Tom Bradley, 12.4&#10;Mike Johnson, 8.1&#10;Sarah Wilkins&#10;Jeff Hart, 22.0" ' +
+        'style="width:100%;box-sizing:border-box;background:transparent;border:none;border-top:1px solid var(--border);padding:10px 12px;color:var(--forest);font-size:.82rem;resize:vertical;min-height:90px;outline:none;font-family:inherit;" ' +
         'onblur="mtsGroupBlur(' + g.id + ')">' + (g.text || '') + '</textarea>' +
+      '<div style="padding:4px 12px 7px;font-size:.6rem;color:var(--muted);">One player per line &nbsp;·&nbsp; Add a comma + handicap index (optional): <em>Name, HCP</em></div>' +
     '</div>';
   }).join('');
 }
@@ -6521,8 +6522,18 @@ function msTsBuild() {
   msTeeConfig   = { startTime: startStr, intervalMin: interval, startHole: startHole, format: format, sort: sort };
 
   var groups = msTeeGroups.map(function(g) {
-    var names = (g.text || '').split('\n').map(function(n){ return n.trim(); }).filter(Boolean);
-    return { id: g.id, players: names.map(function(n){ return { name: n }; }) };
+    var lines = (g.text || '').split('\n').map(function(n){ return n.trim(); }).filter(Boolean);
+    var players = lines.map(function(line) {
+      var comma = line.lastIndexOf(',');
+      if (comma !== -1) {
+        var name = line.slice(0, comma).trim();
+        var hcpStr = line.slice(comma + 1).trim();
+        var hcp = parseFloat(hcpStr);
+        if (name && !isNaN(hcp) && hcp >= 0 && hcp <= 54) return { name: name, hcap: hcp };
+      }
+      return { name: line };
+    });
+    return { id: g.id, players: players };
   }).filter(function(g){ return g.players.length > 0; });
 
   if (!groups.length) {
@@ -6581,15 +6592,22 @@ function msTsRenderOutput() {
       '<th style="text-align:left;padding:5px 6px;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);">' + (cfg.format === 'shotgun' ? 'Start' : 'Time') + '</th>' +
       '<th style="text-align:left;padding:5px 6px;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);">Hole</th>' +
       '<th style="text-align:left;padding:5px 6px;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);">Players</th>' +
+      '<th style="text-align:center;padding:5px 6px;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);">HCP</th>' +
     '</tr></thead><tbody>' +
     msTeeSheet.map(function(entry) {
+      var hasAnyHcp = entry.players.some(function(p){ return p.hcap !== undefined; });
+      var combHcp = hasAnyHcp ? Math.round(entry.players.reduce(function(s,p){ return s + (p.hcap || 0); }, 0) * 10) / 10 : '';
       var players = entry.players.map(function(p) {
-        return '<div style="font-size:.82rem;padding:1px 0;color:var(--forest);">' + p.name + '</div>';
+        var hcpBadge = p.hcap !== undefined
+          ? ' <span style="font-size:.62rem;background:rgba(26,43,31,.1);padding:1px 5px;border-radius:8px;color:var(--forest);margin-left:4px;">' + p.hcap + '</span>'
+          : '';
+        return '<div style="font-size:.82rem;padding:1px 0;color:var(--forest);">' + p.name + hcpBadge + '</div>';
       }).join('');
       return '<tr>' +
         '<td style="padding:7px 6px;border-bottom:1px solid var(--border);color:var(--gold);font-weight:600;font-size:.8rem;white-space:nowrap;">' + entry.teeTime + '</td>' +
         '<td style="padding:7px 6px;border-bottom:1px solid var(--border);color:var(--muted);font-size:.8rem;white-space:nowrap;">' + (cfg.format === 'shotgun' ? 'H' : '#') + entry.hole + '</td>' +
         '<td style="padding:7px 6px;border-bottom:1px solid var(--border);">' + players + '</td>' +
+        '<td style="padding:7px 6px;border-bottom:1px solid var(--border);text-align:center;font-size:.78rem;color:var(--forest);font-weight:600;">' + combHcp + '</td>' +
       '</tr>';
     }).join('') +
     '</tbody></table>';
@@ -6656,7 +6674,9 @@ function msTsLoad() {
     msTeeGroups = msTeeSheet.map(function(g, i) {
       var players = g.players ? g.players : (g.team && g.team.players ? g.team.players : []);
       var text = players.map(function(p) {
-        return p.name || (p.player && p.player.name ? p.player.name : '');
+        var name = p.name || (p.player && p.player.name ? p.player.name : '');
+        var hcap = p.hcap !== undefined ? p.hcap : (p.player && p.player.hcap !== undefined ? p.player.hcap : undefined);
+        return (name && hcap !== undefined) ? name + ', ' + hcap : name;
       }).filter(Boolean).join('\n');
       return { id: g.id || (i + 1), text: text };
     });

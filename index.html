@@ -1953,6 +1953,11 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title">Add Reservation</div>
+    <label class="login-label">Venue</label>
+    <select class="modal-input" id="dr-venue">
+      <option value="grille">Westwood Grill</option>
+      <option value="hoovers">Hoover's</option>
+    </select>
     <label class="login-label">Reservation Time</label>
     <input class="modal-input" id="dr-time" type="time">
     <label class="login-label">Party Name</label>
@@ -5925,6 +5930,7 @@ function renderDiningLog() {
   if (cnt) cnt.textContent = list.length + ' reservations  ·  ' + totalGuests + ' total guests';
 }
 function addReservation() {
+  var venue  = document.getElementById('dr-venue').value;
   var time24 = document.getElementById('dr-time').value;
   var name   = document.getElementById('dr-name').value.trim();
   var party  = parseInt(document.getElementById('dr-party').value);
@@ -5934,16 +5940,19 @@ function addReservation() {
   var ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
   var todayIso = new Date().toISOString().slice(0, 10);
   var list = diningLoad();
-  var newRes = {id:Date.now().toString(), isoDate:todayIso, date:new Date().toDateString(), time24:time24, timeDisplay:h+':'+m+' '+ampm, name:name, party:party, note:note, seated:false, source:'staff'};
+  var newRes = {id:Date.now().toString(), isoDate:todayIso, date:new Date().toDateString(), time24:time24, timeDisplay:h+':'+m+' '+ampm, name:name, party:party, note:note, venue:venue, seated:false, source:'staff'};
   list.push(newRes);
   diningSave(list);
   // Also write to the canonical Dining Reservations sheet
   fetch(WHCC_SCRIPT_URL, {
     method: 'POST', headers: {'Content-Type':'text/plain'},
-    body: JSON.stringify({ action:'dining-reservation', id:newRes.id, date:newRes.isoDate, time24:newRes.time24, timeDisplay:newRes.timeDisplay, name:newRes.name, party:newRes.party, note:newRes.note, source:'staff' })
+    body: JSON.stringify({ action:'dining-reservation', id:newRes.id, date:newRes.isoDate, time24:newRes.time24, timeDisplay:newRes.timeDisplay, name:newRes.name, party:newRes.party, note:newRes.note, venue:venue, source:'staff' })
   }).catch(function(){});
   closeModal('modal-add-res');
+  document.getElementById('dr-venue').value = 'grille';
+  document.getElementById('dr-time').value = '';
   document.getElementById('dr-name').value = '';
+  document.getElementById('dr-party').value = '2';
   document.getElementById('dr-note').value = '';
   renderDiningLog();
   showToast('✅ Reservation added');
@@ -5965,11 +5974,6 @@ function clearSeated() {
 // ════════════════════════════════════
 // TEE SHEET
 // ════════════════════════════════════
-function teeSheetLoad() {
-  var today = new Date().toDateString();
-  var raw = JSON.parse(localStorage.getItem('wh_tee_sheet') || '[]');
-  return raw.filter(function(t){ return t.date === today; });
-}
 function teeSheetSave(list) {
   localStorage.setItem('wh_on_course', JSON.stringify(list));
   WHCC_SYNC.opsPush('on_course', list);

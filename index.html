@@ -2844,6 +2844,7 @@ function submitPartnerPost() {
   var note  = document.getElementById('pp-note').value.trim();
   var time  = sel === 'specific' ? fmt12(document.getElementById('pp-specific-time').value) : sel;
   if (!date || !time || !holes) { showToast('Please fill in date, time, and holes'); return; }
+  if (!currentUser || !currentUser.name) { showToast('Session expired — please sign in again.'); return; }
   var posts = JSON.parse(localStorage.getItem('wh_partners') || '[]');
   var parts = currentUser.name.split(' ');
   var displayName = parts[0] + (parts[1] ? ' ' + parts[1][0] + '.' : '');
@@ -4641,7 +4642,7 @@ function openDiningRes(venue) {
   setModalVenue(venue || 'grille');
   var today = new Date();
   document.getElementById('md-date').value  = today.toISOString().split('T')[0];
-  document.getElementById('md-party').value = '';
+  document.getElementById('md-party').value = '2';
   document.getElementById('md-notes').value = '';
   openModal('modal-dining');
 }

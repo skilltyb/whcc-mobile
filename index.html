@@ -2614,7 +2614,9 @@ function doLogout() {
   if (mBadge) mBadge.style.display = 'none';
   if (sBadge) sBadge.style.display = 'none';
   currentUser = null;
-  if (window._regSyncInterval) { clearInterval(window._regSyncInterval); window._regSyncInterval = null; }
+  if (window._regSyncInterval)  { clearInterval(window._regSyncInterval);  window._regSyncInterval  = null; }
+  if (window._condSyncInterval) { clearInterval(window._condSyncInterval); window._condSyncInterval = null; }
+  if (window._opsRefreshInterval) { clearInterval(window._opsRefreshInterval); window._opsRefreshInterval = null; }
   localStorage.removeItem('wh_current_user');
   showScreen('screen-login');
   document.getElementById('li-email').value = '';
@@ -2914,6 +2916,10 @@ function _initMemberUI() {
   syncRegistrationsFromSheets();
   if (window._regSyncInterval) clearInterval(window._regSyncInterval);
   window._regSyncInterval = setInterval(syncRegistrationsFromSheets, 3 * 60 * 1000);
+
+  // Poll conditions every 5 minutes so sheet edits appear without reload
+  if (window._condSyncInterval) clearInterval(window._condSyncInterval);
+  window._condSyncInterval = setInterval(loadConditions, 5 * 60 * 1000);
 
   // Sync status + notification prefs
   updateSyncLabel();
@@ -3622,7 +3628,11 @@ var WHCC_SYNC = {
           partners:       'wh_partners',
           pool_status:    'wh_pool',
           hole_status:    'wh_hole_status',
-          on_course:      'wh_on_course'
+          on_course:      'wh_on_course',
+          handoff_notes:  'wh_handoff_notes',
+          waitlist:       'wh_waitlist',
+          guest_notes:    'wh_guest_notes',
+          pairings:       'wh_pairings'
         };
         Object.keys(keyMap).forEach(function(serverKey) {
           if (all[serverKey] !== undefined) {
@@ -6073,6 +6083,17 @@ function _initStaffUI() {
   var drInput = document.getElementById('dr-time'); if (drInput) drInput.value = tStr;
   refreshDiningFromServer();
   goTab('staff','dash');
+
+  // Poll every 5 minutes so sheet edits (check-ins, reservations, conditions)
+  // propagate to staff without requiring a manual refresh
+  if (window._opsRefreshInterval) clearInterval(window._opsRefreshInterval);
+  window._opsRefreshInterval = setInterval(function() {
+    WHCC_SYNC.fetchAllOps(function() {
+      renderTeeSheet();
+      renderDiningLog();
+      loadConditionsEditor();
+    });
+  }, 5 * 60 * 1000);
 }
 
 // ════════════════════════════════════

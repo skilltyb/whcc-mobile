@@ -1619,7 +1619,11 @@
 
       <!-- Events panel -->
       <div id="s-events-panel">
-        <button class="ev-reg-btn" style="margin-bottom:14px;" onclick="openAddEvent()">+ Add New Event</button>
+        <button class="ev-reg-btn" style="margin-bottom:10px;" onclick="openAddEvent()">+ Add New Event</button>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <button class="ts-btn" style="font-size:.72rem;" onclick="toggleStaffEventsArchiveView()" id="s-events-archive-toggle">🗄 View Archived</button>
+          <button class="ts-btn" style="font-size:.72rem;" onclick="archiveAllPastEvents()">Archive All Past Events</button>
+        </div>
         <div id="s-events-list"></div>
       </div>
 
@@ -2160,6 +2164,12 @@
     <input class="modal-input" id="ae-title" type="text" placeholder="Event title">
     <input class="modal-input" id="ae-date" type="date">
     <input class="modal-input" id="ae-time" type="text" placeholder="Time (e.g. 8:00 AM Shotgun)">
+    <select class="modal-input" id="ae-type">
+      <option value="golf">Golf</option>
+      <option value="tournament">Tournament</option>
+      <option value="social">Social (RSVP)</option>
+      <option value="aquatics">Aquatics (RSVP)</option>
+    </select>
     <input class="modal-input" id="ae-desc" type="text" placeholder="Description">
     <input class="modal-input" id="ae-fee" type="text" placeholder="Entry fee (optional, e.g. Member Event or $45/person)">
     <input class="modal-input" id="ae-capacity" type="number" placeholder="Capacity (optional, e.g. 72 players)" min="1">
@@ -2179,6 +2189,12 @@
     <input class="modal-input" id="ee-title" type="text" placeholder="Event title">
     <input class="modal-input" id="ee-date" type="date">
     <input class="modal-input" id="ee-time" type="text" placeholder="Time (e.g. 8:00 AM Shotgun)">
+    <select class="modal-input" id="ee-type">
+      <option value="golf">Golf</option>
+      <option value="tournament">Tournament</option>
+      <option value="social">Social (RSVP)</option>
+      <option value="aquatics">Aquatics (RSVP)</option>
+    </select>
     <input class="modal-input" id="ee-desc" type="text" placeholder="Description">
     <input class="modal-input" id="ee-fee" type="text" placeholder="Entry fee (optional, e.g. $45/person)">
     <input class="modal-input" id="ee-capacity" type="number" placeholder="Capacity (optional, e.g. 72 players)" min="1">
@@ -2267,6 +2283,41 @@
   </div>
 </div>
 
+<!-- Event RSVP Sheet (social / aquatics events — no team/GHIN fields) -->
+<div class="modal-overlay" id="modal-event-rsvp" onclick="if(event.target===this)closeModal('modal-event-rsvp')">
+  <div class="modal-sheet" style="max-height:90vh;max-height:90svh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+    <div class="modal-handle"></div>
+    <div id="event-rsvp-form-wrap">
+      <div class="modal-title" id="event-rsvp-title">RSVP</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:14px;" id="event-rsvp-meta"></div>
+      <div class="modal-field">
+        <label class="modal-label">First Name *</label>
+        <input class="cond-input" id="event-rsvp-fname" type="text" placeholder="Jane" required/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Last Name</label>
+        <input class="cond-input" id="event-rsvp-lname" type="text" placeholder="Smith"/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Email *</label>
+        <input class="cond-input" id="event-rsvp-email" type="email" placeholder="jane@email.com" required/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Phone</label>
+        <input class="cond-input" id="event-rsvp-phone" type="tel" placeholder="(573) 555-0000"/>
+      </div>
+      <div style="font-size:.7rem;color:var(--danger);margin-bottom:8px;display:none;" id="event-rsvp-error"></div>
+      <button class="ev-reg-btn" id="event-rsvp-submit" onclick="submitMobileEventRsvp()">I'm Attending</button>
+    </div>
+    <div id="event-rsvp-success" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:2.5rem;margin-bottom:12px;">✓</div>
+      <div style="font-weight:700;font-size:1rem;margin-bottom:8px;">You're on the list!</div>
+      <div style="font-size:.8rem;color:var(--muted);line-height:1.5;" id="event-rsvp-success-msg"></div>
+      <button class="ev-reg-btn" style="margin-top:16px;" onclick="closeModal('modal-event-rsvp')">Done</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -2297,59 +2348,48 @@ var MEMBER_DIRECTORY = [
 ];
 
 var DEFAULT_EVENTS = [
-  {title:"MGA Opening Day Draft", date:'2026-04-17', month:'APR', day:'17', time:'6:00 – 10:00 PM', desc:"Men's Golf Association season draft night. Sign up for your league team.", fee:'Member Event', capacity:64, registeredCount:40, registered:false},
-  {title:"Men's Opening Day", date:'2026-04-18', month:'APR', day:'18', time:'9:30 AM – 2:00 PM', desc:'Registration deadline April 16 at 5:00 PM. All members welcome.', fee:'Member Event', capacity:72, registeredCount:55, registered:false},
-  {title:"Ozark Invitational", date:'2026-04-25', month:'APR', day:'25', time:'2-Day · Apr 25–26', desc:"Westwood Hills' signature invitational event. 2-day tournament format.", fee:'$150/team', capacity:96, registeredCount:64, registered:false},
-  {title:"Friday Night Fights Begins", date:'2026-05-01', month:'MAY', day:'1', time:'6:00 – 10:00 PM', desc:'Weekly competitive series kicks off. Runs through the season every Friday.', fee:'$10/round', capacity:48, registeredCount:20, registered:false},
-  {title:"Hit & Giggle", date:'2026-05-06', month:'MAY', day:'6', time:'7:00 – 11:00 PM', desc:'Recurring social golf series. A great way to socialize on and off the course.', fee:'Member Event', capacity:40, registeredCount:15, registered:false},
-  {title:"Men's League Opening Night", date:'2026-05-07', month:'MAY', day:'7', time:'5:00 – 9:00 PM', desc:'Weekly men\'s league begins. Every Thursday through the season. Sign up for your team.', fee:'League Fee', capacity:80, registeredCount:62, registered:false},
-  {title:"Spring 2-Man Scramble", date:'2026-05-16', month:'MAY', day:'16', time:'8:00 AM Shotgun · May 16–17', desc:'2-day scramble event. Register your team of two for two rounds of competition.', fee:'$120/team', capacity:80, registeredCount:44, registered:false},
-  {title:"MGA 2-Man Best Ball", date:'2026-05-23', month:'MAY', day:'23', time:'8:00 AM – 12:00 PM', desc:"Men's Golf Association event. 2-player best ball format, 18 holes.", fee:'Member Event', capacity:64, registeredCount:38, registered:false},
-  {title:"Memorial Day Wing Ding", date:'2026-05-25', month:'MAY', day:'25', time:'10:00 AM – 2:00 PM', desc:'Annual Memorial Day celebration. Food, fun, & fellowship for the whole family.', fee:'$20/person', capacity:120, registeredCount:67, registered:false},
-  {title:"UCAN Golf Outing", date:'2026-06-05', month:'JUN', day:'5', time:'9:30 AM – 1:30 PM', desc:'Charity tournament raising money for local cancer patients through the UCAN Foundation.', fee:'$80/player', capacity:72, registeredCount:50, registered:false},
-  {title:"Ladies Cup Challenge Matches", date:'2026-06-06', month:'JUN', day:'6', time:'9:00 AM – 1:00 PM', desc:'Annual ladies match play competition. Sign up as an individual — brackets announced day of.', fee:'Member Event', capacity:32, registeredCount:20, registered:false},
-  {title:"Ladies Powder Puff", date:'2026-06-09', month:'JUN', day:'9', time:'9:00 AM – 1:00 PM', desc:'Ladies 2-player scramble. Fun format open to all lady members.', fee:'Member Event', capacity:40, registeredCount:18, registered:false},
-  {title:"Three Rivers College Outing", date:'2026-06-12', month:'JUN', day:'12', time:'9:30 AM – 2:00 PM', desc:'Supporting Three Rivers College. Community charity outing.', fee:'$75/player', capacity:72, registeredCount:36, registered:false},
-  {title:"Steak Stag — SEMO Qualifier", date:'2026-06-18', month:'JUN', day:'18', time:'6:00 – 10:00 PM', desc:'SEMO Cup qualifying event. Steak dinner included. Top finishers earn SEMO Cup points.', fee:'$60/player', capacity:48, registeredCount:29, registered:false},
-  {title:"Parent–Child Championship", date:'2026-06-20', month:'JUN', day:'20', time:'8:30 AM Shotgun · Jun 20–21', desc:'2-day parent-child tournament. Fun format for members and their children.', fee:'Member Event', capacity:48, registeredCount:0, registered:false},
-  {title:"MGA Alternate Shot", date:'2026-06-27', month:'JUN', day:'27', time:'8:30 AM', desc:"Men's Golf Association alternate shot event.", fee:'Member Event', capacity:40, registeredCount:0, registered:false},
-  {title:"PGA Junior Series Event", date:'2026-07-01', month:'JUL', day:'1', time:'Full Day Event', desc:'Junior golfer competition. Full day event.', fee:'Member Event', capacity:48, registeredCount:0, registered:false},
-  {title:"4th of July Wing Ding", date:'2026-07-04', month:'JUL', day:'4', time:'Full Day', desc:'Annual Independence Day celebration. Food, fun & fellowship for the whole family.', fee:'$20/person', capacity:120, registeredCount:0, registered:false},
-  {title:"MGA Match Play", date:'2026-07-10', month:'JUL', day:'10', time:'8:00 AM', desc:"Men's Golf Association match play event.", fee:'Member Event', capacity:32, registeredCount:0, registered:false},
-  {title:"Mules Booster Club Outing", date:'2026-08-07', month:'AUG', day:'7', time:'9:00 AM – 1:30 PM', desc:'Supporting Poplar Bluff Mules athletics. Charity tournament.', fee:'$80/player', capacity:72, registeredCount:0, registered:false},
-  {title:"Ladies Sweet Treat", date:'2026-08-11', month:'AUG', day:'11', time:'Full Day Event', desc:'4-player ladies scramble. A fun full-day event celebrating the ladies of Westwood Hills.', fee:'Member Event', capacity:48, registeredCount:12, registered:false},
-  {title:"SEMO Cup — Thursday Qualifier", date:'2026-08-13', month:'AUG', day:'13', time:'8:00 AM', desc:'SEMO Cup qualifying round. Thursday tee times.', fee:'Member Event', capacity:48, registeredCount:0, registered:false},
-  {title:"Muleskinner Member–Member", date:'2026-08-20', month:'AUG', day:'20', time:'Full Day Event', desc:"Men's member-member tournament. Full day event.", fee:'Member Event', capacity:64, registeredCount:0, registered:false},
-  {title:"Labor Day Wing Ding", date:'2026-09-07', month:'SEP', day:'7', time:'Full Day', desc:'Annual Labor Day celebration. Food, fun & fellowship.', fee:'$20/person', capacity:120, registeredCount:0, registered:false},
-  {title:"Friday Night Fights — Tournament of Champions", date:'2026-09-11', month:'SEP', day:'11', time:'5:00 PM', desc:'Season-ending FNF championship. Top competitors from all season.', fee:'Member Event', capacity:48, registeredCount:0, registered:false},
-  {title:"Mixed Pairs Scramble", date:'2026-09-12', month:'SEP', day:'12', time:'8:00 AM', desc:'2-person mixed scramble. Open to all members.', fee:'Member Event', capacity:64, registeredCount:0, registered:false},
-  {title:"Men's Senior Am", date:'2026-09-14', month:'SEP', day:'14', time:'8:00 AM', desc:'Missouri Amateur Golf Association. Senior division.', fee:'$50/player', capacity:48, registeredCount:0, registered:false},
-  {title:"Chamber of Commerce Outing", date:'2026-09-18', month:'SEP', day:'18', time:'9:30 AM', desc:'Poplar Bluff Chamber of Commerce annual golf outing.', fee:'$75/player', capacity:72, registeredCount:0, registered:false},
-  {title:"Club Championships", date:'2026-09-26', month:'SEP', day:'26', time:'Multi-Day Event', desc:'Annual member club championship. Multi-day event.', fee:'Member Event', capacity:64, registeredCount:0, registered:false},
-  {title:"Fall 2-Man Scramble", date:'2026-10-03', month:'OCT', day:'3', time:'8:00 AM Shotgun', desc:'2-player scramble format. Fall season event.', fee:'$120/team', capacity:80, registeredCount:0, registered:false},
-  {title:"Ladies Calcutta", date:'2026-10-10', month:'OCT', day:'10', time:'8:00 AM', desc:'Annual ladies calcutta tournament.', fee:'Member Event', capacity:40, registeredCount:0, registered:false},
-  {title:"Calcutta Bidding — Bourbon Tasting", date:'2026-10-16', month:'OCT', day:'16', time:'6:00 PM', desc:'Calcutta bidding night paired with a bourbon tasting event.', fee:'$40/person', capacity:60, registeredCount:0, registered:false},
-  {title:"Men's Calcutta", date:'2026-10-17', month:'OCT', day:'17', time:'8:00 AM', desc:"Annual men's calcutta tournament.", fee:'Member Event', capacity:72, registeredCount:0, registered:false},
-  {title:"Rib Stag — Pro's Cup Draft", date:'2026-10-22', month:'OCT', day:'22', time:'6:00 PM', desc:"Men's rib stag dinner & Pro's Cup draft party.", fee:'$50/person', capacity:60, registeredCount:0, registered:false},
-  {title:"Pro's Cup", date:'2026-10-24', month:'OCT', day:'24', time:'8:00 AM Shotgun', desc:'Signature end-of-season tournament.', fee:'Member Event', capacity:80, registeredCount:0, registered:false},
-  {title:"Gobbler", date:'2026-11-27', month:'NOV', day:'27', time:'8:00 AM', desc:'Thanksgiving weekend golf event. Annual tradition.', fee:'Member Event', capacity:64, registeredCount:0, registered:false},
-  {title:"Yule Tide Classic", date:'2026-12-19', month:'DEC', day:'19', time:'8:00 AM', desc:'Year-end holiday golf celebration. All members welcome.', fee:'Member Event', capacity:64, registeredCount:0, registered:false},
-  {title:"Men's League — May 7",  date:'2026-05-07', month:'MAY', day:'7',  time:'5:00 PM', desc:"Week 1 of 16 — Men's League season. 14–20 players, handicap-based team draw.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — May 14", date:'2026-05-14', month:'MAY', day:'14', time:'5:00 PM', desc:"Week 2 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — May 21", date:'2026-05-21', month:'MAY', day:'21', time:'5:00 PM', desc:"Week 3 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — May 28", date:'2026-05-28', month:'MAY', day:'28', time:'5:00 PM', desc:"Week 4 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jun 4",  date:'2026-06-04', month:'JUN', day:'4',  time:'5:00 PM', desc:"Week 5 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jun 11", date:'2026-06-11', month:'JUN', day:'11', time:'5:00 PM', desc:"Week 6 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jun 18", date:'2026-06-18', month:'JUN', day:'18', time:'5:00 PM', desc:"Week 7 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jun 25", date:'2026-06-25', month:'JUN', day:'25', time:'5:00 PM', desc:"Week 8 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jul 2",  date:'2026-07-02', month:'JUL', day:'2',  time:'5:00 PM', desc:"Week 9 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jul 9",  date:'2026-07-09', month:'JUL', day:'9',  time:'5:00 PM', desc:"Week 10 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jul 16", date:'2026-07-16', month:'JUL', day:'16', time:'5:00 PM', desc:"Week 11 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jul 23", date:'2026-07-23', month:'JUL', day:'23', time:'5:00 PM', desc:"Week 12 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Jul 30", date:'2026-07-30', month:'JUL', day:'30', time:'5:00 PM', desc:"Week 13 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Aug 6",  date:'2026-08-06', month:'AUG', day:'6',  time:'5:00 PM', desc:"Week 14 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Aug 13", date:'2026-08-13', month:'AUG', day:'13', time:'5:00 PM', desc:"Week 15 of 16 — Men's League.", fee:'Member Event', capacity:24, registeredCount:0, registered:false},
-  {title:"Men's League — Aug 20", date:'2026-08-20', month:'AUG', day:'20', time:'5:00 PM', desc:"Week 16 of 16 — Men's League season finale.", fee:'Member Event', capacity:24, registeredCount:0, registered:false}
+  {title:'St. Patty\'s Shootout', date:'2026-03-14', month:'MAR', day:'14', time:'10:30 AM – 2:30 PM', desc:'Fun format to kick off the season. All members welcome.', fee:'Member Event', capacity:60, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Ladies Opening Day', date:'2026-04-07', month:'APR', day:'7', time:'9:00 AM – 1:00 PM', desc:'Kick off the season with our ladies opening day event.', fee:'Member Event', capacity:40, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Masters Dinner', date:'2026-04-08', month:'APR', day:'8', time:'6:30 – 9:30 PM', desc:'Annual Masters watch party & dinner. Great food, great company.', fee:'$45/person', capacity:80, type:'social', cta:'RSVP', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Mules Invitational', date:'2026-04-13', month:'APR', day:'13', time:'9:00 AM – 2:00 PM', desc:'Supporting Poplar Bluff athletics.', fee:'$80/team', capacity:20, type:'tournament', cta:'Register', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'MGA Opening Day Draft', date:'2026-04-17', month:'APR', day:'17', time:'6:00 – 10:00 PM', desc:'Men\'s Golf Association season draft night. Sign up for your league team.', fee:'Member Event', capacity:64, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Men\'s Opening Day', date:'2026-04-18', month:'APR', day:'18', time:'9:30 AM – 2:00 PM', desc:'Registration deadline April 16 at 5:00 PM. All members welcome.', fee:'Member Event', capacity:72, type:'golf', cta:'Sign Up', featured:true, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Ozark Invitational', date:'2026-04-25', month:'APR', day:'25', time:'2-Day · Apr 25–26', desc:'Westwood Hills\' signature invitational event. 2-day tournament format.', fee:'$150/team', capacity:96, type:'tournament', cta:'Register', featured:true, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Friday Night Fights Begins', date:'2026-05-01', month:'MAY', day:'1', time:'6:00 – 10:00 PM', desc:'Weekly competitive series kicks off. Runs through the season every Friday.', fee:'$10/round', capacity:48, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Hit & Giggle', date:'2026-05-06', month:'MAY', day:'6', time:'7:00 – 11:00 PM', desc:'Recurring social golf series. A great way to socialize on and off the course.', fee:'Member Event', capacity:40, type:'social', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Men\'s League Opening Night', date:'2026-05-07', month:'MAY', day:'7', time:'5:00 – 9:00 PM', desc:'Weekly men\'s league begins. Every Thursday through the season. Sign up for your team.', fee:'League Fee', capacity:80, type:'golf', cta:'Sign Up', featured:true, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Spring 2-Man Scramble', date:'2026-05-16', month:'MAY', day:'16', time:'8:00 AM Shotgun · May 16–17', desc:'2-day scramble event. Register your team of two for two rounds of competition.', fee:'$120/team', capacity:80, type:'tournament', cta:'Register', featured:true, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'MGA 2-Man Best Ball', date:'2026-05-23', month:'MAY', day:'23', time:'8:00 AM – 12:00 PM', desc:'Men\'s Golf Association event. 2-player best ball format, 18 holes.', fee:'Member Event', capacity:64, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Memorial Day Wing Ding', date:'2026-05-25', month:'MAY', day:'25', time:'10:00 AM – 2:00 PM', desc:'Annual Memorial Day celebration. Food, fun, & fellowship for the whole family.', fee:'$20/person', capacity:120, type:'social', cta:'RSVP', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'UCAN Golf Outing', date:'2026-06-05', month:'JUN', day:'5', time:'9:30 AM – 1:30 PM', desc:'Charity tournament raising money for local cancer patients through the UCAN Foundation.', fee:'$80/player', capacity:72, type:'tournament', cta:'Register', featured:true, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Ladies Cup Challenge Matches', date:'2026-06-06', month:'JUN', day:'6', time:'9:00 AM – 1:00 PM', desc:'Annual ladies match play competition. Sign up as an individual — brackets announced day of.', fee:'Member Event', capacity:32, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Ladies Powder Puff', date:'2026-06-09', month:'JUN', day:'9', time:'9:00 AM – 1:00 PM', desc:'Ladies 2-player scramble. Fun format open to all lady members.', fee:'Member Event', capacity:40, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Three Rivers College Outing', date:'2026-06-12', month:'JUN', day:'12', time:'9:30 AM – 2:00 PM', desc:'Supporting Three Rivers College. Community charity outing.', fee:'$75/player', capacity:72, type:'tournament', cta:'Register', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Steak Stag — SEMO Qualifier', date:'2026-06-18', month:'JUN', day:'18', time:'6:00 – 10:00 PM', desc:'SEMO Cup qualifying event. Steak dinner included. Top finishers earn SEMO Cup points.', fee:'$60/player', capacity:48, type:'tournament', cta:'Register', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Parent–Child Championship', date:'2026-06-20', month:'JUN', day:'20', time:'8:30 AM Shotgun · Jun 20–21', desc:'2-day parent-child tournament. Fun format for members and their children.', fee:'Member Event', capacity:48, type:'tournament', cta:'Register', featured:true, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'MGA Alternate Shot', date:'2026-06-27', month:'JUN', day:'27', time:'8:30 AM', desc:'Men\'s Golf Association alternate shot event.', fee:'Member Event', capacity:40, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'PGA Junior Series Event', date:'2026-07-01', month:'JUL', day:'1', time:'Full Day Event', desc:'Junior golfer competition. Full day event.', fee:'Member Event', capacity:48, type:'tournament', cta:'Register', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'4th of July Wing Ding', date:'2026-07-04', month:'JUL', day:'4', time:'Full Day', desc:'Annual Independence Day celebration. Food, fun & fellowship for the whole family.', fee:'$20/person', capacity:120, type:'social', cta:'RSVP', featured:true, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'MGA Match Play', date:'2026-07-10', month:'JUL', day:'10', time:'8:00 AM', desc:'Men\'s Golf Association match play event.', fee:'Member Event', capacity:32, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Mules Booster Club Outing', date:'2026-08-07', month:'AUG', day:'7', time:'9:00 AM – 1:30 PM', desc:'Supporting Poplar Bluff Mules athletics. Charity tournament.', fee:'$80/player', capacity:72, type:'tournament', cta:'Register', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Ladies Sweet Treat', date:'2026-08-11', month:'AUG', day:'11', time:'Full Day Event', desc:'4-player ladies scramble. A fun full-day event celebrating the ladies of Westwood Hills.', fee:'Member Event', capacity:48, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'SEMO Cup — Thursday Qualifier', date:'2026-08-13', month:'AUG', day:'13', time:'8:00 AM', desc:'SEMO Cup qualifying round. Thursday tee times.', fee:'Member Event', capacity:48, type:'tournament', cta:'Register', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Muleskinner Member–Member', date:'2026-08-20', month:'AUG', day:'20', time:'Full Day Event', desc:'Men\'s member-member tournament. Full day event.', fee:'Member Event', capacity:64, type:'tournament', cta:'Register', featured:true, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Labor Day Wing Ding', date:'2026-09-07', month:'SEP', day:'7', time:'12:00 – 4:00 PM', desc:'Annual Labor Day celebration. Food, fun & fellowship.', fee:'$20/person', capacity:120, type:'social', cta:'RSVP', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'SEMO Cup — Qualifier #5', date:'2026-09-10', month:'SEP', day:'10', time:'8:00 AM', desc:'SEMO Cup qualifying round.', fee:'Member Event', capacity:48, type:'tournament', cta:'Register', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Friday Night Fights — Tournament of Champions', date:'2026-09-11', month:'SEP', day:'11', time:'4:30 PM', desc:'Season-ending FNF championship. Top competitors from all season.', fee:'Member Event', capacity:48, type:'tournament', cta:'Register', featured:true, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'WHCC Mixed Pairs Scramble', date:'2026-09-12', month:'SEP', day:'12', time:'8:00 AM Shotgun · Sep 12–13', desc:'2-day event. 2-person mixed scramble open to all members.', fee:'Member Event', capacity:64, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Missouri Amateur — Men\'s Senior Am', date:'2026-09-14', month:'SEP', day:'14', time:'3-Day Event · Sep 14–16', desc:'Missouri Amateur Golf Association. Senior division.', fee:'$50/player', capacity:48, type:'tournament', cta:'Register', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Poplar Bluff Chamber of Commerce Outing', date:'2026-09-18', month:'SEP', day:'18', time:'10:30 AM', desc:'Poplar Bluff Chamber of Commerce annual golf outing.', fee:'$75/player', capacity:72, type:'tournament', cta:'Register', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Club Championships', date:'2026-09-19', month:'SEP', day:'19', time:'2-Day Event · Sep 19–20', desc:'Annual member club championship.', fee:'Member Event', capacity:64, type:'tournament', cta:'Register', featured:true, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Calcutta Bidding — Bourbon Tasting', date:'2026-09-24', month:'SEP', day:'24', time:'6:00 PM', desc:'Calcutta bidding night paired with a bourbon tasting event.', fee:'$40/person', capacity:60, type:'social', cta:'RSVP', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Men\'s Calcutta', date:'2026-09-26', month:'SEP', day:'26', time:'8:00 AM', desc:'Annual men\'s calcutta tournament.', fee:'Member Event', capacity:72, type:'tournament', cta:'Register', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'WHCC Fall 2-Man Scramble', date:'2026-10-03', month:'OCT', day:'3', time:'8:00 AM Shotgun · Oct 3–4', desc:'2-day event. 2-player scramble format.', fee:'$120/team', capacity:80, type:'tournament', cta:'Register', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Ladies Calcutta', date:'2026-10-10', month:'OCT', day:'10', time:'9:30 AM', desc:'Annual ladies calcutta tournament.', fee:'Member Event', capacity:40, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Men\'s Rib Stag — Pro\'s Cup Draft Party', date:'2026-10-22', month:'OCT', day:'22', time:'5:00 PM', desc:'Men\'s rib stag dinner & Pro\'s Cup draft party.', fee:'$50/person', capacity:60, type:'social', cta:'RSVP', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Pro\'s Cup', date:'2026-10-24', month:'OCT', day:'24', time:'8:00 AM Shotgun · Oct 24–25', desc:'2-day event. Signature end-of-season tournament.', fee:'Member Event', capacity:80, type:'tournament', cta:'Register', featured:true, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Gobbler', date:'2026-11-27', month:'NOV', day:'27', time:'10:30 AM – 2:30 PM', desc:'Thanksgiving weekend golf event. Annual tradition.', fee:'Member Event', capacity:64, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false},
+  {title:'Yule Tide Classic', date:'2026-12-19', month:'DEC', day:'19', time:'10:00 AM – 2:00 PM', desc:'Year-end holiday golf celebration. All members welcome.', fee:'Member Event', capacity:64, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false}
 ];
 
 var WH_MENU_VERSION = '4';
@@ -2498,6 +2538,74 @@ var appEvents; try { appEvents = JSON.parse(localStorage.getItem('wh_app_events'
     localStorage.setItem('wh_app_events', JSON.stringify(appEvents));
   }
 })();
+
+// The schedule shown here needs to be the same schedule staff manage on the
+// website, not a separate copy that only lives in this device's storage —
+// so on top of the local seed above, pull the shared events list from the
+// Sheet (same one the website's Event Calendar CMS reads/writes) and use it
+// as the source of truth for everything except each device's own
+// "registered" flag, which stays local.
+var _mobileSiteContent = null; // full Site Content blob, kept whole so saves never clobber other fields
+function mapSiteEventToMobile_(sc, localByTitle) {
+  var local = localByTitle[sc.name] || {};
+  var mDate = sc.date || ((sc.year || '2026') + '-01-01');
+  return {
+    id: sc.id, title: sc.name, date: mDate,
+    month: (sc.month || '').toUpperCase(), day: sc.day || '',
+    time: sc.time || '', desc: sc.detail || '',
+    fee: sc.fee || 'Member Event', capacity: sc.capacity || 0,
+    type: sc.type || 'golf', cta: sc.cta || 'Sign Up',
+    featured: !!sc.featured, active: sc.active !== false, archived: !!sc.archived,
+    registeredCount: local.registeredCount || 0, registered: !!local.registered
+  };
+}
+function syncEventsFromServer(cb) {
+  if (window.IS_DEMO) { if (cb) cb(false); return; } // demo mode must never touch the real backend
+  if (typeof WHCC_SYNC === 'undefined' || !WHCC_SYNC.fetchSiteContent) { if (cb) cb(false); return; }
+  WHCC_SYNC.fetchSiteContent(function(remote, err) {
+    if (err || !remote || !Array.isArray(remote.events) || !remote.events.length) { if (cb) cb(false); return; }
+    _mobileSiteContent = remote;
+    var localByTitle = {};
+    appEvents.forEach(function(e) { localByTitle[e.title] = e; });
+    appEvents = remote.events.map(function(sc) { return mapSiteEventToMobile_(sc, localByTitle); });
+    appEvents.sort(function(a, b) { return a.date.localeCompare(b.date); });
+    try { localStorage.setItem('wh_app_events', JSON.stringify(appEvents)); } catch(e) {}
+    if (typeof renderStaffEvents === 'function') renderStaffEvents();
+    if (typeof renderMemberEvents === 'function') renderMemberEvents();
+    if (typeof renderHomeEvents === 'function') renderHomeEvents();
+    if (cb) cb(true);
+  });
+}
+// Persists appEvents back through the FULL site-content object (fetched above)
+// so an events save never wipes out announcements/heroes/contact/etc. that
+// this app never touched — same round-trip pattern the website's CMS uses.
+function saveEventsToServer(cb) {
+  // _mobileSiteContent only exists after a successful fetch of the FULL
+  // remote blob. Without it, saving would post {events:[...]} alone and
+  // wipe out announcements/heroes/contact/etc. on the server — refuse
+  // instead. The edit stays in local appEvents/localStorage either way,
+  // and the next successful syncEventsFromServer() call re-attempts it.
+  if (!_mobileSiteContent) { if (cb) cb(false); return; }
+  var sc = JSON.parse(JSON.stringify(_mobileSiteContent));
+  sc.events = appEvents.map(function(ev) {
+    var mNum = {JAN:'01',FEB:'02',MAR:'03',APR:'04',MAY:'05',JUN:'06',JUL:'07',AUG:'08',SEP:'09',OCT:'10',NOV:'11',DEC:'12'}[ev.month] || '01';
+    var year = (ev.date || '2026-01-01').slice(0, 4);
+    return {
+      id: ev.id || ('ev' + Date.now() + Math.floor(Math.random() * 1000)),
+      name: ev.title, month: ev.month.charAt(0) + ev.month.slice(1).toLowerCase(), day: ev.day, year: year,
+      date: ev.date, type: ev.type || 'golf', detail: ev.desc || '', time: ev.time || '',
+      fee: ev.fee || '', capacity: ev.capacity || undefined, cta: ev.cta || 'Sign Up',
+      regMeta: (ev.month.charAt(0) + ev.month.slice(1).toLowerCase()) + ' ' + ev.day + ', ' + year,
+      featured: !!ev.featured, active: ev.active !== false, archived: !!ev.archived
+    };
+  });
+  if (!WHCC_SYNC.saveSiteContent) { if (cb) cb(false); return; }
+  WHCC_SYNC.saveSiteContent(sc, function(r, err) {
+    if (!err && r) _mobileSiteContent = sc;
+    if (cb) cb(!err, r);
+  });
+}
+
 var currentUser = null;
 
 // ════════════════════════════════════
@@ -2516,17 +2624,17 @@ function doLogin() {
     .then(function(data) {
       if (data && data.ok && data.account) {
         err.textContent = '';
-        loginAs(data.account, email);
+        loginAs(data.account, email, pin);
       } else {
         var acct = APP_ACCOUNTS[email];
-        if (acct && acct.pin === pin) { err.textContent = ''; loginAs(acct, email); }
+        if (acct && acct.pin === pin) { err.textContent = ''; loginAs(acct, email, pin); }
         else { err.textContent = 'Invalid email or PIN. Contact the Pro Shop for access.'; }
       }
     })
     .catch(function() {
       // Network unavailable — check local accounts only
       var acct = APP_ACCOUNTS[email];
-      if (acct && acct.pin === pin) { err.textContent = ''; loginAs(acct, email); }
+      if (acct && acct.pin === pin) { err.textContent = ''; loginAs(acct, email, pin); }
       else { err.textContent = 'Invalid email or PIN. Contact the Pro Shop for access.'; }
     });
 }
@@ -2572,9 +2680,14 @@ function enterDemo(role) {
   }
 }
 
-function loginAs(acct, email) {
+function loginAs(acct, email, pin) {
   var isFirstLogin = !localStorage.getItem('wh_onboarded');
   currentUser = Object.assign({email: email}, acct);
+  // Staff/both accounts need their own PIN on hand to authenticate the
+  // events-save call (Code.gs has no session concept — every staff-gated
+  // request re-proves itself with email+PIN, same trust level the sheet's
+  // own plaintext PIN column already carries).
+  if (pin && (acct.role === 'staff' || acct.role === 'both')) currentUser.pin = pin;
   localStorage.setItem('wh_current_user', JSON.stringify(currentUser));
   // Offer biometric enrollment after PIN login (member only, if not already enrolled)
   if (acct.role === 'member' || acct.role === 'both') {
@@ -2870,6 +2983,7 @@ function initMember() {
   WHCC_SYNC.fetchAllOps(function() {
     _initMemberUI();
   });
+  syncEventsFromServer();
 }
 function _initMemberUI() {
   var u = currentUser;
@@ -3464,6 +3578,29 @@ var appCurrentRegEvent = null;
 // ════════════════════════════════════════════════════════
 var WHCC_SYNC = {
   TTL: 90000,
+
+  // The mobile app authenticates per-person (App Users email+PIN) rather
+  // than the shared staff-portal PIN, so this is what Code.gs's
+  // requireStaffAuth_() accepts from here instead of data.staffPin.
+  _staffAuth: function() {
+    if (!currentUser || !currentUser.email || !currentUser.pin) return {};
+    return { staffEmail: currentUser.email, staffUserPin: currentUser.pin };
+  },
+
+  fetchSiteContent: function(cb) {
+    fetch(WHCC_SCRIPT_URL + '?action=get-site-content')
+      .then(function(r) { return r.json(); })
+      .then(function(d) { if (cb) cb(d, null); })
+      .catch(function(e) { if (cb) cb(null, e); });
+  },
+  saveSiteContent: function(data, cb) {
+    var body = Object.assign({ action: 'save-site-content', data: data }, this._staffAuth());
+    fetch(WHCC_SCRIPT_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(body)
+    }).then(function(r) { return r.json(); })
+      .then(function(d) { if (cb) cb(d, null); })
+      .catch(function(e) { if (cb) cb(null, e); });
+  },
 
   getCount: function(ev) {
     try { return (JSON.parse(localStorage.getItem('wh_counts') || '{}'))[ev] || 0; }
@@ -4236,20 +4373,90 @@ function openEventDetail(ev) {
   }
   document.getElementById('ed-body').innerHTML = bodyHtml;
   var regBtn = document.getElementById('ed-reg-btn');
+  // Social/aquatics events are a headcount, not a paid tournament entry — RSVP
+  // instead of the full team/GHIN registration flow, same split the website uses.
+  var isRsvpType = ev.type === 'social' || ev.type === 'aquatics';
   if (ev.registered) {
-    regBtn.textContent = 'Already Registered';
+    regBtn.textContent = isRsvpType ? "You're Attending ✓" : 'Already Registered';
     regBtn.style.background = 'var(--success)';
     regBtn.onclick = function() { closeModal('modal-event-detail'); };
-  } else if (isFull) {
+  } else if (isFull && !isRsvpType) {
     regBtn.textContent = 'Event Full';
     regBtn.style.background = 'var(--muted)';
     regBtn.onclick = null;
+  } else if (isRsvpType) {
+    regBtn.textContent = (ev.cta || "I'm Attending") + ' →';
+    regBtn.style.background = 'var(--forest)';
+    regBtn.onclick = function() { closeModal('modal-event-detail'); openEventRsvp(ev); };
   } else {
     regBtn.textContent = 'Register Now →';
     regBtn.style.background = 'var(--forest)';
     regBtn.onclick = function() { closeModal('modal-event-detail'); openAppReg(ev.title, ev.time, /scramble|invitational|2-man|2 man|best ball|powder puff|sweet treat|ucan|three rivers|mules/i.test(ev.title + ' ' + (ev.desc||''))); };
   }
   openModal('modal-event-detail');
+}
+
+var _eventRsvpCurrent = null;
+function openEventRsvp(ev) {
+  _eventRsvpCurrent = ev;
+  document.getElementById('event-rsvp-title').textContent = ev.title;
+  document.getElementById('event-rsvp-meta').textContent = [ev.month + ' ' + ev.day, ev.time].filter(Boolean).join(' · ');
+  document.getElementById('event-rsvp-form-wrap').style.display = 'block';
+  document.getElementById('event-rsvp-success').style.display = 'none';
+  document.getElementById('event-rsvp-error').style.display = 'none';
+  if (currentUser) {
+    var parts = (currentUser.name || '').split(' ');
+    document.getElementById('event-rsvp-fname').value = parts[0] || '';
+    document.getElementById('event-rsvp-lname').value = parts.slice(1).join(' ') || '';
+    document.getElementById('event-rsvp-email').value = currentUser.email || '';
+  }
+  openModal('modal-event-rsvp');
+}
+
+function submitMobileEventRsvp() {
+  var fname = document.getElementById('event-rsvp-fname').value.trim();
+  var lname = document.getElementById('event-rsvp-lname').value.trim();
+  var email = document.getElementById('event-rsvp-email').value.trim();
+  var phone = document.getElementById('event-rsvp-phone').value.trim();
+  var errEl = document.getElementById('event-rsvp-error');
+  var btn   = document.getElementById('event-rsvp-submit');
+  errEl.style.display = 'none';
+  if (!fname) { errEl.textContent = 'Please enter your first name.'; errEl.style.display = 'block'; return; }
+  if (!email) { errEl.textContent = 'Please enter your email address.'; errEl.style.display = 'block'; return; }
+  var ev = _eventRsvpCurrent;
+  btn.disabled = true; btn.textContent = 'Submitting…';
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST', headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({
+      action: 'event-rsvp',
+      eventName: ev ? ev.title : '', eventDate: ev ? (ev.month + ' ' + ev.day) : '',
+      firstName: fname, lastName: lname, email: email, phone: phone,
+      submitted: new Date().toISOString()
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    btn.disabled = false; btn.textContent = "I'm Attending";
+    if (d && d.ok) {
+      if (ev) {
+        appEvents.forEach(function(e) { if (e.title === ev.title) e.registered = true; });
+        try { localStorage.setItem('wh_app_events', JSON.stringify(appEvents)); } catch(e2) {}
+        renderMemberEvents(); renderHomeEvents();
+      }
+      document.getElementById('event-rsvp-form-wrap').style.display = 'none';
+      document.getElementById('event-rsvp-success-msg').textContent = "We've got you down for " + (ev ? ev.title : 'this event') + '. A confirmation email is on its way.';
+      document.getElementById('event-rsvp-success').style.display = 'block';
+      showToast('RSVP confirmed!');
+    } else {
+      errEl.textContent = 'Something went wrong — please try again or call (573) 785-5253.';
+      errEl.style.display = 'block';
+    }
+  })
+  .catch(function() {
+    btn.disabled = false; btn.textContent = "I'm Attending";
+    errEl.textContent = 'Unable to submit — please call (573) 785-5253.';
+    errEl.style.display = 'block';
+  });
 }
 
 function submitAppReg() {
@@ -4331,16 +4538,19 @@ function eventCardHTML(ev, idx, isStaff) {
               '</div>' +
             '</div>'
           : (regCount > 0 ? '<div style="font-size:.7rem;color:var(--muted);margin-bottom:7px;">' + regCount + ' registered</div>' : '');
+        if (ev.archived) {
+          return capBar + '<button class="ev-reg-btn" onclick="restoreEvent(\'' + ev.id + '\')">↩ Restore Event</button>';
+        }
         return capBar +
           '<div style="display:flex;gap:8px;margin-bottom:8px;">' +
             '<button class="ts-btn checkin" onclick="openEventTeeSheet(' + idx + ')" style="font-size:.72rem;">➕ Add</button>' +
             '<button class="ts-btn" onclick="openEditEvent(' + idx + ')" style="font-size:.72rem;">✏️ Edit</button>' +
             '<button class="ts-btn" onclick="openEventRegs(' + idx + ')" style="font-size:.72rem;">👥 Regs</button>' +
           '</div>' +
-          '<button class="ev-del-btn" onclick="deleteEvent(' + idx + ')">Remove Event</button>';
+          '<button class="ev-del-btn" onclick="archiveEvent(\'' + ev.id + '\')">🗄 Archive Event</button>';
       })()
     : (function() {
-        var isTeam = /scramble|invitational|2-man|2 man|best ball|powder puff|sweet treat|ucan|three rivers|mules/i.test(ev.title + ' ' + (ev.desc||''));
+        var isRsvpType = ev.type === 'social' || ev.type === 'aquatics';
         var regCount = WHCC_SYNC.getCount(ev.title);
         var cap = parseInt(ev.capacity) || 0;
         var spotsLeft = cap > 0 ? cap - regCount : null;
@@ -4356,16 +4566,17 @@ function eventCardHTML(ev, idx, isStaff) {
             capacityBadge = '<div style="margin-bottom:8px;font-size:.74rem;color:' + (getComputedStyle ? '#b45309' : '#b45309') + ';">🔶 Filling up</div>';
           }
         }
+        var ctaLabel = ev.cta || (isRsvpType ? "I'm Attending" : 'Register');
         var regBtn = ev.registered
           ? '<div style="display:flex;gap:6px;">' +
-              '<button class="ev-reg-btn registered" style="flex:1;pointer-events:none;">✓ Registered</button>' +
+              '<button class="ev-reg-btn registered" style="flex:1;pointer-events:none;">✓ ' + (isRsvpType ? 'Attending' : 'Registered') + '</button>' +
               '<button class="ts-btn" style="font-size:.72rem;flex-shrink:0;" onclick="cancelReg(' + idx + ')">Cancel</button>' +
             '</div>'
-          : isFull
+          : (isFull && !isRsvpType)
             ? (isOnWaitlist(ev.title)
                 ? '<button class="ev-reg-btn" style="background:#6b7280;cursor:default;" disabled>✓ On Waitlist</button>'
                 : '<button class="ev-reg-btn" style="background:#92400e;" onclick="joinWaitlist(\'' + ev.title.replace(/'/g,"\\'") + '\')">Join Waitlist</button>')
-            : '<button class="ev-reg-btn" onclick="openEventDetail(upcomingEvents()[' + idx + '])">Register</button>';
+            : '<button class="ev-reg-btn" onclick="openEventDetail(upcomingEvents()[' + idx + '])">' + ctaLabel + '</button>';
         return capacityBadge + regBtn + '<button class="ts-btn" style="font-size:.72rem;margin-top:6px;width:100%;" onclick="openMemberTeeSheet(' + idx + ')">Tee Sheet</button>';
       })();
   var metaRows = '';
@@ -4401,7 +4612,7 @@ function cancelReg(idx) {
 
 function upcomingEvents() {
   var today = new Date().toISOString().slice(0, 10);
-  return appEvents.filter(function(ev) { return ev.date >= today; });
+  return appEvents.filter(function(ev) { return ev.date >= today && !ev.archived; });
 }
 
 // ── WAITLIST ──────────────────────────────────────────────────────────────────
@@ -4480,9 +4691,26 @@ function renderHomeEvents() {
   }).join('');
 }
 
+var _staffEventsShowArchived = false;
+function toggleStaffEventsArchiveView() {
+  _staffEventsShowArchived = !_staffEventsShowArchived;
+  var btn = document.getElementById('s-events-archive-toggle');
+  if (btn) btn.textContent = _staffEventsShowArchived ? '← Back to Active' : '🗄 View Archived';
+  renderStaffEvents();
+}
 function renderStaffEvents() {
   var el = document.getElementById('s-events-list');
-  if (el) el.innerHTML = appEvents.map(function(ev, i){ return eventCardHTML(ev, i, true); }).join('');
+  if (!el) return;
+  var shown = appEvents.filter(function(ev) { return _staffEventsShowArchived ? !!ev.archived : !ev.archived; });
+  if (!shown.length) {
+    el.innerHTML = '<div style="text-align:center;padding:24px 0;color:var(--muted);font-size:.85rem;">' +
+      (_staffEventsShowArchived ? 'No archived events.' : 'No events yet.') + '</div>';
+    return;
+  }
+  // idx passed to eventCardHTML must be the event's real index in appEvents
+  // (openEventTeeSheet/openEditEvent/openEventRegs all index into that full
+  // array) — not its position in this filtered view.
+  el.innerHTML = shown.map(function(ev) { return eventCardHTML(ev, appEvents.indexOf(ev), true); }).join('');
 }
 
 function toggleReg(idx) {
@@ -4492,45 +4720,73 @@ function toggleReg(idx) {
   showToast(appEvents[idx].registered ? '✅ Registered!' : 'Registration cancelled.');
 }
 
-function deleteEvent(idx) {
-  appEvents.splice(idx, 1);
+// Events are archived rather than deleted — kept in appEvents (and in the
+// shared Sheet) with archived:true so past/retired events have a "special
+// place" instead of being lost, and can be restored later.
+function _persistEvents(successMsg) {
   saveEvents();
   renderStaffEvents();
   renderMemberEvents();
   renderHomeEvents();
-  showToast('Event removed.');
+  saveEventsToServer(function(ok) {
+    showToast(ok ? successMsg : (successMsg + ' (offline — will sync when reconnected)'));
+  });
+}
+function archiveEvent(id) {
+  var ev = appEvents.find(function(e) { return e.id === id; });
+  if (!ev) return;
+  ev.archived = true;
+  _persistEvents('Event archived.');
+}
+function restoreEvent(id) {
+  var ev = appEvents.find(function(e) { return e.id === id; });
+  if (!ev) return;
+  ev.archived = false;
+  _persistEvents('Event restored.');
+}
+function archiveAllPastEvents() {
+  var today = new Date().toISOString().slice(0, 10);
+  var n = 0;
+  appEvents.forEach(function(ev) {
+    if (!ev.archived && ev.date < today) { ev.archived = true; n++; }
+  });
+  if (!n) { showToast('No past events to archive.'); return; }
+  _persistEvents(n + ' past event' + (n === 1 ? '' : 's') + ' archived.');
 }
 
 function openAddEvent() {
   document.getElementById('ae-title').value    = '';
   document.getElementById('ae-date').value     = new Date().toISOString().split('T')[0];
   document.getElementById('ae-time').value     = '';
+  document.getElementById('ae-type').value     = 'golf';
   document.getElementById('ae-desc').value     = '';
   document.getElementById('ae-fee').value      = '';
   document.getElementById('ae-capacity').value = '';
   openModal('modal-add-event');
 }
 
+var _EVENT_TYPE_CTA_ = { golf: 'Sign Up', tournament: 'Register', social: 'RSVP', aquatics: 'RSVP' };
 function addEvent() {
   var title = document.getElementById('ae-title').value.trim();
   var date  = document.getElementById('ae-date').value;
   var time  = document.getElementById('ae-time').value.trim();
+  var type  = document.getElementById('ae-type').value;
   var desc  = document.getElementById('ae-desc').value.trim();
   var fee      = document.getElementById('ae-fee').value.trim();
   var capacity = document.getElementById('ae-capacity').value.trim();
   if (!title || !date) { showToast('Title and date are required.'); return; }
   var d = new Date(date + 'T12:00:00');
   var mos = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-  var evObj = { title:title, date:date, month:mos[d.getMonth()], day:String(d.getDate()), time:time||'TBD', desc:desc, fee:fee||'Member Event', registered:false };
+  var evObj = {
+    id: 'ev' + Date.now(), title:title, date:date, month:mos[d.getMonth()], day:String(d.getDate()),
+    time:time||'TBD', type:type, cta:_EVENT_TYPE_CTA_[type] || 'Sign Up',
+    desc:desc, fee:fee||'Member Event', featured:false, active:true, archived:false, registered:false
+  };
   if (capacity) evObj.capacity = parseInt(capacity);
   appEvents.push(evObj);
   appEvents.sort(function(a,b){ return a.date.localeCompare(b.date); });
-  saveEvents();
   closeModal('modal-add-event');
-  renderStaffEvents();
-  renderMemberEvents();
-  renderHomeEvents();
-  showToast('✅ Event added!');
+  _persistEvents('Event added!');
 }
 
 function openEditEvent(idx) {
@@ -4539,6 +4795,7 @@ function openEditEvent(idx) {
   document.getElementById('ee-title').value    = ev.title;
   document.getElementById('ee-date').value     = ev.date;
   document.getElementById('ee-time').value     = ev.time;
+  document.getElementById('ee-type').value     = ev.type || 'golf';
   document.getElementById('ee-desc').value     = ev.desc || '';
   document.getElementById('ee-fee').value      = ev.fee || '';
   document.getElementById('ee-capacity').value = ev.capacity || '';
@@ -4550,6 +4807,7 @@ function saveEditEvent() {
   var title = document.getElementById('ee-title').value.trim();
   var date  = document.getElementById('ee-date').value;
   var time  = document.getElementById('ee-time').value.trim();
+  var type  = document.getElementById('ee-type').value;
   var desc  = document.getElementById('ee-desc').value.trim();
   var fee      = document.getElementById('ee-fee').value.trim();
   var capacity = document.getElementById('ee-capacity').value.trim();
@@ -4557,16 +4815,16 @@ function saveEditEvent() {
   var d = new Date(date + 'T12:00:00');
   var mos = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   var ev = appEvents[idx];
-  var updated = Object.assign({}, ev, { title:title, date:date, month:mos[d.getMonth()], day:String(d.getDate()), time:time||'TBD', desc:desc, fee:fee });
+  var updated = Object.assign({}, ev, {
+    title:title, date:date, month:mos[d.getMonth()], day:String(d.getDate()), time:time||'TBD',
+    type:type, cta: ev.cta && ev.type === type ? ev.cta : (_EVENT_TYPE_CTA_[type] || 'Sign Up'),
+    desc:desc, fee:fee
+  });
   if (capacity) updated.capacity = parseInt(capacity); else delete updated.capacity;
   appEvents[idx] = updated;
   appEvents.sort(function(a,b){ return a.date.localeCompare(b.date); });
-  saveEvents();
   closeModal('modal-edit-event');
-  renderStaffEvents();
-  renderMemberEvents();
-  renderHomeEvents();
-  showToast('✅ Event updated!');
+  _persistEvents('Event updated!');
 }
 
 function saveEvents() { localStorage.setItem('wh_app_events', JSON.stringify(appEvents)); }
@@ -6042,6 +6300,7 @@ function initStaff() {
   WHCC_SYNC.fetchAllOps(function() {
     _initStaffUI();
   });
+  syncEventsFromServer();
 }
 function _initStaffUI() {
   var u     = currentUser;

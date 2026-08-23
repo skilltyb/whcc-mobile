@@ -2,7 +2,7 @@
 echo Checking for updated index.html in Downloads...
 
 set DOWNLOADS=%USERPROFILE%\Downloads
-set APP=C:\Users\sctr1\wh-app
+set APP=C:\Users\sctr1\whcc-mobile
 
 if exist "%DOWNLOADS%\index.html" (
     echo Found index.html in Downloads - copying to app folder...

@@ -331,16 +331,6 @@
     .mi-desc { font-size: .76rem; color: var(--muted); margin-top: 2px; line-height: 1.4; }
     .mi-price { font-family: 'Cormorant Garamond', serif; font-size: .98rem; font-weight: 600; color: var(--forest); flex-shrink: 0; min-width:48px; text-align:right; }
 
-    /* ── EXPRESS BANNER ── */
-    .express-app { background: var(--forest); border-radius: var(--radius); padding: 16px 16px 18px; margin-bottom: 12px; }
-    .ex-badge { display: inline-block; background: var(--gold); color: var(--forest); font-size: .68rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; margin-bottom: 7px; }
-    .ex-title { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; color: var(--white); margin-bottom: 3px; }
-    .ex-detail { font-size: .75rem; color: rgba(255,255,255,.65); margin-bottom: 12px; }
-    .ex-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-    .ex-item { background: rgba(255,255,255,.1); border-radius: 8px; padding: 9px 11px; }
-    .ex-item-name { font-size: .76rem; font-weight: 600; color: var(--white); }
-    .ex-item-price { font-size: .82rem; color: rgba(255,255,255,.75); margin-top: 1px; }
-
     /* ── LEAGUES ── */
     .ml-date-tile{background:rgba(26,74,38,.08);border:1px solid rgba(26,74,38,.2);border-radius:6px;padding:10px 8px;text-align:center;font-size:.82rem;font-weight:600;color:var(--forest);cursor:pointer;transition:background .15s;}
     .ml-date-tile:active{background:rgba(26,74,38,.2);}
@@ -1012,12 +1002,6 @@
           </div>
           <div style="font-size:.68rem;color:rgba(245,240,232,.4);margin-top:8px;font-style:italic;">Dine-in &amp; carry-out · Full menu available</div>
         </div>
-        <div class="express-app">
-          <div class="ex-badge">⚡ 15 Minute Guarantee</div>
-          <div class="ex-title">Express Lunch</div>
-          <div class="ex-detail">Tue – Fri &nbsp;·&nbsp; 11:30 AM – 1:00 PM</div>
-          <div class="ex-grid" id="m-express-items"></div>
-        </div>
         <div class="card" style="margin-bottom:10px;">
           <div class="card-title" style="margin-bottom:6px;">Order To-Go</div>
           <div class="card-body">Call <strong>(573) 785-5253</strong> — our full menu is available for carry-out any time during Grill hours.</div>
@@ -1055,27 +1039,6 @@
           <div style="font-size:.8rem;font-weight:600;color:var(--forest);">No tournament in progress</div>
           <div style="font-size:.72rem;color:var(--muted);">Live scoring appears here during active events</div>
         </div>
-      </div>
-
-      <!-- LEAGUE SCHEDULES -->
-      <div style="margin-bottom:20px;">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--forest);">League <em style="color:var(--gold-dk,#b8976a);">Schedules</em></div>
-          <div style="font-size:.68rem;color:var(--muted);">Next 3 dates</div>
-        </div>
-
-        <!-- League selector tabs -->
-        <div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;">
-          <button onclick="mLeagueShow('mens')" id="ml-tab-mens" style="flex-shrink:0;padding:5px 12px;background:var(--forest);color:#f5f0e8;border:none;border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;">Men's</button>
-          <button onclick="mLeagueShow('ladies')" id="ml-tab-ladies" style="flex-shrink:0;padding:5px 12px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;">Ladies</button>
-          <button onclick="mLeagueShow('hg')" id="ml-tab-hg" style="flex-shrink:0;padding:5px 12px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;">Hit &amp; Giggle</button>
-          <button onclick="mLeagueShow('fnf')" id="ml-tab-fnf" style="flex-shrink:0;padding:5px 12px;background:rgba(26,74,38,.12);color:var(--muted);border:1px solid rgba(26,74,38,.2);border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;">Fri Night</button>
-        </div>
-
-        <div id="ml-panel-mens"><div id="ml-upcoming-mens"></div><div id="ml-standings-mens"></div></div>
-        <div id="ml-panel-ladies" style="display:none;"><div id="ml-upcoming-ladies"></div><div id="ml-standings-ladies"></div></div>
-        <div id="ml-panel-hg" style="display:none;"><div id="ml-upcoming-hg"></div><div id="ml-standings-hg"></div></div>
-        <div id="ml-panel-fnf" style="display:none;"><div id="ml-upcoming-fnf"></div><div id="ml-standings-fnf"></div></div>
       </div>
 
       <div id="m-events-list"><div style="padding:8px 0;"><div class="skel skel-line" style="height:80px;margin-bottom:10px;border-radius:10px;"></div><div class="skel skel-line" style="height:80px;margin-bottom:10px;border-radius:10px;"></div><div class="skel skel-line" style="height:80px;border-radius:10px;"></div></div></div>
@@ -1890,24 +1853,6 @@
   </div>
 </div>
 
-<!-- League registration -->
-<div class="modal-overlay" id="modal-league-reg">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="lr-title">League Sign-Up</div>
-    <div id="lr-info" style="font-size:.78rem;color:var(--gold);background:rgba(184,151,106,.1);border-left:3px solid var(--gold);border-radius:6px;padding:8px 12px;margin-bottom:14px;"></div>
-    <input class="modal-input" id="lr-first" type="text" placeholder="First Name">
-    <input class="modal-input" id="lr-last"  type="text" placeholder="Last Name">
-    <input class="modal-input" id="lr-email" type="email" placeholder="Email">
-    <input class="modal-input" id="lr-phone" type="tel" placeholder="Phone (optional)">
-    <div id="lr-error" style="display:none;color:#c0392b;font-size:.75rem;margin-bottom:8px;padding:8px 12px;background:rgba(192,57,43,.08);border-radius:6px;"></div>
-    <div class="modal-row">
-      <button class="modal-btn secondary" onclick="closeModal('modal-league-reg')">Cancel</button>
-      <button class="modal-btn primary" onclick="submitLeagueReg()">Sign Up</button>
-    </div>
-  </div>
-</div>
-
 <!-- iOS / Safari install instructions -->
 <div class="modal-overlay modal-center" id="modal-ios-install" role="dialog" aria-modal="true" aria-labelledby="ios-install-title">
   <div class="modal-box" style="text-align:center;">
@@ -2392,46 +2337,47 @@ var DEFAULT_EVENTS = [
   {title:'Yule Tide Classic', date:'2026-12-19', month:'DEC', day:'19', time:'10:00 AM – 2:00 PM', desc:'Year-end holiday golf celebration. All members welcome.', fee:'Member Event', capacity:64, type:'golf', cta:'Sign Up', featured:false, active:true, archived:false, registeredCount:0, registered:false}
 ];
 
-var WH_MENU_VERSION = '4';
+var WH_MENU_VERSION = '5';
 var WH_MENU_DEFAULTS = {
   grill: {
-    express: [
-      {name:'Chicken Bacon Ranch Wrap', desc:'', price:'$13'},
-      {name:'½ lb Cheeseburger', desc:'', price:'$14'},
-      {name:'Caesar Salad', desc:'', price:'$13'},
-      {name:'Soup & Salad Combo', desc:'', price:'$12'}
-    ],
     starters: [
-      {name:'Cheese Balls', desc:'Regular or Spicy', price:'$14'},
-      {name:'Fried Green Beans', desc:'', price:'$10'},
-      {name:'Mini Tacos', desc:'', price:'$12'},
-      {name:'Chips & Queso', desc:'', price:'$13'},
-      {name:'Wings (6 pc)', desc:'Sweet Thai Chili, Buffalo, Garlic Parm, BBQ, or Plain', price:'$12'},
-      {name:'Wings (12 pc)', desc:'Sweet Thai Chili, Buffalo, Garlic Parm, BBQ, or Plain', price:'$16'}
+      {name:'Fried Green Beans', desc:'Served with house-made ranch or chipotle ranch', price:'$10'},
+      {name:'Cheese Balls', desc:'Golden-fried cheese curds, served with ranch or chipotle ranch', price:'$13'},
+      {name:'Spicy Cheese Curds', desc:'Crispy battered cheese curds, served with ranch or chipotle ranch', price:'$13'},
+      {name:'House Chips & Queso', desc:'Hand-cut chips with warm queso dip', price:'$11'},
+      {name:'Mini Tacos', desc:'Seasoned chicken and beans, with sour cream and salsa', price:'$11'},
+      {name:'Boneless or Traditional Wings (6 pc)', desc:'Sweet Thai Chili, Buffalo, Garlic Parm, BBQ, or Plain', price:'$12'},
+      {name:'Boneless or Traditional Wings (12 pc)', desc:'Sweet Thai Chili, Buffalo, Garlic Parm, BBQ, or Plain', price:'$16'}
     ],
     sandwiches: [
-      {name:'WHCC Club', desc:'With choice of side', price:'$15'},
-      {name:'Chicken Bacon Ranch Wrap', desc:'With choice of side', price:'$13'},
-      {name:'Chicken Sandwich', desc:'Grilled or Fried — with choice of side', price:'$15'},
+      {name:'WHCC Club', desc:'Sandwich or wrap — with choice of side', price:'$14'},
+      {name:'Chicken Bacon Ranch Wrap', desc:'Grilled or Fried — with choice of side', price:'$13'},
+      {name:'Philly Cheesesteak', desc:'Steak or Chicken — with choice of side', price:'$14'},
+      {name:'Hot Ham & Cheese', desc:'With choice of side', price:'$11'},
+      {name:'Reuben', desc:'With choice of side', price:'$13'},
       {name:'WHCC Smashburger (Single)', desc:'With choice of side', price:'$11'},
       {name:'WHCC Smashburger (Double)', desc:'With choice of side', price:'$14'},
-      {name:'Steak or Chicken Philly', desc:'With choice of side', price:'$14'},
-      {name:'Hot Ham & Cheese', desc:'With choice of side', price:'$11'},
-      {name:'Chicken Caesar Wrap', desc:'With choice of side', price:'$13'},
-      {name:'BLT', desc:'With choice of side', price:'$14'},
+      {name:'Chicken Sandwich', desc:'Grilled or Fried — with choice of side', price:'$15'},
       {name:'Quesadilla', desc:'Chicken or Steak — with choice of side', price:'$12'},
-      {name:'Grilled Cheese', desc:'With choice of side', price:'$8'}
+      {name:'BLT', desc:'With choice of side', price:'$14'},
+      {name:'Chicken Salad Sandwich', desc:'Toasted croissant — with choice of side', price:'$13'}
     ],
     lunchEntrees: [
       {name:'12oz Ribeye', desc:'', price:'$35'},
+      {name:'Bone-In Pork Chop', desc:'', price:'$30'},
       {name:'Pan Seared Salmon', desc:'', price:'$24'},
       {name:'Grilled Chicken', desc:'', price:'$22'}
     ],
     lunchDesserts: [
-      {name:'House Salad', desc:'Add Chicken, Shrimp, or Salmon +$7', price:'$10'},
+      {name:'House', desc:'Add Chicken, Shrimp, or Salmon +$7', price:'$11'},
       {name:'Caesar', desc:'Add Chicken, Shrimp, or Salmon +$7', price:'$11'},
       {name:'Nicoise', desc:'Add Chicken, Shrimp, or Salmon +$7', price:'$13'},
       {name:'Cranberry Pecan', desc:'Add Chicken, Shrimp, or Salmon +$7', price:'$13'}
+    ],
+    dessert: [
+      {name:'Sorbet', desc:'', price:'$7'},
+      {name:'Crème Brûlée', desc:'', price:'$6'},
+      {name:'Chocolate Lava Cake', desc:'', price:'$8'}
     ],
     cocktails: [
       {name:'Westwood Old Fashioned', desc:'Bulleit Rye, house demerara, Angostura, orange', price:'$13'},
@@ -2515,8 +2461,8 @@ var WH_MENU_DEFAULTS = {
 };
 
 var MENU_SECTION_LABELS = {
-  express:'Express Lunch', starters:'Starters', lunchDesserts:'Salads',
-  sandwiches:'Sandwiches', lunchEntrees:'Signature Entrees',
+  starters:'Starters', lunchDesserts:'Salads',
+  sandwiches:'Sandwiches', lunchEntrees:'Signature Entrees', dessert:'Dessert',
   cocktails:'Cocktails', wine:'Wine by the Glass',
   postRound:'Sides', quickBites:'Kids Menu'
 };
@@ -2783,7 +2729,7 @@ function clubSection(s) {
       btn.style.color = sec === s ? 'var(--forest)' : 'var(--muted)';
     }
   });
-  if (s === 'events') { mLoadLiveScoring(); mLeagueShow('mens'); renderFindAGame(); }
+  if (s === 'events') { mLoadLiveScoring(); renderFindAGame(); }
   if (s === 'pool') renderMemberPool();
 }
 
@@ -5120,21 +5066,13 @@ function miHTML(item) {
 function renderAppMenu() {
   var g = menuLoad().grill;
 
-  // Render express items into the special styled card
-  var exEl = document.getElementById('m-express-items');
-  if (exEl) {
-    var exItems = g.express || [];
-    exEl.innerHTML = exItems.map(function(item) {
-      return '<div class="ex-item"><div class="ex-item-name">' + item.name + '</div><div class="ex-item-price">' + item.price + '</div></div>';
-    }).join('');
-  }
-
   // Render regular menu sections in correct order
   var secs = [
     {k:'starters',     l:'Starters'},
     {k:'lunchDesserts',l:'Salads'},
     {k:'sandwiches',   l:'Sandwiches'},
     {k:'lunchEntrees', l:'Signature Entrees'},
+    {k:'dessert',      l:'Dessert'},
     {k:'cocktails',    l:'Cocktails'},
     {k:'wine',         l:'Wine by the Glass'},
     {k:'postRound',    l:'Sides'},
@@ -5196,7 +5134,7 @@ function toggleKitchenView() {
 function open86Modal() {
   var secEl = document.getElementById('86-section');
   if (!secEl) return;
-  var orderedKeys = ['express','starters','lunchDesserts','sandwiches','lunchEntrees','cocktails','wine','postRound','quickBites'];
+  var orderedKeys = ['starters','lunchDesserts','sandwiches','lunchEntrees','dessert','cocktails','wine','postRound','quickBites'];
   secEl.innerHTML = orderedKeys.map(function(k){ return '<option value="'+k+'">'+MENU_SECTION_LABELS[k]+'</option>'; }).join('');
   render86SectionItems();
   openModal('modal-86-item');
@@ -5277,7 +5215,7 @@ function renderStaffMenus() {
   } else {
     var g = menuLoad().grill;
     var list86 = load86List();
-    var orderedKeys = ['express','starters','lunchDesserts','sandwiches','lunchEntrees','cocktails','wine','postRound','quickBites'];
+    var orderedKeys = ['starters','lunchDesserts','sandwiches','lunchEntrees','dessert','cocktails','wine','postRound','quickBites'];
     orderedKeys.forEach(function(key) {
       var items = g[key] || [];
       html += '<div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px;">' +
@@ -7468,201 +7406,6 @@ function initPullToRefresh(el, onRefresh) {
     }
   }, { passive: true });
 })();
-
-// ── LEAGUE SCHEDULES ─────────────────────────────────────────────────────────
-var ML_DATA = {
-  mens:   { name: "Men's League",       sub: 'Thursdays · 5:00 PM', dates: [
-    ['May 7','2026-05-07','Wk 1'],['May 14','2026-05-14','Wk 2'],['May 21','2026-05-21','Wk 3'],
-    ['May 28','2026-05-28','Wk 4'],['Jun 4','2026-06-04','Wk 5'],['Jun 11','2026-06-11','Wk 6'],
-    ['Jun 18','2026-06-18','Wk 7'],['Jun 25','2026-06-25','Wk 8'],['Jul 2','2026-07-02','Wk 9'],
-    ['Jul 9','2026-07-09','Wk 10'],['Jul 16','2026-07-16','Wk 11'],['Jul 23','2026-07-23','Wk 12'],
-    ['Jul 30','2026-07-30','Wk 13'],['Aug 6','2026-08-06','Wk 14'],['Aug 13','2026-08-13','Wk 15'],
-    ['Aug 20','2026-08-20','Final']
-  ]},
-  ladies: { name: 'Ladies Night',       sub: 'Tuesdays · 5:00 PM', dates: [
-    ['May 5','2026-05-05','Wk 1'],['May 12','2026-05-12','Wk 2'],['May 19','2026-05-19','Wk 3'],
-    ['May 26','2026-05-26','Wk 4'],['Jun 2','2026-06-02','Wk 5'],['Jun 9','2026-06-09','Wk 6'],
-    ['Jun 16','2026-06-16','Wk 7'],['Jun 23','2026-06-23','Wk 8'],['Jun 30','2026-06-30','Wk 9'],
-    ['Jul 7','2026-07-07','Wk 10'],['Jul 14','2026-07-14','Wk 11'],['Jul 21','2026-07-21','Wk 12'],
-    ['Jul 28','2026-07-28','Wk 13'],['Aug 4','2026-08-04','Wk 14'],['Aug 11','2026-08-11','Wk 15'],
-    ['Aug 18','2026-08-18','Final']
-  ]},
-  hg:     { name: 'Hit & Giggle',       sub: 'Wednesdays · 5:00 PM', dates: [
-    ['May 6','2026-05-06','Wk 1'],['May 13','2026-05-13','Wk 2'],['May 20','2026-05-20','Wk 3'],
-    ['May 27','2026-05-27','Wk 4'],['Jun 3','2026-06-03','Wk 5'],['Jun 10','2026-06-10','Wk 6'],
-    ['Jun 17','2026-06-17','Wk 7'],['Jun 24','2026-06-24','Wk 8'],['Jul 1','2026-07-01','Wk 9'],
-    ['Jul 8','2026-07-08','Wk 10'],['Jul 15','2026-07-15','Wk 11'],['Jul 22','2026-07-22','Wk 12'],
-    ['Jul 29','2026-07-29','Wk 13'],['Aug 5','2026-08-05','Wk 14'],['Aug 12','2026-08-12','Wk 15'],
-    ['Aug 19','2026-08-19','Final']
-  ]},
-  fnf:    { name: 'Friday Night Fights', sub: 'Fridays · 5:00 PM', dates: [
-    ['May 8','2026-05-08','Wk 1'],['May 15','2026-05-15','Wk 2'],['May 22','2026-05-22','Wk 3'],
-    ['May 29','2026-05-29','Wk 4'],['Jun 5','2026-06-05','Wk 5'],['Jun 12','2026-06-12','Wk 6'],
-    ['Jun 19','2026-06-19','Wk 7'],['Jun 26','2026-06-26','Wk 8'],['Jul 3','2026-07-03','Wk 9'],
-    ['Jul 10','2026-07-10','Wk 10'],['Jul 17','2026-07-17','Wk 11'],['Jul 24','2026-07-24','Wk 12'],
-    ['Jul 31','2026-07-31','Wk 13'],['Aug 7','2026-08-07','Wk 14'],['Aug 14','2026-08-14','Wk 15'],
-    ['Aug 21','2026-08-21','Final']
-  ]}
-};
-
-function mLeagueRenderUpcoming(id) {
-  var data = ML_DATA[id];
-  var el = document.getElementById('ml-upcoming-' + id);
-  if (!data || !el) return;
-  var today = new Date().toISOString().slice(0,10);
-  var upcoming = data.dates.filter(function(d){ return d[1] >= today; }).slice(0,3);
-
-  if (!upcoming.length) {
-    el.innerHTML = '<div style="font-size:.75rem;color:var(--muted);padding:8px 0;">Season complete — see you next year!</div>';
-    return;
-  }
-
-  var sub = '<div style="font-size:.68rem;color:var(--muted);margin-bottom:8px;">' + data.sub + '</div>';
-  var chips = upcoming.map(function(d, i) {
-    var isNext = i === 0;
-    return '<div onclick="mLeagueReg(\'' + id + '\',\'' + data.name.replace(/'/g,"\\'") + '\',\'' + d[0] + '\',\'' + d[1] + '\')" style="'
-      + 'flex:1;text-align:center;padding:9px 4px;border-radius:8px;cursor:pointer;'
-      + 'background:' + (isNext ? 'var(--forest)' : 'rgba(26,74,38,.08)') + ';'
-      + 'border:1px solid ' + (isNext ? 'var(--forest)' : 'rgba(26,74,38,.2)') + ';'
-      + '">'
-      + '<div style="font-size:.78rem;font-weight:700;color:' + (isNext ? '#f5f0e8' : 'var(--dark)') + ';">' + d[0] + '</div>'
-      + '<div style="font-size:.62rem;color:' + (isNext ? 'rgba(245,240,232,.65)' : 'var(--muted)') + ';margin-top:2px;">' + d[2] + '</div>'
-      + '</div>';
-  }).join('');
-
-  el.innerHTML = sub + '<div style="display:flex;gap:8px;">' + chips + '</div>';
-}
-
-function mLeagueRenderStandings(id) {
-  var el = document.getElementById('ml-standings-' + id);
-  if (!el) return;
-  // Collect all scores from events associated with this league
-  var leagueName = ML_DATA[id] ? ML_DATA[id].name : '';
-  var totals = {};
-  appEvents.forEach(function(ev, idx) {
-    if (!ev.title) return;
-    var isLeague = (leagueName && ev.title.toLowerCase().indexOf(leagueName.split(' ')[0].toLowerCase()) >= 0)
-                || (id === 'fnf' && ev.title.toLowerCase().indexOf('friday') >= 0)
-                || (id === 'hg'  && ev.title.toLowerCase().indexOf('giggle') >= 0);
-    if (!isLeague) return;
-    var scores = JSON.parse(localStorage.getItem('wh_scores_' + idx) || '[]');
-    scores.forEach(function(s) {
-      var key = s.name;
-      if (!totals[key]) totals[key] = { name: s.name, rounds: 0, grossTotal: 0, netTotal: 0 };
-      totals[key].rounds++;
-      totals[key].grossTotal += parseInt(s.gross) || 0;
-      if (s.net) totals[key].netTotal += parseInt(s.net) || 0;
-    });
-  });
-  var rows = Object.values(totals);
-  if (!rows.length) {
-    el.innerHTML = '<div style="font-size:.74rem;color:var(--muted);padding:8px 0 4px;">No standings yet — scores will appear here as rounds are played.</div>';
-    return;
-  }
-  rows.sort(function(a, b) {
-    var aAvg = a.rounds ? a.netTotal / a.rounds || a.grossTotal / a.rounds : 999;
-    var bAvg = b.rounds ? b.netTotal / b.rounds || b.grossTotal / b.rounds : 999;
-    return aAvg - bAvg;
-  });
-  var html = '<div style="margin-top:12px;">'
-    + '<div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Season Standings</div>'
-    + '<table style="width:100%;border-collapse:collapse;font-size:.76rem;">'
-    + '<thead><tr style="border-bottom:2px solid var(--border);">'
-    + '<th style="text-align:left;padding:4px 6px;color:var(--muted);font-weight:600;">#</th>'
-    + '<th style="text-align:left;padding:4px 6px;color:var(--muted);font-weight:600;">Player</th>'
-    + '<th style="text-align:center;padding:4px 6px;color:var(--muted);font-weight:600;">Rds</th>'
-    + '<th style="text-align:center;padding:4px 6px;color:var(--muted);font-weight:600;">Avg Net</th>'
-    + '</tr></thead><tbody>';
-  rows.forEach(function(r, i) {
-    var avg = r.rounds ? (r.netTotal || r.grossTotal) / r.rounds : 0;
-    var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
-    html += '<tr style="border-bottom:1px solid var(--border);">'
-      + '<td style="padding:6px 6px;color:var(--muted);">' + (medal || (i+1)) + '</td>'
-      + '<td style="padding:6px 6px;font-weight:' + (i < 3 ? '700' : '400') + ';color:var(--dark);">' + r.name + '</td>'
-      + '<td style="padding:6px 6px;text-align:center;color:var(--muted);">' + r.rounds + '</td>'
-      + '<td style="padding:6px 6px;text-align:center;font-weight:600;color:var(--forest);">' + (avg ? avg.toFixed(1) : '—') + '</td>'
-      + '</tr>';
-  });
-  html += '</tbody></table></div>';
-  el.innerHTML = html;
-}
-
-function mLeagueShow(which) {
-  ['mens','ladies','hg','fnf'].forEach(function(id) {
-    var panel = document.getElementById('ml-panel-' + id);
-    var tab   = document.getElementById('ml-tab-' + id);
-    if (!panel || !tab) return;
-    var active = id === which;
-    panel.style.display = active ? 'block' : 'none';
-    tab.style.background = active ? 'var(--forest)' : 'rgba(26,74,38,.12)';
-    tab.style.color      = active ? '#f5f0e8'        : 'var(--muted)';
-    tab.style.border     = active ? 'none'           : '1px solid rgba(26,74,38,.2)';
-    if (active) { mLeagueRenderUpcoming(id); mLeagueRenderStandings(id); }
-  });
-}
-
-function mLeagueInitAll() {
-  ['mens','ladies','hg','fnf'].forEach(function(id) {
-    mLeagueRenderUpcoming(id);
-    mLeagueRenderStandings(id);
-  });
-}
-
-var _lrLeague = '', _lrDate = '', _lrIso = '', _lrLeagueId = '';
-
-function mLeagueReg(leagueId, leagueName, dateLabel, isoDate) {
-  var today = new Date().toISOString().slice(0,10);
-  if (isoDate < today) { showToast(leagueName + ' · ' + dateLabel + ' has passed'); return; }
-  _lrLeague = leagueName;
-  _lrDate   = dateLabel;
-  _lrIso    = isoDate;
-  _lrLeagueId = leagueId;
-  document.getElementById('lr-title').textContent = 'Sign Up · ' + leagueName;
-  document.getElementById('lr-info').textContent  = dateLabel + ' · ' + (ML_DATA[leagueId] ? ML_DATA[leagueId].sub : '');
-  document.getElementById('lr-first').value = '';
-  document.getElementById('lr-last').value  = '';
-  document.getElementById('lr-email').value = '';
-  document.getElementById('lr-phone').value = '';
-  document.getElementById('lr-error').style.display = 'none';
-  openModal('modal-league-reg');
-}
-
-function submitLeagueReg() {
-  var first = (document.getElementById('lr-first').value || '').trim();
-  var last  = (document.getElementById('lr-last').value  || '').trim();
-  var email = (document.getElementById('lr-email').value || '').trim();
-  var phone = (document.getElementById('lr-phone').value || '').trim();
-  var errEl = document.getElementById('lr-error');
-  errEl.style.display = 'none';
-  if (!first || !last)  { errEl.textContent = 'Please enter your first and last name.'; errEl.style.display = 'block'; return; }
-  if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email address.'; errEl.style.display = 'block'; return; }
-
-  var btn = document.querySelector('#modal-league-reg .modal-btn.primary');
-  if (btn) { btn.textContent = 'Signing up…'; btn.disabled = true; }
-
-  var payload = {
-    league:    _lrLeague,
-    leagueId:  _lrLeagueId,
-    date:      _lrDate,
-    isoDate:   _lrIso,
-    firstName: first,
-    lastName:  last,
-    email:     email,
-    phone:     phone,
-    submitted: new Date().toISOString()
-  };
-
-  WHCC_SYNC.saveLeagueReg(payload, function(res, err) {
-    if (btn) { btn.textContent = 'Sign Up'; btn.disabled = false; }
-    if (err) {
-      errEl.textContent = 'Could not connect — please try again.';
-      errEl.style.display = 'block';
-      return;
-    }
-    closeModal('modal-league-reg');
-    showToast('You\'re signed up for ' + _lrLeague + ' · ' + _lrDate + '!');
-  });
-}
 
 // ════════════════════════════════════════════════════════
 // NETWORK STATUS BANNER

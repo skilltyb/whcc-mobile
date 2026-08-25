@@ -2930,6 +2930,7 @@ function initMember() {
     _initMemberUI();
   });
   syncEventsFromServer();
+  menuFetch();
 }
 function _initMemberUI() {
   var u = currentUser;
@@ -3644,15 +3645,15 @@ var WHCC_SYNC = {
       .catch(function(e){ if (cb) cb(null, e); });
   },
   saveTeeSheet: function(event, round, date, config, groups, cb) {
-    var body = JSON.stringify({ action: 'save-teesheet', event: event, round: round,
-      date: date, config: config, groups: groups });
+    var body = JSON.stringify(Object.assign({ action: 'save-teesheet', event: event, round: round,
+      date: date, config: config, groups: groups }, this._staffAuth()));
     fetch(WHCC_SCRIPT_URL, { method: 'POST', headers: {'Content-Type':'text/plain'}, body: body })
       .then(function(r){ return r.json(); })
       .then(function(d){ if (cb) cb(d, null); })
       .catch(function(e){ if (cb) cb(null, e); });
   },
   saveScores: function(event, round, scores, cb) {
-    var body = JSON.stringify({ action: 'save-scores', event: event, round: round, scores: scores });
+    var body = JSON.stringify(Object.assign({ action: 'save-scores', event: event, round: round, scores: scores }, this._staffAuth()));
     fetch(WHCC_SCRIPT_URL, { method: 'POST', headers: {'Content-Type':'text/plain'}, body: body })
       .then(function(r){ return r.json(); })
       .then(function(d){ if (cb) cb(d, null); })
@@ -3670,13 +3671,33 @@ var WHCC_SYNC = {
       .catch(function(e) { if (cb) cb(null, e); });
   },
 
-  // Generic ops key/value push — fire and forget
+  // Generic ops key/value push — fire and forget. save-ops-data requires
+  // staff auth server-side for every key (there's no per-key exemption),
+  // so this can only ever succeed for a signed-in staffer — member-facing
+  // callers of this (e.g. Find a Game partner posts) stay local-only.
   opsPush: function(key, data) {
+    var body = Object.assign({ action: 'save-ops-data', key: key, data: data }, this._staffAuth());
     fetch(WHCC_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'save-ops-data', key: key, data: data })
+      body: JSON.stringify(body)
     }).catch(function() {});
+  },
+
+  // ── MENU SYNC ── (mirrors the website's WHCC_SYNC.saveMenus/fetchMenus)
+  saveMenus: function(data, cb) {
+    var body = Object.assign({ action: 'save-menus', data: data }, this._staffAuth());
+    fetch(WHCC_SCRIPT_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(body)
+    }).then(function(r){ return r.json(); })
+      .then(function(d){ if (cb) cb(d, null); })
+      .catch(function(e){ if (cb) cb(null, e); });
+  },
+  fetchMenus: function(cb) {
+    fetch(WHCC_SCRIPT_URL + '?action=get-menus')
+      .then(function(r){ return r.json(); })
+      .then(function(d){ if (cb) cb(d, null); })
+      .catch(function(e){ if (cb) cb(null, e); });
   },
 
   // Fetch a single ops key from server, cache in localStorage
@@ -5053,6 +5074,28 @@ function menuLoad() {
 function menuSave(data) {
   data._version = WH_MENU_VERSION;
   localStorage.setItem('wh_menus', JSON.stringify(data));
+  // This previously only wrote to localStorage — menu edits made in the app
+  // (e.g. 86'ing an item, adding a special) never reached the Sheet or the
+  // website. Push to the server the same way the website does.
+  WHCC_SYNC.saveMenus(data, function(res, err) {
+    if (!res || !res.ok || err) showToast('Saved on this device, but failed to sync — check staff PIN.');
+  });
+}
+
+// Pulls the same menu data the website reads/writes (get-menus) so edits
+// made on either side (website CMS, mobile 86/add/edit, or a staff member
+// editing the Sheet directly) show up everywhere.
+function menuFetch() {
+  WHCC_SYNC.fetchMenus(function(remote, err) {
+    if (!remote || err || typeof remote !== 'object' || !remote.grill) return;
+    remote._version = WH_MENU_VERSION;
+    localStorage.setItem('wh_menus', JSON.stringify(remote));
+    // Each render function already no-ops if its target element isn't on
+    // the current screen, so it's safe to just call all of them.
+    renderAppMenu();
+    renderHooversMenu();
+    renderStaffMenus();
+  });
 }
 
 function miHTML(item) {
@@ -6038,8 +6081,13 @@ function pushMemberNotice() {
   loadConditionsEditor();
   fetch(WHCC_SCRIPT_URL, {
     method: 'POST', headers: {'Content-Type':'text/plain'},
-    body: JSON.stringify({ action: 'save-conditions', data: data })
-  }).catch(function(){});
+    body: JSON.stringify({
+      action: 'save-conditions', data: data,
+      staffEmail: currentUser && currentUser.email, staffUserPin: currentUser && currentUser.pin
+    })
+  }).then(function(r) { return r.json(); })
+    .then(function(res) { if (!res || !res.ok) showToast('Saved on this device, but failed to sync — check staff PIN.'); })
+    .catch(function() { showToast('Saved on this device, but failed to sync — check your connection.'); });
   showToast('📣 Notice pushed to all members!');
 }
 function clearMemberNotice() {
@@ -6052,8 +6100,13 @@ function clearMemberNotice() {
   loadConditionsEditor();
   fetch(WHCC_SCRIPT_URL, {
     method: 'POST', headers: {'Content-Type':'text/plain'},
-    body: JSON.stringify({ action: 'save-conditions', data: data })
-  }).catch(function(){});
+    body: JSON.stringify({
+      action: 'save-conditions', data: data,
+      staffEmail: currentUser && currentUser.email, staffUserPin: currentUser && currentUser.pin
+    })
+  }).then(function(r) { return r.json(); })
+    .then(function(res) { if (!res || !res.ok) showToast('Saved on this device, but failed to sync — check staff PIN.'); })
+    .catch(function() { showToast('Saved on this device, but failed to sync — check your connection.'); });
   showToast('Notice cleared');
 }
 
@@ -6239,6 +6292,7 @@ function initStaff() {
     _initStaffUI();
   });
   syncEventsFromServer();
+  menuFetch();
 }
 function _initStaffUI() {
   var u     = currentUser;

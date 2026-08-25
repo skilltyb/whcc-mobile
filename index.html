@@ -6388,11 +6388,20 @@ function quickSaveConditions() {
   if (range) data.rangeStatus = range;
   localStorage.setItem('wh_conditions', JSON.stringify(data));
   localStorage.setItem('wh_conditions_ts', Date.now().toString());
-  // Sync to server
+  // Sync to server (needs staff auth or this silently no-ops server-side)
   fetch(WHCC_SCRIPT_URL, {
     method: 'POST', headers: {'Content-Type':'text/plain'},
-    body: JSON.stringify({ action: 'save-conditions', data: data })
-  }).catch(function(){});
+    body: JSON.stringify({
+      action: 'save-conditions',
+      data: data,
+      staffEmail:   currentUser && currentUser.email,
+      staffUserPin: currentUser && currentUser.pin
+    })
+  }).then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (!res || !res.ok) showToast('Saved on this device, but failed to sync — check staff PIN.');
+    })
+    .catch(function() { showToast('Saved on this device, but failed to sync — check your connection.'); });
   // Update member view
   renderConditionsUI(data);
   showToast('✅ Conditions updated!');
@@ -6413,11 +6422,22 @@ function saveConditions() {
   localStorage.setItem('wh_conditions', JSON.stringify(data));
   localStorage.setItem('wh_conditions_ts', Date.now().toString());
   loadConditions();
-  // Sync to Apps Script so all members see the update
+  // Sync to Apps Script so all members (and the website) see the update.
+  // Must send staff auth — save-conditions requires it server-side, and
+  // without it this silently no-ops (stays local-only) despite the toast.
   fetch(WHCC_SCRIPT_URL, {
     method: 'POST', headers: {'Content-Type':'text/plain'},
-    body: JSON.stringify({ action: 'save-conditions', data: data })
-  }).catch(function(){});
+    body: JSON.stringify({
+      action: 'save-conditions',
+      data: data,
+      staffEmail:   currentUser && currentUser.email,
+      staffUserPin: currentUser && currentUser.pin
+    })
+  }).then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (!res || !res.ok) showToast('Saved on this device, but failed to sync — check staff PIN.');
+    })
+    .catch(function() { showToast('Saved on this device, but failed to sync — check your connection.'); });
   showToast('✅ Course conditions updated!');
 }
 

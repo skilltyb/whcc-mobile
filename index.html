@@ -970,28 +970,9 @@
   <div class="tab-content" id="m-tab-dining">
     <div class="page">
       <div class="page-title">Dining</div>
-      <!-- Venue toggle -->
-      <div style="display:flex;gap:8px;margin-bottom:16px;">
-        <button id="dt-hoovers-btn" onclick="switchDiningView('hoovers')" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--forest);color:rgba(245,240,232,.92);font-size:.8rem;font-weight:700;cursor:pointer;">🍷 Hoover's</button>
-        <button id="dt-grill-btn" onclick="switchDiningView('grill')" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;">🍔 Westwood Grill</button>
-      </div>
-
-      <!-- HOOVER'S SECTION -->
-      <div id="dt-hoovers-section">
-        <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes('hoovers')">Reserve a Table at Hoover's</button>
-        <div style="background:var(--forest);border-radius:12px;padding:18px;margin-bottom:12px;text-align:center;">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:var(--cream);letter-spacing:.06em;">Hoover's</div>
-          <div style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">at Westwood Hills</div>
-          <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
-            <div style="text-align:center;"><div style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.5);margin-bottom:2px;">Thu – Sat</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">5:30 PM – 9 PM</div></div>
-          </div>
-          <div style="font-size:.68rem;color:rgba(245,240,232,.4);margin-top:8px;font-style:italic;">Members only · Open to public 3rd Saturday by reservation</div>
-        </div>
-        <div id="hoovers-menu-content"></div>
-      </div>
 
       <!-- WESTWOOD GRILL SECTION -->
-      <div id="dt-grill-section" style="display:none;">
+      <div id="dt-grill-section">
         <button class="ev-reg-btn" style="margin-bottom:16px;" onclick="openDiningRes('grille')">Reserve a Table at Westwood Grill</button>
         <div style="background:var(--forest);border-radius:12px;padding:18px;margin-bottom:12px;text-align:center;">
           <div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:var(--cream);letter-spacing:.06em;">Westwood Grill</div>
@@ -1539,11 +1520,6 @@
     <div class="page">
       <div class="page-title">Menu Manager</div>
       <div class="page-sub">Tap any item to edit name, description, or price</div>
-      <!-- VENUE TOGGLE -->
-      <div style="display:flex;gap:6px;margin-bottom:14px;">
-        <button class="sev-toggle-btn active" id="smv-grill-btn" onclick="setMenuVenue('grill')" style="flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:none;font-size:.72rem;font-weight:600;cursor:pointer;color:var(--forest);transition:background .15s;">🍔 Westwood Grill</button>
-        <button class="sev-toggle-btn"        id="smv-hoovers-btn" onclick="setMenuVenue('hoovers')" style="flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:none;font-size:.72rem;font-weight:600;cursor:pointer;color:var(--forest);transition:background .15s;">🍽️ Hoover's</button>
-      </div>
       <!-- 86 LIST (Grill only) -->
       <div id="s-86-wrapper">
       <div class="card" style="margin-bottom:12px;">
@@ -1881,10 +1857,6 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title" id="md-title">Reserve at Westwood Grill</div>
-    <div style="display:flex;gap:8px;margin-bottom:14px;">
-      <button id="md-venue-grill" onclick="setModalVenue('grille')" style="flex:1;padding:9px;border-radius:8px;border:none;background:var(--forest);color:rgba(245,240,232,.92);font-size:.78rem;font-weight:700;cursor:pointer;">Westwood Grill</button>
-      <button id="md-venue-hoovers" onclick="setModalVenue('hoovers')" style="flex:1;padding:9px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;">Hoover's</button>
-    </div>
     <div id="md-venue-hint" style="display:none;font-size:.75rem;color:var(--gold);margin-bottom:10px;padding:8px 12px;background:rgba(184,151,106,.1);border-radius:8px;border-left:3px solid var(--gold);"></div>
     <input class="modal-input" id="md-date" type="date">
     <input class="modal-input" id="md-time" type="time" value="12:00">
@@ -1902,11 +1874,7 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title">Add Reservation</div>
-    <label class="login-label">Venue</label>
-    <select class="modal-input" id="dr-venue">
-      <option value="grille">Westwood Grill</option>
-      <option value="hoovers">Hoover's</option>
-    </select>
+    <input type="hidden" id="dr-venue" value="grille">
     <label class="login-label">Reservation Time</label>
     <input class="modal-input" id="dr-time" type="time">
     <label class="login-label">Party Name</label>
@@ -2055,7 +2023,7 @@
     <input class="modal-input" id="me-name" type="text" placeholder="Item name">
     <input class="modal-input" id="me-desc" type="text" placeholder="Description (optional)">
     <input class="modal-input" id="me-price" type="text" placeholder="Price (e.g. $12) — leave blank to hide price">
-    <input class="modal-input" id="me-wine" type="text" placeholder="Wine pairing (optional — Hoover's only)">
+    <input class="modal-input" id="me-wine" type="text" placeholder="Wine pairing (optional)">
     <input type="hidden" id="me-section">
     <input type="hidden" id="me-index">
     <input type="hidden" id="me-venue">
@@ -2406,32 +2374,6 @@ var WH_MENU_DEFAULTS = {
       {name:'Fried Green Beans', desc:'Included with sandwiches & entrees', price:''},
       {name:'House Chips', desc:'Included with sandwiches & entrees', price:''},
       {name:'Fries', desc:'Hand Cut or Traditional — included with sandwiches & entrees', price:''}
-    ]
-  },
-  hoovers: {
-    tapas: [
-      {name:'Asian Steak Bites', desc:'Cubed filet bites marinated in bulgogi sauce, our special blend of spices from the far east', price:'', wine:''},
-      {name:"Chicken Loli's", desc:'Chicken drumsticks prepared with savory spices, arranged with your choice of dipping sauce', price:'', wine:''},
-      {name:'Golden Seared Prawns', desc:'Full body prawns seared and grilled to perfection in scampi sauce', price:'', wine:''}
-    ],
-    salad: [
-      {name:'Caprese', desc:'Sliced mozzarella, tomatoes, sweet basil, balsamic glaze', price:'', wine:''},
-      {name:'Caesar', desc:'Parmesan cheese, croutons, caesar dressing', price:'', wine:''},
-      {name:'Wedge', desc:'Cherry tomatoes, bacon, diced red onion, and parmesan cheese', price:'', wine:''}
-    ],
-    entrees: [
-      {name:'Filet Oscar', desc:'8 oz. filet topped with fresh crab and Béarnaise sauce. Served with fondant potatoes and garlic butter mushrooms', price:'', wine:'Pinot Noir, Bordeaux, or Cabernet'},
-      {name:'Ahi Steak', desc:'Fresh caught Ahi tuna steak featuring a peppercorn crust and flat top grilled. Served with forbidden rice and smashed brussel sprouts', price:'', wine:'Chardonnay or Pinot Noir'},
-      {name:'Veal Milanese', desc:'Marinated veal cutlets breaded and cooked to golden perfection. Served over a bed of risotto and green bean almondine', price:'', wine:'Pinot Noir, Cabernet, or Bordeaux'},
-      {name:"Chicken d'Hoover", desc:'Seasoned chicken breast served over a bed of homemade gnocchi in a parmesan cream sauce', price:'', wine:'Chianti or Pinot Noir'}
-    ],
-    dessert: [
-      {name:'Buried Treasure', desc:'A decadent chocolate covered strawberry encased in cheesecake', price:'', wine:''},
-      {name:'Chocolate Mousse Brownie', desc:'', price:'', wine:''},
-      {name:'Sorbet of the Day', desc:'Rotating flavors, inquire for details', price:'', wine:''}
-    ],
-    specialty: [
-      {name:'Tomahawk Pork Chop', desc:'14 oz. Tomahawk Pork Chop served on a bed of pommes potatoes with a side of bacon wrapped asparagus', price:'', wine:'Cabernet or Sauvignon Blanc'}
     ]
   },
   courseMenu: {
@@ -4853,24 +4795,13 @@ function removeEventTeeSlot(id) {
 var _activeDiningVenue = 'grille';
 
 function setModalVenue(v) {
-  _activeDiningVenue = v;
-  var grillBtn   = document.getElementById('md-venue-grill');
-  var hooversBtn = document.getElementById('md-venue-hoovers');
+  _activeDiningVenue = 'grille';
   var titleEl    = document.getElementById('md-title');
   var timeInput  = document.getElementById('md-time');
   var hintEl     = document.getElementById('md-venue-hint');
-  var active = 'flex:1;padding:9px;border-radius:8px;border:none;background:var(--forest);color:rgba(245,240,232,.92);font-size:.78rem;font-weight:700;cursor:pointer;';
-  var inactive = 'flex:1;padding:9px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;';
-  if (grillBtn)   grillBtn.style.cssText   = (v === 'grille'  ? active : inactive);
-  if (hooversBtn) hooversBtn.style.cssText = (v === 'hoovers' ? active : inactive);
-  if (titleEl)    titleEl.textContent = (v === 'hoovers') ? "Reserve at Hoover's" : 'Reserve at Westwood Grill';
-  if (v === 'hoovers') {
-    if (timeInput) { timeInput.min = '17:30'; timeInput.max = '21:00'; if (timeInput.value < '17:30' || timeInput.value > '21:00') timeInput.value = '18:00'; }
-    if (hintEl) { hintEl.textContent = "Hoover's is open Thursday, Friday & Saturday. Dinner only: 5:30–9 PM (last reservation)."; hintEl.style.display = 'block'; }
-  } else {
-    if (timeInput) { timeInput.min = '11:00'; timeInput.max = '21:00'; if (timeInput.value < '11:00' || timeInput.value > '21:00') timeInput.value = '12:00'; }
-    if (hintEl) { hintEl.textContent = 'Westwood Grill: Lunch 11 AM–2 PM, Dinner 5–9 PM. Closed Mondays.'; hintEl.style.display = 'block'; }
-  }
+  if (titleEl)    titleEl.textContent = 'Reserve at Westwood Grill';
+  if (timeInput) { timeInput.min = '11:00'; timeInput.max = '21:00'; if (timeInput.value < '11:00' || timeInput.value > '21:00') timeInput.value = '12:00'; }
+  if (hintEl) { hintEl.textContent = 'Westwood Grill: Lunch 11 AM–2 PM, Dinner 5–9 PM. Closed Mondays.'; hintEl.style.display = 'block'; }
 }
 
 function openDiningRes(venue) {
@@ -4889,24 +4820,8 @@ function confirmDining() {
   var notes = document.getElementById('md-notes').value;
   if (!date || !party) { showToast('Please fill in date and party size.'); return; }
 
-  // Hoover's: Thursday, Friday & Saturday only, 5:30–9 PM (dinner only)
-  if (_activeDiningVenue === 'hoovers') {
-    var dow = new Date(date + 'T12:00:00').getDay(); // 0=Sun … 4=Thu, 5=Fri, 6=Sat
-    if (dow !== 4 && dow !== 5 && dow !== 6) {
-      showToast("Hoover's is only open Thursday, Friday & Saturday. Please select a valid date.");
-      return;
-    }
-    var timeParts = (time || '').split(':');
-    var hh = parseInt(timeParts[0]), mm = parseInt(timeParts[1] || 0);
-    var timeMin = hh * 60 + mm;
-    if (!time || timeMin < 17 * 60 + 30 || timeMin > 21 * 60) {
-      showToast("Hoover's reservations are available 5:30–9 PM only.");
-      return;
-    }
-  }
-
   // Westwood Grill: closed Mondays, Lunch 11 AM–2 PM, Dinner 5–9 PM
-  if (_activeDiningVenue === 'grille') {
+  {
     var dowG = new Date(date + 'T12:00:00').getDay(); // 1=Monday
     if (dowG === 1) {
       showToast('Westwood Grill is closed on Mondays. Please select another day.');
@@ -5028,34 +4943,6 @@ function confirmDining() {
   showToast('✅ Reservation confirmed!');
 }
 
-function switchDiningView(view) {
-  _activeDiningVenue = (view === 'grill') ? 'grille' : 'hoovers';
-  var hooversSection = document.getElementById('dt-hoovers-section');
-  var grillSection = document.getElementById('dt-grill-section');
-  var hooversBtn = document.getElementById('dt-hoovers-btn');
-  var grillBtn = document.getElementById('dt-grill-btn');
-  if (view === 'hoovers') {
-    hooversSection.style.display = 'block';
-    grillSection.style.display = 'none';
-    renderHooversMenu();
-    hooversBtn.style.background = 'var(--forest)';
-    hooversBtn.style.color = 'rgba(245,240,232,.92)';
-    hooversBtn.style.border = 'none';
-    grillBtn.style.background = 'transparent';
-    grillBtn.style.color = 'var(--muted)';
-    grillBtn.style.border = '2px solid var(--border)';
-  } else {
-    hooversSection.style.display = 'none';
-    grillSection.style.display = 'block';
-    grillBtn.style.background = 'var(--forest)';
-    grillBtn.style.color = 'rgba(245,240,232,.92)';
-    grillBtn.style.border = 'none';
-    hooversBtn.style.background = 'transparent';
-    hooversBtn.style.color = 'var(--muted)';
-    hooversBtn.style.border = '2px solid var(--border)';
-  }
-}
-
 // ════════════════════════════════════
 // MENU (reads shared localStorage)
 // ════════════════════════════════════
@@ -5063,8 +4950,6 @@ function menuLoad() {
   try {
     var d = JSON.parse(localStorage.getItem('wh_menus'));
     if (d && d._version === WH_MENU_VERSION) {
-      // Back-fill hoovers if somehow missing from a saved v4 record
-      if (!d.hoovers) d.hoovers = JSON.parse(JSON.stringify(WH_MENU_DEFAULTS.hoovers));
       return d;
     }
     return JSON.parse(JSON.stringify(WH_MENU_DEFAULTS));
@@ -7758,20 +7643,13 @@ function globalSearch(q) {
         '</div>';
     }).join('');
   }
-  // ── Menu items (Grill + Hoover's) ──
+  // ── Menu items (Grill) ──
   var menu = menuLoad();
   var menuResults = [];
   Object.keys(menu.grill || {}).forEach(function(sec) {
     (menu.grill[sec] || []).forEach(function(item) {
       if ((item.name||'').toLowerCase().indexOf(term) >= 0 || (item.desc||'').toLowerCase().indexOf(term) >= 0) {
         menuResults.push({ name: item.name, desc: item.desc, venue: 'Grill', section: MENU_SECTION_LABELS[sec] || sec });
-      }
-    });
-  });
-  Object.keys(menu.hoovers || {}).forEach(function(sec) {
-    (menu.hoovers[sec] || []).forEach(function(item) {
-      if ((item.name||'').toLowerCase().indexOf(term) >= 0 || (item.desc||'').toLowerCase().indexOf(term) >= 0) {
-        menuResults.push({ name: item.name, desc: item.desc, venue: "Hoover's", section: HOOVERS_SECTION_LABELS[sec] || sec });
       }
     });
   });
@@ -7842,8 +7720,8 @@ document.addEventListener('keydown', function(e) {
     <div class="wf-item">
       <div class="wf-icon">🍽</div>
       <div class="wf-text">
-        <div class="wf-title">Dining — Grill &amp; Hoover's</div>
-        <div class="wf-desc">Reserve a table at the Westwood Grill or Hoover's. Call us at (573) 785-5253.</div>
+        <div class="wf-title">Dining — Westwood Grill</div>
+        <div class="wf-desc">Reserve a table at the Westwood Grill. Call us at (573) 785-5253.</div>
       </div>
     </div>
     <div class="wf-item">

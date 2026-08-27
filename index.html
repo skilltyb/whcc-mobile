@@ -737,7 +737,7 @@
         </div>
       </div>
       <!-- PWA INSTALL CTA — hidden by default, shown by _pwaShowBtn() when installable -->
-      <button id="btn-install-app-home" class="pwa-install-btn ev-reg-btn" onclick="triggerInstall()" style="display:none;margin-bottom:12px;background:var(--gold);color:var(--forest);">Download the App</button>
+      <button id="btn-install-app-home" class="pwa-install-btn ev-reg-btn" onclick="triggerInstall()" style="display:none;margin-bottom:12px;background:var(--gold);color:var(--forest);">Add to Home Screen</button>
       <!-- WEATHER + CONDITIONS WIDGET -->
       <div class="home-cols">
         <!-- LEFT: weather + quick actions -->
@@ -3751,13 +3751,13 @@ function triggerInstall() {
   var isAndroid = /android/i.test(ua);
 
   if (isIOS && !isSafari) {
-    showToast('Open this site in Safari to install it');
+    showToast('Open this site in Safari to add it to your Home Screen');
   } else if (isIOS) {
     showToast('Tap the Share icon, then "Add to Home Screen"');
   } else if (isAndroid) {
-    showToast('Tap your browser menu, then "Install app"');
+    showToast('Tap your browser menu, then "Add to Home Screen"');
   } else {
-    showToast('Look for the install icon in your address bar');
+    showToast('Look for "Add to Home Screen" in your browser\'s menu');
   }
 }
 

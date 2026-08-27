@@ -736,6 +736,15 @@
           <div class="greeting-badge" id="m-greet-badge">Member</div>
         </div>
       </div>
+      <!-- PWA INSTALL CTA — hidden by default, shown by _pwaShowBtn() when installable -->
+      <button id="btn-install-app-home" class="pwa-install-btn" onclick="triggerInstall()" style="display:none;width:100%;padding:12px 14px;margin-bottom:12px;background:var(--white);border:1px dashed var(--gold);border-radius:var(--radius);box-shadow:var(--shadow);font-family:inherit;cursor:pointer;text-align:left;align-items:center;gap:10px;">
+        <span style="font-size:1.3rem;">📲</span>
+        <span style="flex:1;">
+          <span style="display:block;font-size:.84rem;font-weight:700;color:var(--forest);">Download the App</span>
+          <span style="display:block;font-size:.72rem;color:var(--muted);">Add to your Home Screen for quick access</span>
+        </span>
+        <span style="font-size:.72rem;color:var(--gold);font-weight:600;">Install →</span>
+      </button>
       <!-- WEATHER + CONDITIONS WIDGET -->
       <div class="home-cols">
         <!-- LEFT: weather + quick actions -->
@@ -3718,11 +3727,15 @@ function _pwaShowBtn() {
   if (_pwaIsStandalone()) return; // already installed — never show
   var btn = document.getElementById('btn-install-app');
   if (btn) btn.style.display = 'block';
+  var homeBtn = document.getElementById('btn-install-app-home');
+  if (homeBtn) homeBtn.style.display = 'flex';
 }
 
 function _pwaHideBtn() {
   var btn = document.getElementById('btn-install-app');
   if (btn) btn.style.display = 'none';
+  var homeBtn = document.getElementById('btn-install-app-home');
+  if (homeBtn) homeBtn.style.display = 'none';
 }
 
 // Chrome / Edge / Firefox on Android — native install prompt

@@ -3750,18 +3750,13 @@ window.addEventListener('appinstalled', function() {
   _pwaHideBtn();
 });
 
-// iOS & macOS Safari — beforeinstallprompt never fires; show button manually
-(function() {
-  if (_pwaIsStandalone()) return;
-  var ua = navigator.userAgent;
-  // Safari on iOS or macOS (excludes Chrome/Firefox/Edge on iOS which use CriOS/FxiOS/EdgiOS)
-  var isAppleSafari = /safari/i.test(ua) &&
-                      !/chrome|crios|fxios|edgios|chromium|android/i.test(ua) &&
-                      /apple/i.test(navigator.vendor || '');
-  if (isAppleSafari) {
-    document.addEventListener('DOMContentLoaded', _pwaShowBtn);
-  }
-})();
+// Show the install button by default on every platform — Chrome's
+// beforeinstallprompt only fires after enough engagement (not on a first
+// visit), and iOS/other browsers never fire it at all, so waiting for
+// either left most visitors never seeing a button at all. triggerInstall()
+// picks the right instructions (native prompt if one arrived in the
+// meantime, otherwise per-platform manual steps) whenever it's clicked.
+document.addEventListener('DOMContentLoaded', _pwaShowBtn);
 
 function triggerInstall() {
   if (_pwaIsStandalone()) { _pwaHideBtn(); return; }
@@ -3787,10 +3782,14 @@ function triggerInstall() {
     return;
   }
 
-  // macOS Safari (desktop — no touch, no standalone nav.standalone)
-  var isMacSafari = /macintosh/i.test(ua) && navigator.maxTouchPoints === 0;
+  var isSafari = /safari/i.test(ua) && !/chrome|chromium|android/i.test(ua) && /apple/i.test(navigator.vendor || '');
+  // macOS Safari (desktop — no touch, no standalone nav.standalone). Requires
+  // Safari specifically — Mac Chrome/Firefox users who haven't gotten the
+  // native prompt yet fall through to the generic desktop instructions below.
+  var isMacSafari = isSafari && /macintosh/i.test(ua) && navigator.maxTouchPoints === 0;
   // iPad (reports as Macintosh in Safari 13+ with desktop mode)
   var isIpad = /ipad/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+  var isAndroid = /android/i.test(ua);
 
   var intro = document.getElementById('ios-install-intro');
   var steps = document.getElementById('ios-install-steps');
@@ -3807,13 +3806,28 @@ function triggerInstall() {
       '<li>Tap the <strong>Share</strong> button <span style="font-size:1rem;">⬆️</span> in the <strong>top</strong> toolbar</li>' +
       '<li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>' +
       '<li>Tap <strong>Add</strong> in the top right</li>';
-  } else {
-    // iPhone (default)
+  } else if (isSafari) {
+    // iPhone
     if (intro) intro.textContent = 'To install the app on your iPhone:';
     if (steps) steps.innerHTML =
       '<li>Tap the <strong>Share</strong> button <span style="font-size:1rem;">⬆️</span> at the <strong>bottom</strong> of Safari</li>' +
       '<li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>' +
       '<li>Tap <strong>Add</strong> in the top right</li>';
+  } else if (isAndroid) {
+    if (intro) intro.textContent = 'To install the app on your Android device:';
+    if (steps) steps.innerHTML =
+      '<li>Tap the <strong>⋮ menu</strong> in the top right of your browser</li>' +
+      '<li>Tap <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong></li>' +
+      '<li>Confirm to add it</li>';
+  } else {
+    // Desktop (Windows/Linux/Mac Chrome or Edge) — native prompt hasn't
+    // fired yet, usually because the browser wants a bit more engagement
+    // with the site first.
+    if (intro) intro.textContent = 'To install the app on this computer:';
+    if (steps) steps.innerHTML =
+      '<li>Look for an <strong>install icon</strong> in your browser\'s address bar</li>' +
+      '<li>Or open your browser\'s menu and look for <strong>"Install app"</strong></li>' +
+      '<li>If you don\'t see either yet, browse the site a bit more — some browsers wait until you\'ve visited a few times before offering it</li>';
   }
 
   openModal('modal-ios-install');

@@ -737,7 +737,7 @@
         </div>
       </div>
       <!-- PWA INSTALL CTA — hidden by default, shown by _pwaShowBtn() when installable -->
-      <button id="btn-install-app-home" class="pwa-install-btn ev-reg-btn" onclick="triggerInstall()" style="display:none;margin-bottom:12px;">Download the App</button>
+      <button id="btn-install-app-home" class="pwa-install-btn ev-reg-btn" onclick="triggerInstall()" style="display:none;margin-bottom:12px;background:var(--gold);color:var(--forest);">Download the App</button>
       <!-- WEATHER + CONDITIONS WIDGET -->
       <div class="home-cols">
         <!-- LEFT: weather + quick actions -->
@@ -1830,29 +1830,6 @@
       <button class="modal-btn secondary" onclick="closeModal('modal-add-spray')">Cancel</button>
       <button class="modal-btn primary" onclick="addSprayLog()">Log It</button>
     </div>
-  </div>
-</div>
-
-<!-- iOS / Safari install instructions -->
-<div class="modal-overlay modal-center" id="modal-ios-install" role="dialog" aria-modal="true" aria-labelledby="ios-install-title">
-  <div class="modal-box" style="text-align:center;">
-    <div class="modal-title" id="ios-install-title">Add to Home Screen</div>
-    <div id="ios-install-icon" style="font-size:2rem;margin:12px 0;">📲</div>
-    <p id="ios-install-intro" style="font-size:.84rem;color:var(--dark);line-height:1.6;margin-bottom:8px;"></p>
-    <ol id="ios-install-steps" style="text-align:left;font-size:.82rem;color:var(--dark);line-height:2;padding-left:20px;margin-bottom:16px;"></ol>
-    <button class="modal-btn primary" onclick="closeModal('modal-ios-install')">Got it</button>
-  </div>
-</div>
-
-<!-- iOS Chrome/Firefox — must use Safari -->
-<div class="modal-overlay modal-center" id="modal-ios-other-browser" role="dialog" aria-modal="true" aria-labelledby="ios-other-title">
-  <div class="modal-box" style="text-align:center;">
-    <div class="modal-title" id="ios-other-title">Use Safari to Install</div>
-    <div style="font-size:2rem;margin:12px 0;">🧭</div>
-    <p style="font-size:.84rem;color:var(--dark);line-height:1.6;margin-bottom:16px;">
-      To add this app to your Home Screen, open it in <strong>Safari</strong> — your current browser doesn't support installation.
-    </p>
-    <button class="modal-btn primary" onclick="closeModal('modal-ios-other-browser')">Got it</button>
   </div>
 </div>
 
@@ -3745,10 +3722,9 @@ window.addEventListener('appinstalled', function() {
 
 // Show the install button by default on every platform — Chrome's
 // beforeinstallprompt only fires after enough engagement (not on a first
-// visit), and iOS/other browsers never fire it at all, so waiting for
-// either left most visitors never seeing a button at all. triggerInstall()
-// picks the right instructions (native prompt if one arrived in the
-// meantime, otherwise per-platform manual steps) whenever it's clicked.
+// visit), so waiting for it left most visitors never seeing a button at
+// all. triggerInstall() only acts when a native prompt has actually
+// arrived by the time it's clicked; otherwise the tap is a no-op.
 document.addEventListener('DOMContentLoaded', _pwaShowBtn);
 
 function triggerInstall() {
@@ -3763,67 +3739,9 @@ function triggerInstall() {
         _pwaHideBtn();
       }
     });
-    return;
   }
-
-  // Determine which manual instructions to show
-  var ua = navigator.userAgent;
-
-  // iOS browsers that cannot install PWAs (must use Safari)
-  if (/crios|fxios|edgios/i.test(ua)) {
-    openModal('modal-ios-other-browser');
-    return;
-  }
-
-  var isSafari = /safari/i.test(ua) && !/chrome|chromium|android/i.test(ua) && /apple/i.test(navigator.vendor || '');
-  // macOS Safari (desktop — no touch, no standalone nav.standalone). Requires
-  // Safari specifically — Mac Chrome/Firefox users who haven't gotten the
-  // native prompt yet fall through to the generic desktop instructions below.
-  var isMacSafari = isSafari && /macintosh/i.test(ua) && navigator.maxTouchPoints === 0;
-  // iPad (reports as Macintosh in Safari 13+ with desktop mode)
-  var isIpad = /ipad/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
-  var isAndroid = /android/i.test(ua);
-
-  var intro = document.getElementById('ios-install-intro');
-  var steps = document.getElementById('ios-install-steps');
-
-  if (isMacSafari) {
-    if (intro) intro.textContent = 'To install the app on your Mac:';
-    if (steps) steps.innerHTML =
-      '<li>In the Safari menu bar, click <strong>File</strong></li>' +
-      '<li>Select <strong>"Add to Dock…"</strong></li>' +
-      '<li>Click <strong>Add</strong> to confirm</li>';
-  } else if (isIpad) {
-    if (intro) intro.textContent = 'To install the app on your iPad:';
-    if (steps) steps.innerHTML =
-      '<li>Tap the <strong>Share</strong> button <span style="font-size:1rem;">⬆️</span> in the <strong>top</strong> toolbar</li>' +
-      '<li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>' +
-      '<li>Tap <strong>Add</strong> in the top right</li>';
-  } else if (isSafari) {
-    // iPhone
-    if (intro) intro.textContent = 'To install the app on your iPhone:';
-    if (steps) steps.innerHTML =
-      '<li>Tap the <strong>Share</strong> button <span style="font-size:1rem;">⬆️</span> at the <strong>bottom</strong> of Safari</li>' +
-      '<li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>' +
-      '<li>Tap <strong>Add</strong> in the top right</li>';
-  } else if (isAndroid) {
-    if (intro) intro.textContent = 'To install the app on your Android device:';
-    if (steps) steps.innerHTML =
-      '<li>Tap the <strong>⋮ menu</strong> in the top right of your browser</li>' +
-      '<li>Tap <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong></li>' +
-      '<li>Confirm to add it</li>';
-  } else {
-    // Desktop (Windows/Linux/Mac Chrome or Edge) — native prompt hasn't
-    // fired yet, usually because the browser wants a bit more engagement
-    // with the site first.
-    if (intro) intro.textContent = 'To install the app on this computer:';
-    if (steps) steps.innerHTML =
-      '<li>Look for an <strong>install icon</strong> in your browser\'s address bar</li>' +
-      '<li>Or open your browser\'s menu and look for <strong>"Install app"</strong></li>' +
-      '<li>If you don\'t see either yet, browse the site a bit more — some browsers wait until you\'ve visited a few times before offering it</li>';
-  }
-
-  openModal('modal-ios-install');
+  // No native prompt available (iOS Safari never offers one; Chrome/Edge
+  // only offer it after enough engagement) — nothing to do but wait.
 }
 
 // ── MOBILE TEE SHEET ──────────────────────────────────────────────────────────

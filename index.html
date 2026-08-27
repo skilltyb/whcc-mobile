@@ -3739,9 +3739,26 @@ function triggerInstall() {
         _pwaHideBtn();
       }
     });
+    return;
   }
-  // No native prompt available (iOS Safari never offers one; Chrome/Edge
-  // only offer it after enough engagement) — nothing to do but wait.
+
+  // No native prompt available yet — one-line hint instead of a full
+  // instructions popup. iOS Safari never offers a native prompt at all;
+  // Chrome/Edge only offer one after enough engagement with the site.
+  var ua = navigator.userAgent;
+  var isIOS = /iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+  var isSafari = /safari/i.test(ua) && !/chrome|crios|fxios|edgios|chromium|android/i.test(ua) && /apple/i.test(navigator.vendor || '');
+  var isAndroid = /android/i.test(ua);
+
+  if (isIOS && !isSafari) {
+    showToast('Open this site in Safari to install it');
+  } else if (isIOS) {
+    showToast('Tap the Share icon, then "Add to Home Screen"');
+  } else if (isAndroid) {
+    showToast('Tap your browser menu, then "Install app"');
+  } else {
+    showToast('Look for the install icon in your address bar');
+  }
 }
 
 // ── MOBILE TEE SHEET ──────────────────────────────────────────────────────────

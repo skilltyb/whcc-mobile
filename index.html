@@ -2349,18 +2349,6 @@ var WH_MENU_DEFAULTS = {
       {name:'Crème Brûlée', desc:'', price:'$6'},
       {name:'Chocolate Lava Cake', desc:'', price:'$8'}
     ],
-    cocktails: [
-      {name:'Westwood Old Fashioned', desc:'Bulleit Rye, house demerara, Angostura, orange', price:'$13'},
-      {name:'The Westwood', desc:"Hendrick's Gin, elderflower, cucumber, tonic", price:'$12'},
-      {name:'Ozark Mule', desc:'Missouri bourbon, ginger beer, fresh lime', price:'$11'},
-      {name:'Birdie Aperol Spritz', desc:'Aperol, Prosecco, splash of soda, orange', price:'$12'}
-    ],
-    wine: [
-      {name:'Kim Crawford Sauvignon Blanc', desc:'New Zealand', price:'$11'},
-      {name:"Stags' Leap Chardonnay", desc:'Napa Valley', price:'$14'},
-      {name:'Decoy Pinot Noir', desc:'Sonoma, CA', price:'$13'},
-      {name:'Jordan Cabernet Sauvignon', desc:'Alexander Valley, CA', price:'$16'}
-    ],
     quickBites: [
       {name:'Hamburger', desc:'', price:'$7'},
       {name:'Cheeseburger', desc:'', price:'$8'},
@@ -2407,7 +2395,6 @@ var WH_MENU_DEFAULTS = {
 var MENU_SECTION_LABELS = {
   starters:'Starters', lunchDesserts:'Salads',
   sandwiches:'Sandwiches', lunchEntrees:'Signature Entrees', dessert:'Dessert',
-  cocktails:'Cocktails', wine:'Wine by the Glass',
   postRound:'Sides', quickBites:'Kids Menu'
 };
 var HOOVERS_SECTION_LABELS = {
@@ -5003,8 +4990,6 @@ function renderAppMenu() {
     {k:'sandwiches',   l:'Sandwiches'},
     {k:'lunchEntrees', l:'Signature Entrees'},
     {k:'dessert',      l:'Dessert'},
-    {k:'cocktails',    l:'Cocktails'},
-    {k:'wine',         l:'Wine by the Glass'},
     {k:'postRound',    l:'Sides'},
     {k:'quickBites',   l:'Kids Menu'}
   ];
@@ -5064,7 +5049,7 @@ function toggleKitchenView() {
 function open86Modal() {
   var secEl = document.getElementById('86-section');
   if (!secEl) return;
-  var orderedKeys = ['starters','lunchDesserts','sandwiches','lunchEntrees','dessert','cocktails','wine','postRound','quickBites'];
+  var orderedKeys = ['starters','lunchDesserts','sandwiches','lunchEntrees','dessert','postRound','quickBites'];
   secEl.innerHTML = orderedKeys.map(function(k){ return '<option value="'+k+'">'+MENU_SECTION_LABELS[k]+'</option>'; }).join('');
   render86SectionItems();
   openModal('modal-86-item');
@@ -5145,7 +5130,7 @@ function renderStaffMenus() {
   } else {
     var g = menuLoad().grill;
     var list86 = load86List();
-    var orderedKeys = ['starters','lunchDesserts','sandwiches','lunchEntrees','dessert','cocktails','wine','postRound','quickBites'];
+    var orderedKeys = ['starters','lunchDesserts','sandwiches','lunchEntrees','dessert','postRound','quickBites'];
     orderedKeys.forEach(function(key) {
       var items = g[key] || [];
       html += '<div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px;">' +

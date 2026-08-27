@@ -737,14 +737,7 @@
         </div>
       </div>
       <!-- PWA INSTALL CTA — hidden by default, shown by _pwaShowBtn() when installable -->
-      <button id="btn-install-app-home" class="pwa-install-btn" onclick="triggerInstall()" style="display:none;width:100%;padding:12px 14px;margin-bottom:12px;background:var(--white);border:1px dashed var(--gold);border-radius:var(--radius);box-shadow:var(--shadow);font-family:inherit;cursor:pointer;text-align:left;align-items:center;gap:10px;">
-        <span style="font-size:1.3rem;">📲</span>
-        <span style="flex:1;">
-          <span style="display:block;font-size:.84rem;font-weight:700;color:var(--forest);">Download the App</span>
-          <span style="display:block;font-size:.72rem;color:var(--muted);">Add to your Home Screen for quick access</span>
-        </span>
-        <span style="font-size:.72rem;color:var(--gold);font-weight:600;">Install →</span>
-      </button>
+      <button id="btn-install-app-home" class="pwa-install-btn ev-reg-btn" onclick="triggerInstall()" style="display:none;margin-bottom:12px;">Download the App</button>
       <!-- WEATHER + CONDITIONS WIDGET -->
       <div class="home-cols">
         <!-- LEFT: weather + quick actions -->
@@ -1187,7 +1180,7 @@
         <div class="info-row" style="border:none;padding:6px 0 0"><div class="ir-label">Pro Shop</div><div class="ir-val">Tue – Sun, 8 AM – 6 PM · Closed Mon</div></div>
       </div>
       <a href="https://www.goibsvision.com/WebRes/Club/westwoodhillscc/LogIn" target="_blank" style="display:block;width:100%;padding:14px;background:var(--forest);color:var(--white);border-radius:var(--radius-sm);font-size:.84rem;font-weight:600;text-align:center;text-decoration:none;box-sizing:border-box;margin-bottom:8px;">💳 Pay My Bill</a>
-      <button id="btn-install-app" onclick="triggerInstall()" style="display:none;width:100%;padding:14px;background:var(--sand);color:var(--forest);border:none;border-radius:var(--radius-sm);font-size:.84rem;font-weight:600;cursor:pointer;margin-bottom:8px;">📲 Add to Home Screen</button>
+      <button id="btn-install-app" onclick="triggerInstall()" style="display:none;width:100%;padding:14px;background:var(--sand);color:var(--forest);border:none;border-radius:var(--radius-sm);font-size:.84rem;font-weight:600;cursor:pointer;margin-bottom:8px;">Add to Home Screen</button>
       <button class="logout-btn" onclick="doLogout()">Sign Out</button>
     </div>
   </div>
@@ -3728,7 +3721,7 @@ function _pwaShowBtn() {
   var btn = document.getElementById('btn-install-app');
   if (btn) btn.style.display = 'block';
   var homeBtn = document.getElementById('btn-install-app-home');
-  if (homeBtn) homeBtn.style.display = 'flex';
+  if (homeBtn) homeBtn.style.display = 'block';
 }
 
 function _pwaHideBtn() {

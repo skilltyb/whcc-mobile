@@ -4935,6 +4935,41 @@ function confirmDining() {
 // ════════════════════════════════════
 // MENU (reads shared localStorage)
 // ════════════════════════════════════
+// ── WEEKLY SPECIALS RESET (same rule as the website) ──
+// The restaurant specials last one week: anything not saved since the most recent Monday 12:00 a.m.
+// (club time) is treated as blank, so the app is never out of date if staff forgets or there is no
+// new special that week. A Monday-midnight job in the Apps Script also clears the saved copy.
+var WH_SPECIALS_TZ = 'America/Chicago';
+var WH_WEEKLY_SPECIAL_KEYS = ['weeklySpecial', 'fridayNight', 'drinkSpecial'];
+function whZonedParts_(ms) {
+  var parts = {};
+  new Intl.DateTimeFormat('en-US', { timeZone: WH_SPECIALS_TZ, hourCycle: 'h23', weekday: 'short', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' })
+    .formatToParts(new Date(ms)).forEach(function(q) { parts[q.type] = q.value; });
+  return parts;
+}
+function whZonedOffsetMs_(ms) {
+  var q = whZonedParts_(ms);
+  return Date.UTC(+q.year, +q.month - 1, +q.day, (+q.hour) % 24, +q.minute, +q.second) - Math.floor(ms / 1000) * 1000;
+}
+function whSpecialsWeekStart() {
+  var q = whZonedParts_(Date.now());
+  var sinceMonday = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 }[q.weekday] || 0;
+  var wallMidnight = Date.UTC(+q.year, +q.month - 1, +q.day - sinceMonday, 0, 0, 0);
+  var guess = wallMidnight - whZonedOffsetMs_(wallMidnight);
+  return wallMidnight - whZonedOffsetMs_(guess);
+}
+function whSpecialFresh(spec) {
+  var t = (spec && spec.updatedAt) ? Date.parse(spec.updatedAt) : NaN;
+  return !isNaN(t) && t >= whSpecialsWeekStart();
+}
+function whFreshSpecials(data) {
+  var out = Object.assign({}, data || {});
+  WH_WEEKLY_SPECIAL_KEYS.forEach(function(k) {
+    if (!whSpecialFresh(out[k])) out[k] = { active: false, name: '', desc: '', price: '', wine: '', image: '' };
+  });
+  return out;
+}
+
 function menuLoad() {
   try {
     var d = JSON.parse(localStorage.getItem('wh_menus'));
@@ -5000,7 +5035,7 @@ function specialCardHTML(spec, title, dayGate) {
 function renderSpecials() {
   var el = document.getElementById('dt-specials');
   if (!el) return;
-  var data = menuLoad();
+  var data = whFreshSpecials(menuLoad());
   var html = specialCardHTML(data.weeklySpecial, 'Weekly Lunch Special')
     + specialCardHTML(data.wednesdayBuffet, 'Wednesday Night Buffet', 3)
     + specialCardHTML(data.fridayNight, 'Friday Night Special', 5)

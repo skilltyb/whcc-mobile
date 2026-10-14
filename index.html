@@ -5038,7 +5038,7 @@ function renderSpecials() {
   var data = whFreshSpecials(menuLoad());
   var html = specialCardHTML(data.weeklySpecial, 'Weekly Lunch Special')
     + specialCardHTML(data.wednesdayBuffet, 'Wednesday Night Buffet', 3)
-    + specialCardHTML(data.fridayNight, 'Friday Night Special', 5)
+    + specialCardHTML(data.fridayNight, 'Friday Night Special')
     + specialCardHTML(data.drinkSpecial, 'Weekly Drink Special');
   el.innerHTML = html;
 }

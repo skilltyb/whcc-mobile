@@ -691,8 +691,8 @@
     <button onclick="enterPortalAs('staff')" style="background:var(--forest);border:none;border-radius:var(--radius);padding:22px 20px;text-align:left;cursor:pointer;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:16px;">
       <div style="width:44px;height:44px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">👔</div>
       <div>
-        <div style="font-weight:700;font-size:.95rem;color:var(--white);margin-bottom:3px;">Staff Portal</div>
-        <div style="font-size:.75rem;color:rgba(255,255,255,.6);">Dashboard, operations &amp; management</div>
+        <div id="picker-staff-title" style="font-weight:700;font-size:.95rem;color:var(--white);margin-bottom:3px;">Staff Portal</div>
+        <div id="picker-staff-sub" style="font-size:.75rem;color:rgba(255,255,255,.6);">Dashboard, operations &amp; management</div>
       </div>
     </button>
     <p style="text-align:center;font-size:.75rem;color:rgba(255,255,255,.4);margin-top:6px;cursor:pointer;" onclick="doLogout()">Sign Out</p>
@@ -716,7 +716,7 @@
     <div class="hdr-title">Westwood Hills CC</div><span id="m-hdr-user" style="color:rgba(255,255,255,.7);font-size:.75rem;margin-right:4px;"></span>
     <span id="m-demo-badge" style="display:none;background:#b45309;color:#fff;font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:10px;margin-right:4px;">Demo</span>
     <button onclick="openSearch()" style="background:none;border:none;color:rgba(255,255,255,.75);font-size:1.1rem;cursor:pointer;padding:4px 8px;margin-right:2px;" aria-label="Search">🔍</button>
-    <button id="m-switch-btn" onclick="switchView('staff')" style="display:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;margin-right:6px;letter-spacing:.03em;">Staff →</button>
+    <button id="m-switch-btn" onclick="switchView('staff')" style="display:none;background:var(--gold);border:none;color:#fff;font-weight:700;font-size:.7rem;padding:5px 11px;border-radius:20px;cursor:pointer;margin-right:6px;letter-spacing:.03em;">Staff →</button>
     <button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;letter-spacing:.03em;">Sign Out</button>
   </div>
 
@@ -1119,6 +1119,11 @@
         <div class="prof-sub" id="m-prof-type">Full Membership</div>
         <div class="hcp-badge" onclick="openModal('modal-hcp')" style="cursor:pointer;">Handicap: <span id="m-hcp">—</span> ⓘ</div>
       </div>
+      <div class="card" id="m-switch-card" style="display:none;">
+        <div class="card-title" style="margin-bottom:4px;" id="m-switch-title">Admin Portal</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px;" id="m-switch-sub">You are viewing the member side. Switch to manage the club.</div>
+        <button class="modal-btn primary" style="width:100%;" onclick="switchView('staff')" id="m-switch-card-btn">Open Admin Portal →</button>
+      </div>
       <div class="card">
         <div class="info-row"><div class="ir-label">Member #</div><div class="ir-val" id="m-membernum">—</div></div>
         <div class="info-row"><div class="ir-label">Member Since</div><div class="ir-val" id="m-since">—</div></div>
@@ -1215,9 +1220,9 @@
 <div class="screen app-screen hidden" id="screen-staff">
   <div class="app-header">
     <div class="hdr-logo">W</div>
-    <div class="hdr-title">WHCC Staff</div>
+    <div class="hdr-title" id="s-hdr-title">WHCC Staff</div>
     <span id="s-demo-badge" style="display:none;background:#b45309;color:#fff;font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:10px;margin-right:4px;">Demo</span>
-    <button id="s-switch-btn" onclick="switchView('member')" style="display:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;margin-right:6px;letter-spacing:.03em;">← Member</button>
+    <button id="s-switch-btn" onclick="switchView('member')" style="display:none;background:var(--gold);border:none;color:#fff;font-weight:700;font-size:.7rem;padding:5px 11px;border-radius:20px;cursor:pointer;margin-right:6px;letter-spacing:.03em;">← Member view</button>
     <button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);font-size:.7rem;padding:4px 10px;border-radius:20px;cursor:pointer;letter-spacing:.03em;">Sign Out</button>
   </div>
 
@@ -1227,7 +1232,7 @@
       <div class="greeting-banner" style="background:linear-gradient(140deg,var(--forest) 0%,#2e4d35 60%,var(--forest-light) 100%);">
         <div class="greeting-name" id="s-greet-name">Good morning!</div>
         <div class="greeting-detail" id="s-greet-detail">Today</div>
-        <div class="greeting-badge" style="background:rgba(255,255,255,.18);color:#fff;">Staff Portal</div>
+        <div class="greeting-badge" id="s-greet-badge" style="background:rgba(255,255,255,.18);color:#fff;">Staff Portal</div>
       </div>
       <div class="stat-grid">
         <div class="stat-card"><div class="stat-num" id="s-stat-rounds">—</div><div class="stat-label">On the Course</div></div>
@@ -1242,6 +1247,7 @@
         <button class="qa-btn" onclick="(function(){var el=document.getElementById('notice-input');el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});})()"><span class="qa-icon">📣</span>Notice</button>
         <button class="qa-btn" onclick="openModal('modal-add-incident')"><span class="qa-icon">🔧</span>Incident</button>
         <button class="qa-btn" onclick="openModal('modal-add-lf')"><span class="qa-icon">🎒</span>Lost &amp; Found</button>
+        <button class="qa-btn" id="qa-specials" style="display:none;" onclick="goTab('staff','menus');setTimeout(function(){var w=document.getElementById('s-specials-wrap');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});},200)"><span class="qa-icon">📸</span>Specials</button>
       </div>
       <div class="s-dash-cols">
       <!-- LEFT COL: live ops -->
@@ -1532,6 +1538,8 @@
     <div class="page">
       <div class="page-title">Menu Manager</div>
       <div class="page-sub">Tap any item to edit name, description, or price</div>
+      <!-- FOOD & DRINK SPECIALS (admins only; filled in by renderSpecialsEditor) -->
+      <div id="s-specials-wrap"></div>
       <!-- 86 LIST (Grill only) -->
       <div id="s-86-wrapper">
       <div class="card" style="margin-bottom:12px;">
@@ -2001,6 +2009,57 @@
     <div class="modal-row">
       <button class="modal-btn secondary" onclick="closeModal('modal-partner-post')">Cancel</button>
       <button class="modal-btn primary" onclick="submitPartnerPost()">Post Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit a special (admin) -->
+<div class="modal-overlay" id="modal-special-edit">
+  <div class="modal-sheet" style="max-height:90vh;max-height:90svh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="sp-title">Edit Special</div>
+    <input class="modal-input" id="sp-name" type="text" placeholder="Name (e.g. Southwest Chicken Wrap)" maxlength="120">
+    <textarea class="modal-input" id="sp-desc" rows="3" placeholder="Description (optional)" maxlength="400" style="resize:vertical;"></textarea>
+    <input class="modal-input" id="sp-price" type="text" placeholder="Price (e.g. $12)" maxlength="20">
+    <input class="modal-input" id="sp-wine" type="text" placeholder="Pairs with (optional)" maxlength="120">
+    <div id="sp-photo-block" style="margin-bottom:12px;">
+      <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Photo</div>
+      <div id="sp-photo-preview" style="display:none;position:relative;margin-bottom:8px;">
+        <img id="sp-img" alt="" style="width:100%;max-height:200px;object-fit:cover;border-radius:var(--radius-sm);display:block;background:var(--cream);">
+      </div>
+      <div id="sp-photo-empty" style="font-size:.78rem;color:var(--muted);margin-bottom:8px;">No photo yet.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="modal-btn secondary" style="flex:1 1 45%;" onclick="document.getElementById('sp-file').click()">📷 Take / choose photo</button>
+        <button class="modal-btn secondary" style="flex:1 1 45%;" onclick="spOpenLibrary()">🖼 From library</button>
+        <button class="modal-btn secondary" id="sp-photo-remove" style="flex:1 1 100%;display:none;color:#991b1b;" onclick="spRemovePhoto()">Remove photo</button>
+      </div>
+      <input type="file" id="sp-file" accept="image/*" style="display:none;" onchange="spPickFile(this)">
+    </div>
+    <div id="sp-status" style="font-size:.78rem;color:var(--muted);margin-bottom:8px;display:none;"></div>
+    <div class="modal-row">
+      <button class="modal-btn secondary" id="sp-clear-btn" onclick="spSave(true)" style="background:#fee2e2;color:#991b1b;border:none;">Clear</button>
+      <button class="modal-btn secondary" onclick="closeModal('modal-special-edit')">Cancel</button>
+      <button class="modal-btn primary" id="sp-save-btn" onclick="spSave(false)">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Photo library (admin) -->
+<div class="modal-overlay" id="modal-photo-library">
+  <div class="modal-sheet" style="max-height:85vh;max-height:85svh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Photo Library</div>
+    <select class="modal-input" id="sp-lib-cat" onchange="spLibLoad()">
+      <option value="">All Photos</option>
+      <option value="Dining">Dining</option>
+      <option value="Golf">Golf</option>
+      <option value="Pool &amp; Events">Pool &amp; Events</option>
+      <option value="Banners">Banners</option>
+    </select>
+    <div id="sp-lib-status" style="font-size:.78rem;color:var(--muted);margin-bottom:8px;"></div>
+    <div id="sp-lib-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+    <div class="modal-row" style="margin-top:12px;">
+      <button class="modal-btn secondary" onclick="closeModal('modal-photo-library')">Close</button>
     </div>
   </div>
 </div>
@@ -2476,6 +2535,12 @@ function saveEventsToServer(cb) {
 
 var currentUser = null;
 
+// Admins (like "both" accounts) have a member side and a management side, so they get the role
+// picker at sign-in and a switch button in both headers.
+function isDualRole(u) { return !!u && (u.role === 'both' || u.role === 'admin'); }
+function isAdminUser() { return !!currentUser && currentUser.role === 'admin' && !window.IS_DEMO; }
+function staffSideName(u) { return (u && u.role === 'admin') ? 'Admin' : 'Staff'; }
+
 // ════════════════════════════════════
 // AUTH
 // ════════════════════════════════════
@@ -2555,13 +2620,13 @@ function loginAs(acct, email, pin) {
   // events-save call (Code.gs has no session concept — every staff-gated
   // request re-proves itself with email+PIN, same trust level the sheet's
   // own plaintext PIN column already carries).
-  if (pin && (acct.role === 'staff' || acct.role === 'both')) currentUser.pin = pin;
+  if (pin && (acct.role === 'staff' || acct.role === 'both' || acct.role === 'admin')) currentUser.pin = pin;
   localStorage.setItem('wh_current_user', JSON.stringify(currentUser));
   // Offer biometric enrollment after PIN login (member only, if not already enrolled)
-  if (acct.role === 'member' || acct.role === 'both') {
+  if (acct.role === 'member' || isDualRole(acct)) {
     maybeOfferBiometric(email, acct);
   }
-  if (acct.role === 'both') {
+  if (isDualRole(acct)) {
     var sub = document.getElementById('picker-sub');
     if (sub) sub.textContent = 'Welcome, ' + (acct.name ? acct.name.split(' ')[0] : 'back') + '!';
     showScreen('screen-role-picker');
@@ -2609,6 +2674,12 @@ function doLogout() {
 // NAVIGATION
 // ════════════════════════════════════
 function showScreen(id) {
+  if (id === 'screen-role-picker') {
+    var pt = document.getElementById('picker-staff-title'), ps = document.getElementById('picker-staff-sub');
+    var adm = currentUser && currentUser.role === 'admin';
+    if (pt) pt.textContent = adm ? 'Admin Portal' : 'Staff Portal';
+    if (ps) ps.textContent = adm ? 'Edit specials, photos, events & more' : 'Dashboard, operations & management';
+  }
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.add('hidden'); });
   document.getElementById(id).classList.remove('hidden');
 }
@@ -2858,7 +2929,17 @@ function _initMemberUI() {
   var u = currentUser;
   var first = u.name.split(' ')[0];
   var mSwBtn = document.getElementById('m-switch-btn');
-  if (mSwBtn) mSwBtn.style.display = (u.role === 'both') ? 'inline-block' : 'none';
+  if (mSwBtn) { mSwBtn.style.display = isDualRole(u) ? 'inline-block' : 'none'; mSwBtn.textContent = staffSideName(u) + ' \u2192'; }
+  var mSwCard = document.getElementById('m-switch-card');
+  if (mSwCard) {
+    mSwCard.style.display = isDualRole(u) ? 'block' : 'none';
+    var mSwTitle = document.getElementById('m-switch-title'), mSwSub = document.getElementById('m-switch-sub'), mSwGo = document.getElementById('m-switch-card-btn');
+    if (mSwTitle) mSwTitle.textContent = staffSideName(u) + ' Portal';
+    if (mSwSub) mSwSub.textContent = 'You are viewing the member side. Switch to ' + (u.role === 'admin' ? 'edit specials, photos and more.' : 'the staff tools.');
+    if (mSwGo) mSwGo.textContent = 'Open ' + staffSideName(u) + ' Portal \u2192';
+  }
+  if (!u.handicap) u.handicap = '\u2014';
+  if (!u.membership) u.membership = (u.role === 'admin') ? 'Administrator' : 'Member';
   var extraRounds = parseInt(localStorage.getItem('wh_extra_rounds_' + u.email) || '0');
   document.getElementById('m-hdr-user').textContent = first;
   document.getElementById('m-greet-name').textContent = greet() + ', ' + first + '!';
@@ -5016,12 +5097,13 @@ function miHTML(item) {
 
 // Mirrors the website's Weekly Lunch Special / Wednesday Night Buffet /
 // Friday Night Special / Weekly Drink Special cards on the Dining page.
-// Edited only from the website's staff Menus -> Specials tab; this just
-// displays whatever's synced through the shared Menus sheet.
+// Edited by admins here (Menu Manager -> Food & Drink Specials) or on the website's
+// staff Menus -> Specials tab; everyone else just sees what's synced through the shared Menus sheet.
 function specialCardHTML(spec, title, dayGate) {
   if (!spec || !spec.active || !spec.name) return '';
   if (dayGate !== undefined && new Date().getDay() !== dayGate) return '';
   var html = '<div class="card" style="margin-bottom:10px;">' +
+    (spec.image ? '<img src="' + whDriveImg(spec.image, 800) + '" alt="" loading="lazy" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;display:block;margin-bottom:10px;" onerror="this.style.display=\'none\'">' : '') +
     '<div class="card-title" style="margin-bottom:6px;">' + title + '</div>' +
     '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.3rem;color:var(--dark);margin-bottom:4px;">' + spec.name + '</div>';
   if (spec.desc) html += '<div class="card-body" style="margin-bottom:6px;">' + spec.desc + '</div>';
@@ -5039,6 +5121,232 @@ function renderSpecials() {
     + specialCardHTML(data.fridayNight, 'Friday Night Special')
     + specialCardHTML(data.drinkSpecial, 'Weekly Drink Special');
   el.innerHTML = html;
+}
+
+// ════════════════════════════════════
+// ADMIN: FOOD & DRINK SPECIALS (text + photos)
+// ════════════════════════════════════
+// Same data and rules as the website's Menus -> Specials tab: weekly specials carry updatedAt and
+// are blank again after Monday 12 a.m.; the Wednesday buffet is a standing offering (no photo).
+var SPECIAL_DEFS = [
+  { key: 'weeklySpecial',   title: 'Weekly Lunch Special',    wine: true,  photo: true,  weekly: true  },
+  { key: 'wednesdayBuffet', title: 'Wednesday Night Buffet',  wine: false, photo: false, weekly: false },
+  { key: 'fridayNight',     title: 'Friday Night Special',    wine: true,  photo: true,  weekly: true  },
+  { key: 'drinkSpecial',    title: 'Weekly Drink Special',    wine: false, photo: true,  weekly: true  }
+];
+var _spEdit = null;
+
+// Google Drive links from the photo library no longer render via drive.google.com/uc — use the image host.
+function whDriveImg(url, w) {
+  var u = String(url || '');
+  var m = u.match(/^https?:\/\/drive\.google\.com\/(?:uc|open)\?[^#]*?\bid=([A-Za-z0-9_-]+)/) ||
+          u.match(/^https?:\/\/drive\.google\.com\/file\/d\/([A-Za-z0-9_-]+)/);
+  return m ? 'https://lh3.googleusercontent.com/d/' + m[1] + '=w' + (w || 1000) : u;
+}
+
+function spAdminAuth_() {
+  return (currentUser && currentUser.email && currentUser.pin) ? { staffEmail: currentUser.email, staffUserPin: currentUser.pin } : {};
+}
+
+function renderSpecialsEditor() {
+  var el = document.getElementById('s-specials-wrap');
+  if (!el) return;
+  if (!isAdminUser()) { el.innerHTML = ''; return; }
+  var data = whFreshSpecials(menuLoad());
+  var html = '<div class="card" style="margin-bottom:12px;">' +
+    '<div class="card-title" style="margin:0 0 4px;">📸 Food &amp; Drink Specials</div>' +
+    '<div style="font-size:.74rem;color:var(--muted);margin-bottom:10px;">Edit the text and photo. Members see changes right away; weekly specials clear every Monday at 12 a.m.</div>';
+  SPECIAL_DEFS.forEach(function(def, i) {
+    var sp = data[def.key] || {};
+    var on = !!(sp.active && sp.name);
+    var thumb = (def.photo && sp.image)
+      ? '<img src="' + escHtml(whDriveImg(sp.image, 200)) + '" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">'
+      : '<span style="font-size:1.3rem;opacity:.5;">' + (def.key === 'drinkSpecial' ? '🍹' : '🍽') + '</span>';
+    html += '<div class="smi" style="align-items:center;' + (i === SPECIAL_DEFS.length - 1 ? 'border-bottom:none;' : '') + '">' +
+      '<div style="width:52px;height:52px;border-radius:8px;overflow:hidden;background:var(--cream);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:10px;">' + (def.photo ? thumb : '<span style="font-size:1.3rem;opacity:.5;">🍽</span>') + '</div>' +
+      '<div class="smi-info"><div class="smi-name">' + def.title + '</div>' +
+      '<div class="smi-price">' + (on ? escHtml(sp.name) + (sp.price ? ' · ' + escHtml(sp.price) : '') : (def.weekly ? 'Not set this week' : 'Not set')) + '</div></div>' +
+      '<button class="smi-edit" onclick="openSpecialEdit(\'' + def.key + '\')">' + (on ? 'Edit' : 'Set') + '</button>' +
+    '</div>';
+  });
+  el.innerHTML = html + '</div>';
+}
+
+function spStatus_(msg) {
+  var st = document.getElementById('sp-status');
+  if (!st) return;
+  st.textContent = msg || '';
+  st.style.display = msg ? 'block' : 'none';
+}
+
+function spShowPhoto_() {
+  var img = _spEdit ? _spEdit.image : '';
+  var prev = document.getElementById('sp-photo-preview'), empty = document.getElementById('sp-photo-empty'), rm = document.getElementById('sp-photo-remove');
+  if (img) document.getElementById('sp-img').src = img.indexOf('data:') === 0 ? img : whDriveImg(img, 800);
+  if (prev)  prev.style.display  = img ? 'block' : 'none';
+  if (empty) empty.style.display = img ? 'none'  : 'block';
+  if (rm)    rm.style.display    = img ? 'block' : 'none';
+}
+
+function openSpecialEdit(key) {
+  if (!isAdminUser()) { showToast('Only admins can edit specials.'); return; }
+  var def = SPECIAL_DEFS.filter(function(d) { return d.key === key; })[0];
+  if (!def) return;
+  var sp = whFreshSpecials(menuLoad())[key] || {};
+  _spEdit = { def: def, image: def.photo ? (sp.image || '') : '' };
+  document.getElementById('sp-title').textContent = def.title;
+  document.getElementById('sp-name').value  = sp.name  || '';
+  document.getElementById('sp-desc').value  = sp.desc  || '';
+  document.getElementById('sp-price').value = sp.price || '';
+  document.getElementById('sp-wine').value  = sp.wine  || '';
+  document.getElementById('sp-wine').style.display = def.wine ? '' : 'none';
+  document.getElementById('sp-photo-block').style.display = def.photo ? '' : 'none';
+  document.getElementById('sp-file').value = '';
+  spStatus_('');
+  spShowPhoto_();
+  openModal('modal-special-edit');
+}
+
+// Downscale before upload so a phone photo stays well under Apps Script's POST limit
+function spCompressImage(file, cb) {
+  var reader = new FileReader();
+  reader.onerror = function() { cb(null); };
+  reader.onload = function(ev) {
+    var img = new Image();
+    img.onerror = function() { cb(null); };
+    img.onload = function() {
+      var MAX = 1600, w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; } else { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      cb(canvas.toDataURL('image/jpeg', 0.82));
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function spPickFile(input) {
+  var file = input.files && input.files[0];
+  if (!file || !_spEdit) return;
+  if (file.size > 15 * 1024 * 1024) { showToast('That photo is too large (15 MB max).'); return; }
+  spStatus_('Preparing photo…');
+  spCompressImage(file, function(dataUrl) {
+    spStatus_('');
+    if (!dataUrl) { showToast('Could not read that photo — try another.'); return; }
+    _spEdit.image = dataUrl;
+    spShowPhoto_();
+  });
+}
+
+function spRemovePhoto() {
+  if (!_spEdit) return;
+  _spEdit.image = '';
+  document.getElementById('sp-file').value = '';
+  spShowPhoto_();
+}
+
+var _spLibReq = 0, _spLibCache = {};
+function spOpenLibrary() {
+  document.getElementById('sp-lib-cat').value = '';   // always opens on All Photos
+  openModal('modal-photo-library');
+  spLibLoad();
+}
+function spLibLoad() {
+  var cat = document.getElementById('sp-lib-cat').value || '';
+  var grid = document.getElementById('sp-lib-grid'), status = document.getElementById('sp-lib-status');
+  var myReq = ++_spLibReq;
+  grid.innerHTML = '';
+  function show(photos) {
+    if (myReq !== _spLibReq) return;
+    if (!Array.isArray(photos) || !photos.length) { status.textContent = 'No photos here yet.'; return; }
+    status.textContent = photos.length + ' photo' + (photos.length === 1 ? '' : 's') + ' — tap one to use it';
+    photos.forEach(function(p) {
+      var card = document.createElement('div');
+      card.style.cssText = 'cursor:pointer;border-radius:8px;overflow:hidden;background:var(--cream);';
+      var im = document.createElement('img');
+      im.src = whDriveImg(p.url, 300); im.loading = 'lazy'; im.alt = p.name || '';
+      im.style.cssText = 'width:100%;height:84px;object-fit:cover;display:block;';
+      card.appendChild(im);
+      card.onclick = function() {
+        if (_spEdit) { _spEdit.image = whDriveImg(p.url); spShowPhoto_(); }
+        closeModal('modal-photo-library');
+      };
+      grid.appendChild(card);
+    });
+  }
+  var hit = _spLibCache[cat];
+  if (hit && Date.now() - hit.at < 120000) { show(hit.photos); return; }
+  status.textContent = 'Loading…';
+  fetch(WHCC_SCRIPT_URL + '?action=get-photos' + (cat ? '&category=' + encodeURIComponent(cat) : ''))
+    .then(function(r) { return r.json(); })
+    .then(function(photos) { if (Array.isArray(photos)) _spLibCache[cat] = { at: Date.now(), photos: photos }; show(photos); })
+    .catch(function() { if (myReq === _spLibReq) status.textContent = 'Could not load the library.'; });
+}
+
+// A newly picked/taken photo is a data: URL; upload it to the club's Drive library first.
+function spUploadIfNeeded_(img, key, cb) {
+  if (!img || img.indexOf('data:') !== 0) { cb(img || ''); return; }
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST', headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(Object.assign({
+      action: 'upload-photo', base64: img.split(',')[1], mimeType: 'image/jpeg',
+      filename: 'special-' + key + '-' + Date.now() + '.jpg', category: 'Dining'
+    }, spAdminAuth_()))
+  }).then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d && d.ok) { _spLibCache = {}; cb(whDriveImg(d.url)); }
+      else cb(null, (d && d.error === 'Not authorized.') ? 'auth' : 'upload');
+    })
+    .catch(function() { cb(null, 'upload'); });
+}
+
+function spSave(clear) {
+  if (!isAdminUser() || !_spEdit) return;
+  if (clear && !confirm('Clear this special? It will disappear from the app and website.')) return;
+  var def = _spEdit.def, key = def.key;
+  var saveBtn = document.getElementById('sp-save-btn'), clearBtn = document.getElementById('sp-clear-btn');
+  function busy(on) {
+    saveBtn.disabled = clearBtn.disabled = on;
+    saveBtn.textContent = on ? 'Saving…' : 'Save';
+  }
+  function fail(code) {
+    busy(false); spStatus_('');
+    showToast(code === 'auth' ? 'Only admins can change specials — sign out and back in.'
+            : code === 'upload' ? 'Photo upload failed — check your signal and try again.'
+            : 'Could not save — check your signal and try again.');
+  }
+  var v = clear
+    ? { name: '', desc: '', price: '', wine: '', image: '' }
+    : { name: document.getElementById('sp-name').value.trim(), desc: document.getElementById('sp-desc').value.trim(),
+        price: document.getElementById('sp-price').value.trim(), wine: document.getElementById('sp-wine').value.trim(), image: _spEdit.image };
+  busy(true);
+  spStatus_(v.image && v.image.indexOf('data:') === 0 ? 'Uploading photo…' : 'Saving…');
+  spUploadIfNeeded_(def.photo ? v.image : '', key, function(imgUrl, err) {
+    if (err) { fail(err); return; }
+    // Merge into the server's current copy so nothing edited elsewhere is overwritten
+    WHCC_SYNC.fetchMenus(function(remote, ferr) {
+      if (ferr || !remote || typeof remote !== 'object' || !remote.grill) { fail('save'); return; }
+      var base = whFreshSpecials(remote)[key] || {};
+      var spec = Object.assign({}, base, { name: v.name, desc: v.desc, price: v.price, active: !!v.name });
+      if (def.wine)  spec.wine  = v.wine;
+      if (def.photo) spec.image = imgUrl;
+      if (def.weekly) spec.updatedAt = new Date().toISOString();
+      remote[key] = spec;
+      remote._version = WH_MENU_VERSION;
+      WHCC_SYNC.saveMenus(remote, function(res, serr) {
+        if (serr || !res || !res.ok) { fail(res && res.error === 'Not authorized.' ? 'auth' : 'save'); return; }
+        try { localStorage.setItem('wh_menus', JSON.stringify(remote)); } catch (e) {}
+        busy(false); spStatus_('');
+        closeModal('modal-special-edit');
+        renderSpecials(); renderSpecialsEditor();
+        showToast(clear ? 'Special cleared' : '✅ ' + def.title + ' saved');
+      });
+    });
+  });
 }
 
 function renderAppMenu() {
@@ -5163,6 +5471,7 @@ function setMenuVenue(venue) {
 }
 
 function renderStaffMenus() {
+  renderSpecialsEditor();
   var el = document.getElementById('s-menu-sections');
   if (!el) return;
   var html = '';
@@ -6231,7 +6540,10 @@ function _initStaffUI() {
   var u     = currentUser;
   var first = u.name.split(' ')[0];
   var sSwBtn = document.getElementById('s-switch-btn');
-  if (sSwBtn) sSwBtn.style.display = (u.role === 'both') ? 'inline-block' : 'none';
+  if (sSwBtn) sSwBtn.style.display = isDualRole(u) ? 'inline-block' : 'none';
+  var sHdrTitle = document.getElementById('s-hdr-title'); if (sHdrTitle) sHdrTitle.textContent = 'WHCC ' + staffSideName(u);
+  var sGreetBadge = document.getElementById('s-greet-badge'); if (sGreetBadge) sGreetBadge.textContent = staffSideName(u) + ' Portal';
+  var qaSp = document.getElementById('qa-specials'); if (qaSp) qaSp.style.display = isAdminUser() ? '' : 'none';
   var now   = new Date();
   var dateStr = now.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
 
@@ -6241,7 +6553,7 @@ function _initStaffUI() {
   var ini = u.name.split(' ').map(function(n){ return n[0]; }).join('');
   var elAvatar = document.getElementById('s-avatar'); if (elAvatar) elAvatar.textContent = ini;
   var elProfName = document.getElementById('s-prof-name'); if (elProfName) elProfName.textContent = u.name;
-  var elProfRole = document.getElementById('s-prof-role'); if (elProfRole) elProfRole.textContent = u.title || 'Staff';
+  var elProfRole = document.getElementById('s-prof-role'); if (elProfRole) elProfRole.textContent = u.title || staffSideName(u);
   var elEmail = document.getElementById('s-email'); if (elEmail) elEmail.textContent = u.email;
   var elRole = document.getElementById('s-role'); if (elRole) elRole.textContent = u.title || 'Golf Operations';
   var acctInfo = document.getElementById('s-acct-info');
@@ -6636,7 +6948,7 @@ document.getElementById('li-pin').addEventListener('keydown',   function(e){ if 
       var u = JSON.parse(saved);
       if (u && u.email && u.role) {
         currentUser = u;
-        if (u.role === 'both') {
+        if (isDualRole(u)) {
           var sub = document.getElementById('picker-sub');
           if (sub) sub.textContent = 'Welcome, ' + (u.name ? u.name.split(' ')[0] : 'back') + '!';
           showScreen('screen-role-picker');
@@ -7614,7 +7926,7 @@ function doBiometricLogin() {
     var acct = JSON.parse(saved);
     if (acct.email !== email) { showToast('Account mismatch — sign in with PIN'); return; }
     currentUser = acct;
-    if (acct.role === 'both') {
+    if (isDualRole(acct)) {
       var sub = document.getElementById('picker-sub');
       if (sub) sub.textContent = 'Welcome back, ' + (acct.name ? acct.name.split(' ')[0] : '') + '!';
       showScreen('screen-role-picker');
@@ -7734,7 +8046,7 @@ function globalSearch(q) {
     }).join('');
   }
   // ── Members (staff only) ──
-  if (currentUser && (currentUser.role === 'staff' || currentUser.role === 'both')) {
+  if (currentUser && (currentUser.role === 'staff' || currentUser.role === 'both' || currentUser.role === 'admin')) {
     var memDir = MEMBER_DIRECTORY && MEMBER_DIRECTORY.length ? MEMBER_DIRECTORY
       : (function(){ try { return JSON.parse(localStorage.getItem('wh_member_dir') || '[]'); } catch(e){ return []; } })();
     var memResults = memDir.filter(function(m) {

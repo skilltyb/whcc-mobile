@@ -5088,11 +5088,22 @@ function menuFetch() {
   });
 }
 
+// The dining menus show no prices. Set to true to show them again — the saved prices are untouched.
+var WH_SHOW_MENU_PRICES = false;
+// Drops dollar amounts written into a description (e.g. "Add Chicken or Salmon +$7").
+function menuNoPrice(s) {
+  s = s || '';
+  if (WH_SHOW_MENU_PRICES) return s;
+  return s.replace(/\s*\+?\$\s?\d[\d,]*(?:\.\d{2})?(?:\s*(?:per person|per guest|\/\s*person|each))?/gi, '')
+    .replace(/\(\s*\)/g, '').replace(/\s{2,}/g, ' ').replace(/^[\s,;:·–—-]+|[\s,;:·–—-]+$/g, '');
+}
+
 function miHTML(item) {
+  var d = menuNoPrice(item.desc);
   return '<div class="mi-row">' +
     '<div class="mi-info"><div class="mi-name">' + item.name + '</div>' +
-    (item.desc ? '<div class="mi-desc">' + item.desc + '</div>' : '') + '</div>' +
-    (item.price ? '<div class="mi-price">' + item.price + '</div>' : '') +
+    (d ? '<div class="mi-desc">' + d + '</div>' : '') + '</div>' +
+    (WH_SHOW_MENU_PRICES && item.price ? '<div class="mi-price">' + item.price + '</div>' : '') +
   '</div>';
 }
 
@@ -5107,9 +5118,9 @@ function specialCardHTML(spec, title, dayGate) {
     (spec.image ? '<img src="' + whDriveImg(spec.image, 800) + '" alt="" loading="lazy" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;display:block;margin-bottom:10px;" onerror="this.style.display=\'none\'">' : '') +
     '<div class="card-title" style="margin-bottom:6px;">' + title + '</div>' +
     '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.3rem;color:var(--dark);margin-bottom:4px;">' + spec.name + '</div>';
-  if (spec.desc) html += '<div class="card-body" style="margin-bottom:6px;">' + spec.desc + '</div>';
+  if (menuNoPrice(spec.desc)) html += '<div class="card-body" style="margin-bottom:6px;">' + menuNoPrice(spec.desc) + '</div>';
   if (spec.wine) html += '<div style="font-size:.75rem;font-style:italic;color:var(--gold);margin-bottom:4px;">Pairs with ' + spec.wine + '</div>';
-  if (spec.price) html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.1rem;color:var(--gold);">' + spec.price + '</div>';
+  if (WH_SHOW_MENU_PRICES && spec.price) html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.1rem;color:var(--gold);">' + spec.price + '</div>';
   html += '</div>';
   return html;
 }

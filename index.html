@@ -2986,6 +2986,7 @@ function _initMemberUI() {
   // Poll conditions every 5 minutes so sheet edits appear without reload
   if (window._condSyncInterval) clearInterval(window._condSyncInterval);
   window._condSyncInterval = setInterval(loadConditions, 5 * 60 * 1000);
+  startContentWatch();
 
   // Sync status + notification prefs
   updateSyncLabel();
@@ -5088,6 +5089,38 @@ function menuFetch() {
   });
 }
 
+// Re-fetches what admins edit (events, menus, daily conditions) and repaints it.
+function refreshContentNow() {
+  syncEventsFromServer();
+  menuFetch();
+  loadConditions();
+}
+
+// Asks the sheet for its content-change stamp. The first answer is the baseline for this session;
+// a different answer later means an admin saved something, so repaint right away instead of
+// waiting for the next 3-5 minute refresh.
+function checkContentVersion() {
+  if (window.IS_DEMO || document.visibilityState === 'hidden') return;
+  fetch(WHCC_SCRIPT_URL + '?action=content-version', { cache: 'no-store' })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d || typeof d.v !== 'string' || !d.v) return;
+      var seen = window._contentVer;
+      window._contentVer = d.v;
+      if (seen && seen !== d.v) refreshContentNow();
+    })
+    .catch(function() {});
+}
+
+function startContentWatch() {
+  if (window.IS_DEMO || window._contentWatchOn) return;
+  window._contentWatchOn = true;
+  checkContentVersion();
+  window._contentVerInterval = setInterval(checkContentVersion, 60 * 1000);
+  document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible') checkContentVersion(); });
+  window.addEventListener('online', checkContentVersion);
+}
+
 function miHTML(item) {
   return '<div class="mi-row">' +
     '<div class="mi-info"><div class="mi-name">' + item.name + '</div>' +
@@ -6591,6 +6624,7 @@ function _initStaffUI() {
       loadConditionsEditor();
     });
   }, 5 * 60 * 1000);
+  startContentWatch();
 }
 
 // ════════════════════════════════════

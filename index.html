@@ -1359,6 +1359,7 @@
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
             <button class="ts-btn" data-preset="normal" onclick="condPreset('normal')" style="font-size:.7rem;padding:6px 10px;">Normal Day</button>
             <button class="ts-btn" data-preset="fall" onclick="condPreset('fall')" style="font-size:.7rem;padding:6px 10px;">Fall Hours</button>
+            <button class="ts-btn" data-preset="winter" onclick="condPreset('winter')" style="font-size:.7rem;padding:6px 10px;">Winter Hours</button>
             <button class="ts-btn" data-preset="frost" onclick="condPreset('frost')" style="font-size:.7rem;padding:6px 10px;">Frost Delay</button>
             <button class="ts-btn" data-preset="cartpath" onclick="condPreset('cartpath')" style="font-size:.7rem;padding:6px 10px;">Cart Path Only</button>
             <button class="ts-btn" data-preset="tournament" onclick="condPreset('tournament')" style="font-size:.7rem;padding:6px 10px;">Tournament Day</button>
@@ -6752,6 +6753,7 @@ function condPreset(type) {
   var sets = {
     normal:     { courseOpens:'9 a.m.',               cartRules:'Off Path',        rangeStatus:'Open — Mats Only',     rangeHours:'8:30 a.m. – 5 p.m.', puttingGreen:'9 a.m. – Dusk',  proShop:'8:30 a.m. – 6 p.m.', notice:'' },
     fall:       { courseOpens:'8 a.m.',               cartRules:'Off Path',        rangeStatus:'Open — Grass & Mats',  rangeHours:'8 a.m. – Dusk',      puttingGreen:'8 a.m. – Dusk',  proShop:'8 a.m. – 7 p.m.',    clubhouseHours:'10 a.m. – 11 p.m.', poolHours:'Closed for the season', notice:'' },
+    winter:     { courseOpens:'8 a.m.',               cartRules:'Off Path',        rangeStatus:'Open — Mats Only',     rangeHours:'8 a.m. – 6 p.m.',    puttingGreen:'8 a.m. – Dusk',  proShop:'8 a.m. – 7 p.m.',    clubhouseHours:'Winter Hours', notice:'' },
     frost:      { courseOpens:'10 a.m. (Frost Delay)', cartRules:'Cart Path Only',  rangeStatus:'Open — Mats Only',     rangeHours:'9:30 a.m. – 5 p.m.', puttingGreen:'10 a.m. – Dusk', proShop:'9 a.m. – 6 p.m.', notice:'Frost delay in effect. Course will open when conditions allow.' },
     cartpath:   { courseOpens:'9 a.m.',               cartRules:'Cart Path Only',  rangeStatus:'Open — Mats Only',     rangeHours:'8:30 a.m. – 5 p.m.', puttingGreen:'9 a.m. – Dusk',  proShop:'8:30 a.m. – 6 p.m.', notice:'Cart path only due to wet conditions.' },
     tournament: { courseOpens:'8 a.m. (Tournament)',  cartRules:'Off Path',        rangeStatus:'Closed — Tournament',  rangeHours:'Closed for tournament', puttingGreen:'7 a.m. – Dusk', proShop:'7:30 a.m. – 7 p.m.', notice:'Tournament in progress. Course closed to general play.' },

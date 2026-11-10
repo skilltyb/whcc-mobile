@@ -1856,8 +1856,9 @@
     <div class="modal-handle"></div>
     <div class="modal-title" id="md-title">Reserve at Westwood Grill</div>
     <div id="md-venue-hint" style="display:none;font-size:.75rem;color:var(--gold);margin-bottom:10px;padding:8px 12px;background:rgba(184,151,106,.1);border-radius:8px;border-left:3px solid var(--gold);"></div>
-    <input class="modal-input" id="md-date" type="date">
+    <input class="modal-input" id="md-date" type="date" onchange="updateDiningTimeLimits()">
     <input class="modal-input" id="md-time" type="time" value="12:00">
+    <div id="md-time-hint" style="display:none;font-size:.72rem;color:var(--muted);margin:-4px 0 10px;"></div>
     <input class="modal-input" id="md-party" type="number" placeholder="Party size" min="1" max="20">
     <input class="modal-input" id="md-notes" type="text" placeholder="Special requests (optional)">
     <div class="modal-row">
@@ -4864,14 +4865,48 @@ function removeEventTeeSlot(id) {
 
 var _activeDiningVenue = 'grille';
 
+// Reservation hours come from the "Reservation Hours" Google Sheet via Apps Script: get-conditions
+// attaches reservationRules, and loadConditions() caches them in wh_conditions. Nothing is hard-coded
+// here. With no rules for the current Clubhouse Hours season: closed Mondays, 11 a.m. – 9 p.m.
+function hhmmLabel(hhmm) {
+  var p = hhmm.split(':'), h = parseInt(p[0], 10);
+  return (h % 12 || 12) + (p[1] !== '00' ? ':' + p[1] : '') + ' ' + (h >= 12 ? 'p.m.' : 'a.m.');
+}
+// Reservation window for a yyyy-mm-dd date: {closed, first, last}
+function grillResWindow(dateStr) {
+  var dow = dateStr ? new Date(dateStr + 'T12:00:00').getDay() : new Date().getDay();
+  if (dow === 1) return { closed: true };
+  var cond = JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {};
+  var rule = cond.reservationRules && cond.reservationRules.days && cond.reservationRules.days[dow];
+  if (rule) return rule.closed ? { closed: true } : { closed: false, first: rule.first, last: rule.last };
+  return { closed: false, first: '11:00', last: '21:00' };
+}
+// Keep the time picker + helper text in step with the chosen date
+function updateDiningTimeLimits() {
+  var dateEl = document.getElementById('md-date'), timeInput = document.getElementById('md-time'), noteEl = document.getElementById('md-time-hint');
+  if (!dateEl || !timeInput) return;
+  var w = grillResWindow(dateEl.value);
+  if (w.closed) {
+    if (noteEl) { noteEl.textContent = 'Westwood Grill is closed on this day — please pick another day.'; noteEl.style.display = 'block'; }
+    return;
+  }
+  timeInput.min = w.first; timeInput.max = w.last;
+  if (!timeInput.value || timeInput.value < w.first || timeInput.value > w.last) timeInput.value = (w.last < '12:00') ? w.first : '12:00';
+  if (noteEl) { noteEl.textContent = 'Reservations ' + hhmmLabel(w.first) + ' – ' + hhmmLabel(w.last) + ' on this day.'; noteEl.style.display = 'block'; }
+}
+
 function setModalVenue(v) {
   _activeDiningVenue = 'grille';
   var titleEl    = document.getElementById('md-title');
-  var timeInput  = document.getElementById('md-time');
   var hintEl     = document.getElementById('md-venue-hint');
   if (titleEl)    titleEl.textContent = 'Reserve at Westwood Grill';
-  if (timeInput) { timeInput.min = '11:00'; timeInput.max = '21:00'; if (timeInput.value < '11:00' || timeInput.value > '21:00') timeInput.value = '12:00'; }
-  if (hintEl) { hintEl.textContent = 'Westwood Grill: Lunch 11 a.m. – 2 p.m., Dinner 5 – 9 p.m. Closed Mondays.'; hintEl.style.display = 'block'; }
+  if (hintEl) {
+    // Mirror the Clubhouse Hours set under Course Conditions
+    var cond = JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {};
+    var hrs = (cond.clubhouseHours || '').trim();
+    hintEl.textContent = hrs;
+    hintEl.style.display = hrs ? 'block' : 'none';
+  }
 }
 
 function openDiningRes(venue) {
@@ -4880,6 +4915,7 @@ function openDiningRes(venue) {
   document.getElementById('md-date').value  = today.toISOString().split('T')[0];
   document.getElementById('md-party').value = '2';
   document.getElementById('md-notes').value = '';
+  updateDiningTimeLimits();
   openModal('modal-dining');
 }
 
@@ -4890,16 +4926,15 @@ function confirmDining() {
   var notes = document.getElementById('md-notes').value;
   if (!date || !party) { showToast('Please fill in date and party size.'); return; }
 
-  // Westwood Grill: closed Mondays, Lunch 11 a.m. – 2 p.m., Dinner 5 – 9 p.m.
+  // Westwood Grill: closed Mondays; in winter, last reservation is 30 min before the kitchen closes
   {
-    var dowG = new Date(date + 'T12:00:00').getDay(); // 1=Monday
-    if (dowG === 1) {
-      showToast('Westwood Grill is closed on Mondays. Please select another day.');
+    var win = grillResWindow(date);
+    if (win.closed) {
+      showToast('Westwood Grill is closed on that day. Please select another day.');
       return;
     }
-    var hhG = parseInt((time || '').split(':')[0]);
-    if (!time || hhG < 11 || hhG > 21) {
-      showToast('Westwood Grill reservations are available 11 a.m. – 9 p.m. only.');
+    if (!time || time < win.first || time > win.last) {
+      showToast('Westwood Grill reservations on this day are ' + hhmmLabel(win.first) + ' – ' + hhmmLabel(win.last) + ' only.');
       return;
     }
   }

@@ -5686,13 +5686,45 @@ function saveMenuEdit() {
 function poolLoad() { return JSON.parse(localStorage.getItem('wh_pool') || 'null') || {open:true, reason:'', bathers:0, notice:''}; }
 function poolSave(d) { localStorage.setItem('wh_pool', JSON.stringify(d)); WHCC_SYNC.opsPush('pool_status', d); }
 
+// Pool season: Memorial Day (last Monday of May) through Labor Day (first Monday of September), inclusive.
+function poolSeasonBounds(year) {
+  var may31 = new Date(year, 4, 31);
+  var memorial = new Date(year, 4, 31 - ((may31.getDay() + 6) % 7));   // back up to the Monday on/before May 31
+  var sep1 = new Date(year, 8, 1);
+  var labor = new Date(year, 8, 1 + ((8 - sep1.getDay()) % 7));        // forward to the first Monday on/after Sep 1
+  return { start: memorial, end: labor };
+}
+function poolInSeason(now) {
+  now = now || new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var b = poolSeasonBounds(today.getFullYear());
+  return today >= b.start && today <= b.end;
+}
+function poolNextOpenLabel(now) {
+  now = now || new Date();
+  var b = poolSeasonBounds(now.getFullYear());
+  var start = (now > b.end) ? poolSeasonBounds(now.getFullYear() + 1).start : b.start;
+  return 'Reopens Memorial Day (' + start.toLocaleDateString('en-US', {month:'long', day:'numeric'}) + ')';
+}
+// What members should see: outside the season the pool is closed regardless of the staff toggle.
+function poolEffective() {
+  var d = poolLoad();
+  if (poolInSeason()) return d;
+  return { open:false, reason:'Closed for the season. ' + poolNextOpenLabel(), notice:'', bathers:d.bathers||0, offSeason:true };
+}
+
 function initPool() { renderPoolStatus(); renderPoolNoticeCard(); renderPoolGuests(); renderChemLog(); }
 
 function renderPoolStatus() {
   var d = poolLoad();
+  var off = !poolInSeason();
   var badge = document.getElementById('pool-status-badge');
   var reason = document.getElementById('pool-reason');
-  if (badge) { badge.textContent = d.open ? 'Open' : 'Closed'; badge.style.background = d.open ? '#dcfce7' : '#fee2e2'; badge.style.color = d.open ? '#166534' : '#991b1b'; }
+  if (badge) {
+    var isOpen = d.open && !off;
+    badge.textContent = off ? 'Closed · Off-season' : (d.open ? 'Open' : 'Closed');
+    badge.style.background = isOpen ? '#dcfce7' : '#fee2e2'; badge.style.color = isOpen ? '#166534' : '#991b1b';
+  }
   if (reason) reason.value = d.reason || '';
   var cnt = document.getElementById('bather-count');
   if (cnt) cnt.textContent = d.bathers || 0;
@@ -5815,7 +5847,7 @@ function addChemReading() {
 function renderPoolChip() {
   var el = document.getElementById('m-pool-chip');
   if (!el) return;
-  var d = poolLoad();
+  var d = poolEffective();
   el.style.display = 'flex';
   el.style.borderLeft = d.open ? '3px solid var(--success)' : '3px solid var(--danger)';
   el.style.background = d.open ? 'rgba(45,106,79,.06)' : 'rgba(192,57,43,.06)';
@@ -5831,7 +5863,7 @@ function renderPoolChip() {
 
 // Member-facing pool tab render
 function renderMemberPool() {
-  var d = poolLoad();
+  var d = poolEffective();
   var banner = document.getElementById('m-pool-status-banner');
   var icon   = document.getElementById('m-pool-status-icon');
   var label  = document.getElementById('m-pool-status-label');

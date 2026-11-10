@@ -3898,7 +3898,7 @@ function mTeeSheetBuildEventDropdown() {
   var myEventsEl = document.getElementById('m-ts-my-events');
   if (!myEventsEl) return;
 
-  var today = new Date().toISOString().slice(0, 10);
+  var today = localISODate();
   myEventsEl.innerHTML = '<div style="font-size:.75rem;color:rgba(245,240,232,.3);text-align:center;padding:24px 0;">Loading…</div>';
 
   var eventsByTitle = {};
@@ -4591,7 +4591,7 @@ function cancelReg(idx) {
 }
 
 function upcomingEvents() {
-  var today = new Date().toISOString().slice(0, 10);
+  var today = localISODate();
   return appEvents.filter(function(ev) { return ev.date >= today && !ev.archived; });
 }
 
@@ -4725,7 +4725,7 @@ function restoreEvent(id) {
   _persistEvents('Event restored.');
 }
 function archiveAllPastEvents() {
-  var today = new Date().toISOString().slice(0, 10);
+  var today = localISODate();
   var n = 0;
   appEvents.forEach(function(ev) {
     if (!ev.archived && ev.date < today) { ev.archived = true; n++; }
@@ -4736,7 +4736,7 @@ function archiveAllPastEvents() {
 
 function openAddEvent() {
   document.getElementById('ae-title').value    = '';
-  document.getElementById('ae-date').value     = new Date().toISOString().split('T')[0];
+  document.getElementById('ae-date').value     = localISODate();
   document.getElementById('ae-time').value     = '';
   document.getElementById('ae-type').value     = 'golf';
   document.getElementById('ae-desc').value     = '';
@@ -4863,6 +4863,13 @@ function removeEventTeeSlot(id) {
 // DINING RESERVATION
 // ════════════════════════════════════
 
+// Local calendar date as yyyy-mm-dd. toISOString() is UTC, which is already "tomorrow" every evening in
+// Central time, so it must not be used for "today".
+function localISODate(d) {
+  d = d || new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
 var _activeDiningVenue = 'grille';
 
 // Reservation hours come from the "Reservation Hours" Google Sheet via Apps Script: get-conditions
@@ -4912,7 +4919,7 @@ function setModalVenue(v) {
 function openDiningRes(venue) {
   setModalVenue(venue || 'grille');
   var today = new Date();
-  document.getElementById('md-date').value  = today.toISOString().split('T')[0];
+  document.getElementById('md-date').value  = localISODate(today);
   document.getElementById('md-party').value = '2';
   document.getElementById('md-notes').value = '';
   updateDiningTimeLimits();
@@ -4939,8 +4946,6 @@ function confirmDining() {
     }
   }
 
-  closeModal('modal-dining');
-
   // Format date nicely
   var d = new Date(date + 'T12:00:00');
   var dateStr = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
@@ -4954,8 +4959,6 @@ function confirmDining() {
   var h12 = hh % 12 || 12;
   var timeDisplay = h12 + (mm && mm !== '00' ? ':' + mm : '') + ' ' + ampm;
 
-  // Save reservation so staff can see it
-  var all = JSON.parse(localStorage.getItem('wh_dining_res') || '[]');
   var res = {
     id: Date.now().toString(),
     isoDate: date,
@@ -4969,18 +4972,8 @@ function confirmDining() {
     seated: false,
     source: 'member'
   };
-  all.push(res);
-  localStorage.setItem('wh_dining_res', JSON.stringify(all));
-  renderMyUpcoming();
 
-  // Push to Ops Data (mobile staff portal)
-  fetch(WHCC_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ action: 'save-ops-data', key: 'dining_res', data: all })
-  }).catch(function() {});
-
-  // Also push to Dining Reservations sheet (website staff portal)
+  // Payload for the Dining Reservations sheet (website staff portal)
   var _diningPayload = {
     id:          res.id,
     date:        res.isoDate,
@@ -4994,58 +4987,90 @@ function confirmDining() {
     source:      'mobile',
     submitted:   new Date().toISOString()
   };
-  if (!navigator.onLine) {
-    var q = JSON.parse(localStorage.getItem('wh_sync_queue') || '[]');
-    q.push({ type: 'dining', data: _diningPayload, ts: Date.now() });
-    localStorage.setItem('wh_sync_queue', JSON.stringify(q));
-  } else {
+
+  // Everything that happens once the reservation is accepted by the server (or queued while offline)
+  function finishDining(queued) {
+    closeModal('modal-dining');
+
+    // Save reservation so staff can see it
+    var all = JSON.parse(localStorage.getItem('wh_dining_res') || '[]');
+    all.push(res);
+    localStorage.setItem('wh_dining_res', JSON.stringify(all));
+    renderMyUpcoming();
+
+    // Push to Ops Data (mobile staff portal)
     fetch(WHCC_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(Object.assign({ action: 'dining-reservation' }, _diningPayload))
+      body: JSON.stringify({ action: 'save-ops-data', key: 'dining_res', data: all })
     }).catch(function() {});
+
+    if (queued) {
+      var q = JSON.parse(localStorage.getItem('wh_sync_queue') || '[]');
+      q.push({ type: 'dining', data: _diningPayload, ts: Date.now() });
+      localStorage.setItem('wh_sync_queue', JSON.stringify(q));
+    }
+
+    // Send confirmation email via Apps Script
+    if (currentUser && currentUser.email) {
+      fetch(WHCC_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          action:      'send-dining-confirm',
+          email:       currentUser.email,
+          name:        currentUser.name || 'Member',
+          venue:       _activeDiningVenue === 'hoovers' ? "Hoover's" : 'Westwood Grill',
+          date:        dateStr,
+          time:        timeDisplay,
+          party:       party,
+          note:        notes || ''
+        })
+      }).catch(function() {});
+    }
+
+    // Show confirmation card in dining tab
+    var conf = document.getElementById('dining-res-confirmation');
+    if (!conf) {
+      conf = document.createElement('div');
+      conf.id = 'dining-res-confirmation';
+      var diningPage = document.querySelector('#m-tab-dining .page');
+      if (diningPage) diningPage.insertBefore(conf, diningPage.firstChild);
+    }
+    conf.style.cssText = 'background:linear-gradient(135deg,var(--forest) 0%,#1e4d2b 100%);border-radius:12px;padding:16px;margin-bottom:16px;color:#f5f0e8;';
+    conf.innerHTML =
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
+        '<span style="font-size:1.2rem;">✅</span>' +
+        '<span style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4CAF50;">Reservation Confirmed</span>' +
+      '</div>' +
+      '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.1rem;font-weight:700;margin-bottom:4px;">' + dateStr + '</div>' +
+      '<div style="font-size:.8rem;color:rgba(245,240,232,.75);">' + timeDisplay + ' · Party of ' + party + (notes ? ' · ' + notes : '') + '</div>' +
+      '<div style="font-size:.7rem;color:rgba(245,240,232,.5);margin-top:8px;">We look forward to seeing you! Call (573) 785-5253 for changes.</div>' +
+      (queued ? '<div style="font-size:.7rem;color:rgba(255,220,100,.8);margin-top:6px;">📶 Offline — reservation saved and will sync when you reconnect.</div>' : '');
+
+    goTab('member', 'dining');
+    showToast('✅ Reservation confirmed!');
   }
 
-
-  // Send confirmation email via Apps Script
-  if (currentUser && currentUser.email) {
-    fetch(WHCC_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({
-        action:      'send-dining-confirm',
-        email:       currentUser.email,
-        name:        currentUser.name || 'Member',
-        venue:       _activeDiningVenue === 'hoovers' ? "Hoover's" : 'Westwood Grill',
-        date:        dateStr,
-        time:        timeDisplay,
-        party:       party,
-        note:        notes || ''
-      })
-    }).catch(function() {});
-  }
-
-  // Show confirmation card in dining tab
-  var conf = document.getElementById('dining-res-confirmation');
-  if (!conf) {
-    conf = document.createElement('div');
-    conf.id = 'dining-res-confirmation';
-    var diningPage = document.querySelector('#m-tab-dining .page');
-    if (diningPage) diningPage.insertBefore(conf, diningPage.firstChild);
-  }
-  conf.style.cssText = 'background:linear-gradient(135deg,var(--forest) 0%,#1e4d2b 100%);border-radius:12px;padding:16px;margin-bottom:16px;color:#f5f0e8;';
-  conf.innerHTML =
-    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
-      '<span style="font-size:1.2rem;">✅</span>' +
-      '<span style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4CAF50;">Reservation Confirmed</span>' +
-    '</div>' +
-    '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.1rem;font-weight:700;margin-bottom:4px;">' + dateStr + '</div>' +
-    '<div style="font-size:.8rem;color:rgba(245,240,232,.75);">' + timeDisplay + ' · Party of ' + party + (notes ? ' · ' + notes : '') + '</div>' +
-    '<div style="font-size:.7rem;color:rgba(245,240,232,.5);margin-top:8px;">We look forward to seeing you! Call (573) 785-5253 for changes.</div>' +
-    (!navigator.onLine ? '<div style="font-size:.7rem;color:rgba(255,220,100,.8);margin-top:6px;">📶 Offline — reservation saved and will sync when you reconnect.</div>' : '');
-
-  goTab('member', 'dining');
-  showToast('✅ Reservation confirmed!');
+  // The server is the final check on the reservation window, so ask it first: a rejection must not
+  // look like success. Offline (or unreachable) reservations are queued and retried later.
+  if (!navigator.onLine) { finishDining(true); return; }
+  var okBtn = document.querySelector('#modal-dining .modal-btn.primary');
+  function resetDiningBtn() { if (okBtn) { okBtn.disabled = false; okBtn.textContent = 'Confirm Reservation'; } }
+  if (okBtn) { okBtn.disabled = true; okBtn.textContent = 'Reserving…'; }
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(Object.assign({ action: 'dining-reservation' }, _diningPayload))
+  }).then(function(r) { return r.json(); })
+    .then(function(out) {
+      resetDiningBtn();
+      if (out && out.ok === false) { showToast(out.error || 'Sorry, that reservation could not be made.'); return; }
+      finishDining(false);
+    }, function() {
+      resetDiningBtn();
+      finishDining(true);
+    });
 }
 
 // ════════════════════════════════════
@@ -6365,7 +6390,7 @@ function refreshGlance() {
   if (el) el.textContent = totalOnCourse;
 
   // Dining reservations today
-  var todayIsoG = new Date().toISOString().slice(0, 10);
+  var todayIsoG = localISODate();
   var todayStrG = new Date().toDateString();
   var resList = JSON.parse(localStorage.getItem('wh_dining_res') || '[]').filter(function(r){
     return r.isoDate ? r.isoDate === todayIsoG : r.date === todayStrG;
@@ -6460,7 +6485,7 @@ function diningLoad() {
   return JSON.parse(localStorage.getItem('wh_dining_res') || '[]');
 }
 function diningUpcoming() {
-  var todayStr = new Date().toISOString().slice(0, 10);
+  var todayStr = localISODate();
   return diningLoad().filter(function(r) {
     if (r.isoDate) return r.isoDate >= todayStr;
     try { return new Date(r.date) >= new Date(todayStr + 'T00:00:00'); } catch(e) { return true; }
@@ -6516,7 +6541,7 @@ function renderDiningLog() {
     if (cnt) cnt.textContent = '';
     return;
   }
-  var todayIso = new Date().toISOString().slice(0, 10);
+  var todayIso = localISODate();
   var totalGuests = list.reduce(function(s,r){ return s + parseInt(r.party||1); }, 0);
   el.innerHTML = list.map(function(r){
     var isToday = r.isoDate ? r.isoDate === todayIso : r.date === new Date().toDateString();
@@ -6541,7 +6566,7 @@ function addReservation() {
   if (!time24 || !name) { showToast('Please enter a time and party name'); return; }
   var h = parseInt(time24.split(':')[0]), m = time24.split(':')[1];
   var ampm = h >= 12 ? 'p.m.' : 'a.m.'; h = h % 12 || 12;
-  var todayIso = new Date().toISOString().slice(0, 10);
+  var todayIso = localISODate();
   var list = diningLoad();
   var newRes = {id:Date.now().toString(), isoDate:todayIso, date:new Date().toDateString(), time24:time24, timeDisplay:h+(m&&m!=='00'?':'+m:'')+' '+ampm, name:name, party:party, note:note, venue:venue, seated:false, source:'staff'};
   list.push(newRes);
@@ -7158,7 +7183,7 @@ var msTeeSheet  = [];
 function msTsInitPanel() {
   var sel = document.getElementById('mts-event-sel');
   if (!sel) return;
-  var today = new Date().toISOString().slice(0, 10);
+  var today = localISODate();
   var events = appEvents.filter(function(ev) { return ev.date >= today; });
   events.sort(function(a, b) { return a.date.localeCompare(b.date); });
   var current = sel.value;
@@ -7333,7 +7358,7 @@ function msTsSave() {
   var btn    = document.getElementById('mts-save-btn');
   var status = document.getElementById('mts-status');
   if (btn) { btn.textContent = '⏳ Saving…'; btn.disabled = true; }
-  var date = new Date().toISOString().slice(0, 10);
+  var date = localISODate();
   WHCC_SYNC.saveTeeSheet(event, msTeeRound, date, msTeeConfig, msTeeSheet, function(res, err) {
     if (btn) { btn.textContent = '💾 Save'; btn.disabled = false; }
     if (err || (res && res.error)) {
@@ -8114,7 +8139,7 @@ function globalSearch(q) {
   var html = '';
   // ── Events ──
   var evResults = appEvents.filter(function(ev) {
-    return ev.date >= new Date().toISOString().slice(0,10) &&
+    return ev.date >= localISODate() &&
       ((ev.title||'').toLowerCase().indexOf(term) >= 0 || (ev.desc||'').toLowerCase().indexOf(term) >= 0);
   }).slice(0, 5);
   if (evResults.length) {

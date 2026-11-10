@@ -4873,8 +4873,9 @@ function localISODate(d) {
 var _activeDiningVenue = 'grille';
 
 // Reservation hours come from the "Reservation Hours" Google Sheet via Apps Script: get-conditions
-// attaches reservationRules, and loadConditions() caches them in wh_conditions. Nothing is hard-coded
-// here. With no rules for the current Clubhouse Hours season: closed Mondays, 11 a.m. – 9 p.m.
+// attaches reservationRules (a ready-made window for each upcoming date, with seasons, holidays and
+// closures already resolved) and loadConditions() caches it in wh_conditions. Nothing is hard-coded
+// here except the fallback for a date the script didn't cover: closed Mondays, 11 a.m. – 8:30 p.m.
 function hhmmLabel(hhmm) {
   var p = hhmm.split(':'), h = parseInt(p[0], 10);
   return (h % 12 || 12) + (p[1] !== '00' ? ':' + p[1] : '') + ' ' + (h >= 12 ? 'p.m.' : 'a.m.');
@@ -4884,9 +4885,9 @@ function grillResWindow(dateStr) {
   var dow = dateStr ? new Date(dateStr + 'T12:00:00').getDay() : new Date().getDay();
   if (dow === 1) return { closed: true };
   var cond = JSON.parse(localStorage.getItem('wh_conditions') || 'null') || {};
-  var rule = cond.reservationRules && cond.reservationRules.days && cond.reservationRules.days[dow];
-  if (rule) return rule.closed ? { closed: true } : { closed: false, first: rule.first, last: rule.last };
-  return { closed: false, first: '11:00', last: '21:00' };
+  var v = cond.reservationRules && cond.reservationRules.dates && cond.reservationRules.dates[dateStr];
+  if (v) return v === 'closed' ? { closed: true } : { closed: false, first: v.slice(0, 5), last: v.slice(6) };
+  return { closed: false, first: '11:00', last: '20:30' };
 }
 // Keep the time picker + helper text in step with the chosen date
 function updateDiningTimeLimits() {

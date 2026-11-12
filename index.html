@@ -838,7 +838,7 @@
           <span style="font-size:1.2rem;">🏪</span>
           <div>
             <div style="font-size:.82rem;font-weight:700;color:var(--dark);">Pro Shop</div>
-            <div style="font-size:.7rem;color:var(--muted);">Tue–Sun · 8 a.m. – 6 p.m. · Closed Mon</div>
+            <div class="js-proshop-hours" style="font-size:.7rem;color:var(--muted);">Tue–Sun · 8 a.m. – 6 p.m. · Closed Mon</div>
           </div>
         </div>
         <a href="tel:+15737855253" style="text-decoration:none;padding:6px 12px;background:var(--forest);color:#fff;border-radius:20px;font-size:.72rem;font-weight:600;">Call</a>
@@ -980,7 +980,7 @@
           <div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:var(--cream);letter-spacing:.06em;">Westwood Grill</div>
           <div style="font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">at Westwood Hills</div>
           <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap;">
-            <div style="text-align:center;"><div style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.5);margin-bottom:2px;">Tue – Sun</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">11 a.m. – 8 p.m.</div></div>
+            <div style="text-align:center;"><div style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.5);margin-bottom:2px;">Tue – Sun</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">Lunch &amp; Dinner</div></div>
             <div style="text-align:center;"><div style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.5);margin-bottom:2px;">Closed</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);">Monday</div></div>
           </div>
           <div style="font-size:.68rem;color:rgba(245,240,232,.4);margin-top:8px;font-style:italic;">Dine-in &amp; carry-out · Full menu available</div>
@@ -1181,7 +1181,7 @@
       <div class="card">
         <div class="card-title" style="margin-bottom:10px;">Contact the Club</div>
         <div class="card-body" style="margin-bottom:10px;">📞 (573) 785-5253<br>📍 1 Birdie Ln, Poplar Bluff, MO</div>
-        <div class="info-row" style="border:none;padding:6px 0 0"><div class="ir-label">Pro Shop</div><div class="ir-val">Tue – Sun, 8 a.m. – 6 p.m. · Closed Mon</div></div>
+        <div class="info-row" style="border:none;padding:6px 0 0"><div class="ir-label">Pro Shop</div><div class="ir-val js-proshop-hours">Tue – Sun, 8 a.m. – 6 p.m. · Closed Mon</div></div>
       </div>
       <a href="https://www.goibsvision.com/WebRes/Club/westwoodhillscc/LogIn" target="_blank" style="display:block;width:100%;padding:14px;background:var(--forest);color:var(--white);border-radius:var(--radius-sm);font-size:.84rem;font-weight:600;text-align:center;text-decoration:none;box-sizing:border-box;margin-bottom:8px;">💳 Pay My Bill</a>
       <button id="btn-install-app" onclick="triggerInstall()" style="display:none;width:100%;padding:14px;background:var(--sand);color:var(--forest);border:none;border-radius:var(--radius-sm);font-size:.84rem;font-weight:600;cursor:pointer;margin-bottom:8px;">Add to Home Screen</button>
@@ -6498,7 +6498,15 @@ function diningSave(list) {
   refreshGlance();
 }
 function refreshDiningFromServer() {
-  fetch(WHCC_SCRIPT_URL + '?action=get-dining')
+  // get-dining holds guest names and phone numbers, so the server only answers staff. Send the
+  // signed-in staff member's login in a POST body (never in the URL), the same way the website does.
+  var auth = WHCC_SYNC._staffAuth();
+  if (!auth.staffEmail) return;
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify(Object.assign({ action: 'get-dining' }, auth)),
+    cache: 'no-store'
+  })
     .then(function(r) { return r.json(); })
     .then(function(rows) {
       if (!Array.isArray(rows)) return;
@@ -6519,7 +6527,7 @@ function refreshDiningFromServer() {
           name:        name,
           party:       r['Party Size'] || r['party'] || 1,
           note:        r['Notes'] || r['note'] || '',
-          venue:       (r['Venue'] || r['venue'] || 'hoovers').toLowerCase(),
+          venue:       (function(v) { v = String(v || 'grille').toLowerCase(); return v === 'grill' ? 'grille' : v; })(r['Venue'] || r['venue']),
           seated:      (r['Status'] || '').toLowerCase() === 'seated',
           source:      r['Source'] || r['source'] || 'website'
         };
@@ -6551,7 +6559,7 @@ function renderDiningLog() {
       '<div class="dr-time">' + r.timeDisplay + dateLabel + '</div>' +
       '<div class="dr-info">' +
         '<div class="dr-name">' + r.name + '</div>' +
-        '<div class="dr-detail">' + (r.venue === 'grille' ? 'Westwood Grill' : "Hoover's") + ' &nbsp;·&nbsp; Party of ' + r.party + (r.note ? ' &nbsp;·&nbsp; ' + r.note : '') + '</div>' +
+        '<div class="dr-detail">' + (r.venue === 'hoovers' ? "Hoover's" : 'Westwood Grill') + ' &nbsp;·&nbsp; Party of ' + r.party + (r.note ? ' &nbsp;·&nbsp; ' + r.note : '') + '</div>' +
       '</div>' +
       '<button class="ts-btn" onclick="removeReservation(\'' + r.id + '\')">✕</button>' +
     '</div>';
@@ -6758,6 +6766,11 @@ function condValColor(key, val) {
   return 'var(--dark)';
 }
 function renderConditionsUI(data) {
+  // The Pro Shop lines elsewhere in the app follow the Pro Shop hours set under Course Conditions
+  var ps = (data.proShop || '').trim();
+  if (ps) document.querySelectorAll('.js-proshop-hours').forEach(function(n) {
+    n.textContent = /closed/i.test(ps) ? ps : 'Tue–Sun · ' + ps + ' · Closed Mon';
+  });
   var el = document.getElementById('wx-conditions');
   if (!el) return;
   var html =

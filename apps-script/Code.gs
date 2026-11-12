@@ -474,7 +474,7 @@ function saveDiningRes(body) {
       'Email':        body.email       || '',
       'Party Size':   body.party       || '',
       'Notes':        body.note        || '',
-      'Venue':        body.venue       || 'hoovers',
+      'Venue':        body.venue       || 'grille',
       'Status':       'Pending',
       'Source':       body.source      || 'mobile',
       'Submitted':    body.submitted   || new Date().toISOString()
@@ -495,7 +495,7 @@ function saveDiningRes(body) {
     name:        body.name        || '',
     party:       body.party       || 1,
     note:        body.note        || '',
-    venue:       body.venue       || 'hoovers',
+    venue:       body.venue       || 'grille',
     seated:      false,
     source:      body.source      || 'mobile'
   });

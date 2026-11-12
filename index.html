@@ -6689,6 +6689,15 @@ function initStaff() {
 function _initStaffUI() {
   var u     = currentUser;
   var first = u.name.split(' ')[0];
+  // A staff session saved before the app kept the PIN (or restored without it) can't prove itself to the
+  // server, so registrations, the member directory and saves come back refused. Tell them how to fix it.
+  if (!window.IS_DEMO && !u.pin) {
+    setTimeout(function() {
+      showToast('Sign out and sign back in with your PIN to load registrations, members and saves.');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() { var t = document.getElementById('toast'); if (t) t.classList.remove('show'); }, 8000);
+    }, 1200);
+  }
   var sSwBtn = document.getElementById('s-switch-btn');
   if (sSwBtn) sSwBtn.style.display = isDualRole(u) ? 'inline-block' : 'none';
   var sHdrTitle = document.getElementById('s-hdr-title'); if (sHdrTitle) sHdrTitle.textContent = 'WHCC ' + staffSideName(u);

@@ -1267,7 +1267,7 @@
       <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div class="card-title" style="margin:0;">🍽 Dining Reservations</div>
-          <button class="ts-btn checkin" onclick="openModal('modal-add-res')">+ Add</button>
+          <button class="ts-btn checkin" onclick="openAddReservation()">+ Add</button>
         </div>
         <div id="s-dining-list"><div class="ts-empty"><div style="font-size:1.4rem;margin-bottom:5px;opacity:.4;">🍽</div>No reservations yet</div></div>
         <div id="s-dining-count" style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:right;"></div>
@@ -1874,6 +1874,8 @@
     <div class="modal-handle"></div>
     <div class="modal-title">Add Reservation</div>
     <input type="hidden" id="dr-venue" value="grille">
+    <label class="login-label">Date</label>
+    <input class="modal-input" id="dr-date" type="date">
     <label class="login-label">Reservation Time</label>
     <input class="modal-input" id="dr-time" type="time">
     <label class="login-label">Party Name</label>
@@ -2554,7 +2556,11 @@ function doLogin() {
   if (!email || !pin) { err.textContent = 'Please enter your email and PIN.'; return; }
   err.textContent = 'Verifying…';
   // Try Apps Script validation first (requires validate-login action in deployed script)
-  fetch(WHCC_SCRIPT_URL + '?action=validate-login&email=' + encodeURIComponent(email) + '&pin=' + encodeURIComponent(pin))
+  // POST, not a query string: a PIN in the web address ends up in browser history and server logs
+  fetch(WHCC_SCRIPT_URL, {
+    method: 'POST', headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'validate-login', email: email, pin: pin })
+  })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data && data.ok && data.account) {
@@ -6581,27 +6587,48 @@ function renderDiningLog() {
   }).join('');
   if (cnt) cnt.textContent = list.length + ' reservations  ·  ' + totalGuests + ' total guests';
 }
+function openAddReservation() {
+  document.getElementById('dr-date').value = localISODate();
+  openModal('modal-add-res');
+}
 function addReservation() {
   var venue  = document.getElementById('dr-venue').value;
   var time24 = document.getElementById('dr-time').value;
   var name   = document.getElementById('dr-name').value.trim();
   var party  = parseInt(document.getElementById('dr-party').value);
   var note   = document.getElementById('dr-note').value.trim();
+  var dateIso = document.getElementById('dr-date').value || localISODate();
   if (!time24 || !name) { showToast('Please enter a time and party name'); return; }
   var h = parseInt(time24.split(':')[0]), m = time24.split(':')[1];
   var ampm = h >= 12 ? 'p.m.' : 'a.m.'; h = h % 12 || 12;
-  var todayIso = localISODate();
+  var newRes = {id:Date.now().toString(), isoDate:dateIso, date:new Date(dateIso + 'T12:00:00').toDateString(), time24:time24, timeDisplay:h+(m&&m!=='00'?':'+m:'')+' '+ampm, name:name, party:party, note:note, venue:venue, seated:false, source:'staff'};
   var list = diningLoad();
-  var newRes = {id:Date.now().toString(), isoDate:todayIso, date:new Date().toDateString(), time24:time24, timeDisplay:h+(m&&m!=='00'?':'+m:'')+' '+ampm, name:name, party:party, note:note, venue:venue, seated:false, source:'staff'};
   list.push(newRes);
   diningSave(list);
-  // Also write to the canonical Dining Reservations sheet
+  // Also write to the canonical Dining Reservations sheet. The list above shows it straight away; if the
+  // server refuses it, take it back off and say why, and if the phone is offline, queue it for later.
+  var payload = { action:'dining-reservation', id:newRes.id, date:newRes.isoDate, time24:newRes.time24, timeDisplay:newRes.timeDisplay, name:newRes.name, party:newRes.party, note:newRes.note, venue:venue, source:'staff' };
   fetch(WHCC_SCRIPT_URL, {
     method: 'POST', headers: {'Content-Type':'text/plain'},
-    body: JSON.stringify({ action:'dining-reservation', id:newRes.id, date:newRes.isoDate, time24:newRes.time24, timeDisplay:newRes.timeDisplay, name:newRes.name, party:newRes.party, note:newRes.note, venue:venue, source:'staff' })
-  }).catch(function(){});
+    body: JSON.stringify(payload)
+  }).then(function(r) { return r.json(); })
+    .then(function(out) {
+      if (out && out.ok === false) {
+        diningSave(diningLoad().filter(function(r){ return r.id !== newRes.id; }));
+        renderDiningLog();
+        showToast(out.error || 'The server could not add that reservation.');
+      }
+    }, function() {
+      try {
+        var q = JSON.parse(localStorage.getItem('wh_sync_queue') || '[]');
+        q.push({ type: 'dining', data: { id:payload.id, date:payload.date, time24:payload.time24, timeDisplay:payload.timeDisplay, name:payload.name, party:payload.party, note:payload.note, venue:payload.venue, source:'staff' }, ts: Date.now() });
+        localStorage.setItem('wh_sync_queue', JSON.stringify(q));
+      } catch(e) {}
+      showToast('Offline — saved on this phone and will sync when you reconnect.');
+    });
   closeModal('modal-add-res');
   document.getElementById('dr-venue').value = 'grille';
+  document.getElementById('dr-date').value = '';
   document.getElementById('dr-time').value = '';
   document.getElementById('dr-name').value = '';
   document.getElementById('dr-party').value = '2';
@@ -7973,20 +8000,29 @@ function updateSyncLabel() {
 function drainSyncQueue() {
   var q; try { q = JSON.parse(localStorage.getItem('wh_sync_queue') || '[]'); } catch(e) { q = []; }
   if (!q.length) return;
-  var remaining = [];
-  q.forEach(function(item) {
-    var url = WHCC_SCRIPT_URL;
+  if (window._drainingSyncQueue) return;
+  window._drainingSyncQueue = true;
+  // Send every item, wait for all of them, and only then save what is still unsent. (Saving first dropped
+  // anything that failed, so a phone that was still offline lost its queue.)
+  Promise.all(q.map(function(item) {
     var body;
     if (item.type === 'registration') body = JSON.stringify(item.data);
     else if (item.type === 'dining') body = JSON.stringify(Object.assign({ action: 'dining-reservation' }, item.data));
-    else { remaining.push(item); return; }
-    fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body })
-      .then(function() { /* synced */ })
-      .catch(function() { remaining.push(item); });
-  });
-  try { localStorage.setItem('wh_sync_queue', JSON.stringify(remaining)); } catch(e) {}
-  if (q.length > remaining.length)
-    showToast('✓ ' + (q.length - remaining.length) + ' queued item(s) synced');
+    else return Promise.resolve(item);
+    return fetch(WHCC_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body })
+      .then(function(r) { return r.json(); })
+      .then(function() { return null; })
+      .catch(function() { return item; });
+  })).then(function(results) {
+    var remaining = results.filter(Boolean);
+    // keep anything queued while these requests were in flight
+    var current; try { current = JSON.parse(localStorage.getItem('wh_sync_queue') || '[]'); } catch(e) { current = []; }
+    var sentTs = {}; q.forEach(function(it) { sentTs[it.ts + ':' + it.type] = true; });
+    current.forEach(function(it) { if (!sentTs[it.ts + ':' + it.type]) remaining.push(it); });
+    try { localStorage.setItem('wh_sync_queue', JSON.stringify(remaining)); } catch(e) {}
+    if (q.length > remaining.length)
+      showToast('✓ ' + (q.length - remaining.length) + ' queued item(s) synced');
+  }).then(function() { window._drainingSyncQueue = false; }, function() { window._drainingSyncQueue = false; });
 }
 
 function manualSync() {

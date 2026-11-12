@@ -2451,9 +2451,6 @@ var MENU_SECTION_LABELS = {
   sandwiches:'Sandwiches', lunchEntrees:'Signature Entrees', dessert:'Dessert',
   postRound:'Sides', quickBites:'Kids Menu'
 };
-var HOOVERS_SECTION_LABELS = {
-  tapas:'Tapas', salad:'Salad', entrees:'Entrées', dessert:'Dessert', specialty:'House Specialty'
-};
 
 var appEvents; try { appEvents = JSON.parse(localStorage.getItem('wh_app_events') || 'null') || JSON.parse(JSON.stringify(DEFAULT_EVENTS)); } catch(e) { appEvents = JSON.parse(JSON.stringify(DEFAULT_EVENTS)); }
 // Merge any DEFAULT_EVENTS entries that aren't in the stored list (e.g. new season events added to the app)
@@ -2824,7 +2821,7 @@ function renderMyUpcoming() {
         var d = new Date(r.isoDate + 'T12:00:00');
         var mo = d.toLocaleDateString('en-US',{month:'short'}).toUpperCase();
         var dy = d.getDate();
-        var venueLabel = r.venue === 'hoovers' ? "Hoover's" : 'Westwood Grill';
+        var venueLabel = 'Westwood Grill';
         items.push({ date: d, type: 'dining',
           title: 'Dining — ' + venueLabel,
           subtitle: r.timeDisplay + (r.party ? ' · Party of ' + r.party : ''),
@@ -2968,7 +2965,6 @@ function _initMemberUI() {
   renderHomeEvents();
   renderAppMenu();
   renderSpecials();
-  renderHooversMenu();
   renderRoundLog();
   loadWeather();
   if (window._initHeroPhotos) window._initHeroPhotos();
@@ -5042,7 +5038,7 @@ function confirmDining() {
           action:      'send-dining-confirm',
           email:       currentUser.email,
           name:        currentUser.name || 'Member',
-          venue:       _activeDiningVenue === 'hoovers' ? "Hoover's" : 'Westwood Grill',
+          venue:       'Westwood Grill',
           date:        dateStr,
           time:        timeDisplay,
           party:       party,
@@ -5166,7 +5162,6 @@ function menuFetch() {
     // the current screen, so it's safe to just call all of them.
     renderAppMenu();
     renderSpecials();
-    renderHooversMenu();
     renderStaffMenus();
   });
 }
@@ -5576,13 +5571,9 @@ function remove86Item(id) {
 var staffMenuVenue = 'grill';
 
 function setMenuVenue(venue) {
-  staffMenuVenue = venue;
-  var grillBtn   = document.getElementById('smv-grill-btn');
-  var hooversBtn = document.getElementById('smv-hoovers-btn');
+  staffMenuVenue = 'grill';
   var wrapper86  = document.getElementById('s-86-wrapper');
-  if (grillBtn)   grillBtn.classList.toggle('active',   venue === 'grill');
-  if (hooversBtn) hooversBtn.classList.toggle('active', venue === 'hoovers');
-  if (wrapper86)  wrapper86.style.display = venue === 'grill' ? '' : 'none';
+  if (wrapper86)  wrapper86.style.display = '';
   renderStaffMenus();
 }
 
@@ -5591,29 +5582,7 @@ function renderStaffMenus() {
   var el = document.getElementById('s-menu-sections');
   if (!el) return;
   var html = '';
-  if (staffMenuVenue === 'hoovers') {
-    var h = menuLoad().hoovers || {};
-    var orderedKeys = ['tapas','salad','entrees','dessert','specialty'];
-    orderedKeys.forEach(function(key) {
-      var items = h[key] || [];
-      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px;">' +
-        '<div class="menu-sec-title" style="margin:0;">' + HOOVERS_SECTION_LABELS[key] + '</div>' +
-        '<button class="ts-btn" style="font-size:.65rem;padding:3px 8px;" onclick="openMenuAdd(\'' + key + '\')">+ Add</button>' +
-      '</div>';
-      items.forEach(function(item, idx) {
-        html += '<div class="smi">' +
-          '<div class="smi-info">' +
-            '<div class="smi-name">' + item.name + '</div>' +
-            '<div class="smi-price">' + (item.price || '') +
-              (item.desc ? (item.price ? ' · ' : '') + item.desc.substring(0,36) + (item.desc.length > 36 ? '…' : '') : '') +
-              (item.wine ? ' <span style="color:#7a6030;font-style:italic;">· 🍷 Pairs well with ' + item.wine.substring(0,30) + (item.wine.length > 30 ? '…' : '') + '</span>' : '') +
-            '</div>' +
-          '</div>' +
-          '<button class="smi-edit" onclick="openMenuEdit(\'' + key + '\',' + idx + ')">Edit</button>' +
-        '</div>';
-      });
-    });
-  } else {
+  {
     var g = menuLoad().grill;
     var list86 = load86List();
     var orderedKeys = ['starters','lunchDesserts','sandwiches','lunchEntrees','dessert','postRound','quickBites'];
@@ -5640,51 +5609,17 @@ function renderStaffMenus() {
   el.innerHTML = html;
 }
 
-function renderHooversMenu() {
-  var el = document.getElementById('hoovers-menu-content');
-  if (!el) return;
-  var h = menuLoad().hoovers || {};
-  var html = '';
-  var regularSections = ['tapas','salad','entrees','dessert'];
-  regularSections.forEach(function(key) {
-    var items = h[key] || [];
-    if (!items.length) return;
-    html += '<div class="card" style="margin-bottom:10px;">';
-    html += '<div class="card-title" style="margin-bottom:10px;font-family:\'Cormorant Garamond\',serif;font-size:1rem;letter-spacing:.05em;">' + HOOVERS_SECTION_LABELS[key] + '</div>';
-    items.forEach(function(item, idx) {
-      var isLast = idx === items.length - 1;
-      html += '<div' + (isLast ? '' : ' style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px;"') + '>';
-      html += '<div style="font-weight:600;font-size:.84rem;">' + item.name + '</div>';
-      if (item.desc) html += '<div style="font-size:.74rem;color:var(--muted);margin-top:2px;">' + item.desc + '</div>';
-      if (item.wine) html += '<div style="font-size:.7rem;color:#7a6030;margin-top:4px;font-style:italic;">🍷 Pairs well with ' + item.wine + '</div>';
-      html += '</div>';
-    });
-    html += '</div>';
-  });
-  // Specialty section — rendered as dark card
-  var specialty = h.specialty || [];
-  specialty.forEach(function(item) {
-    html += '<div style="background:var(--forest);border-radius:12px;padding:18px;margin-bottom:12px;text-align:center;">';
-    html += '<div style="font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">House Specialty</div>';
-    html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.3rem;color:var(--cream);margin-bottom:6px;">' + item.name + '</div>';
-    if (item.desc) html += '<div style="font-size:.76rem;color:rgba(245,240,232,.55);line-height:1.5;">' + item.desc + '</div>';
-    if (item.wine) html += '<div style="font-size:.7rem;color:var(--gold);font-style:italic;margin-top:8px;">🍷 Pairs well with ' + item.wine + '</div>';
-    html += '</div>';
-  });
-  el.innerHTML = html;
-}
-
 function openMenuEdit(section, idx) {
   var venue = staffMenuVenue;
   var data  = menuLoad();
-  var item  = venue === 'hoovers' ? (data.hoovers[section] || [])[idx] : data.grill[section][idx];
+  var item  = data.grill[section][idx];
   if (!item) return;
   document.getElementById('me-title').textContent = 'Edit Item';
   document.getElementById('me-name').value    = item.name;
   document.getElementById('me-desc').value    = item.desc || '';
   document.getElementById('me-price').value   = item.price || '';
   document.getElementById('me-wine').value    = item.wine || '';
-  document.getElementById('me-wine').style.display = venue === 'hoovers' ? '' : 'none';
+  document.getElementById('me-wine').style.display = 'none';
   document.getElementById('me-section').value = section;
   document.getElementById('me-index').value   = idx;
   document.getElementById('me-venue').value   = venue;
@@ -5698,7 +5633,7 @@ function openMenuAdd(section) {
   document.getElementById('me-desc').value    = '';
   document.getElementById('me-price').value   = '';
   document.getElementById('me-wine').value    = '';
-  document.getElementById('me-wine').style.display = venue === 'hoovers' ? '' : 'none';
+  document.getElementById('me-wine').style.display = 'none';
   document.getElementById('me-section').value = section;
   document.getElementById('me-index').value   = '-1';
   document.getElementById('me-venue').value   = venue;
@@ -5712,15 +5647,11 @@ function deleteMenuItem() {
   if (idx < 0) { closeModal('modal-menu-edit'); return; }
   if (!confirm('Remove this item from the menu?')) return;
   var data = menuLoad();
-  if (venue === 'hoovers') {
-    if (data.hoovers && data.hoovers[section]) data.hoovers[section].splice(idx, 1);
-  } else {
-    data.grill[section].splice(idx, 1);
-  }
+  data.grill[section].splice(idx, 1);
   menuSave(data);
   closeModal('modal-menu-edit');
   renderStaffMenus();
-  if (venue === 'hoovers') renderHooversMenu(); else { renderAppMenu(); renderSpecials(); }
+  renderAppMenu(); renderSpecials();
 }
 
 function saveMenuEdit() {
@@ -5735,27 +5666,16 @@ function saveMenuEdit() {
     desc:  document.getElementById('me-desc').value.trim(),
     price: document.getElementById('me-price').value.trim()
   };
-  if (venue === 'hoovers') {
-    newItem.wine = document.getElementById('me-wine').value.trim();
-    if (!data.hoovers) data.hoovers = {};
-    if (idx < 0) {
-      if (!data.hoovers[section]) data.hoovers[section] = [];
-      data.hoovers[section].push(newItem);
-    } else {
-      data.hoovers[section][idx] = newItem;
-    }
+  if (idx < 0) {
+    if (!data.grill[section]) data.grill[section] = [];
+    data.grill[section].push(newItem);
   } else {
-    if (idx < 0) {
-      if (!data.grill[section]) data.grill[section] = [];
-      data.grill[section].push(newItem);
-    } else {
-      data.grill[section][idx] = newItem;
-    }
+    data.grill[section][idx] = newItem;
   }
   menuSave(data);
   closeModal('modal-menu-edit');
   renderStaffMenus();
-  if (venue === 'hoovers') renderHooversMenu(); else { renderAppMenu(); renderSpecials(); }
+  renderAppMenu(); renderSpecials();
   showToast('✅ Menu item updated!');
 }
 
@@ -6580,7 +6500,7 @@ function renderDiningLog() {
       '<div class="dr-time">' + escHtml(r.timeDisplay) + dateLabel + '</div>' +
       '<div class="dr-info">' +
         '<div class="dr-name">' + escHtml(r.name) + '</div>' +
-        '<div class="dr-detail">' + (r.venue === 'hoovers' ? "Hoover's" : 'Westwood Grill') + ' &nbsp;·&nbsp; Party of ' + escHtml(r.party) + (r.note ? ' &nbsp;·&nbsp; ' + escHtml(r.note) : '') + '</div>' +
+        '<div class="dr-detail">' + 'Westwood Grill &nbsp;·&nbsp; Party of ' + escHtml(r.party) + (r.note ? ' &nbsp;·&nbsp; ' + escHtml(r.note) : '') + '</div>' +
       '</div>' +
       '<button class="ts-btn" onclick="removeReservation(\'' + safeId(r.id) + '\')">✕</button>' +
     '</div>';

@@ -2842,11 +2842,11 @@ function renderMyUpcoming() {
     var boxText  = x.type === 'dining' ? '#d4b483'       : 'var(--forest)';
     return '<div class="upcoming-ev">' +
       '<div class="ev-date-box" style="background:'+boxColor+';border-radius:7px;padding:5px 9px;text-align:center;color:'+boxText+';flex-shrink:0;">' +
-        '<div class="edb-mo">'+x.month+'</div><div class="edb-day">'+x.day+'</div>' +
+        '<div class="edb-mo">'+escHtml(x.month)+'</div><div class="edb-day">'+escHtml(x.day)+'</div>' +
       '</div>' +
       '<div style="flex:1;min-width:0;">' +
-        '<div style="font-size:.84rem;font-weight:600;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+x.title+'</div>' +
-        '<div style="font-size:.72rem;color:var(--muted);margin-top:1px;">'+x.subtitle+'</div>' +
+        '<div style="font-size:.84rem;font-weight:600;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+escHtml(x.title)+'</div>' +
+        '<div style="font-size:.72rem;color:var(--muted);margin-top:1px;">'+escHtml(x.subtitle)+'</div>' +
       '</div>' +
       '<div class="upcoming-when">'+when+'</div>' +
     '</div>';
@@ -2871,12 +2871,12 @@ function renderPartners() {
     var mine = currentUser && p.email === currentUser.email;
     return '<div class="partner-post">' +
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
-        '<div class="pp-name">'+p.name+'</div>' +
-        (mine ? '<button onclick="deletePartnerPost(\''+p.posted+'\')" style="font-size:.68rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;">Remove</button>' : '') +
+        '<div class="pp-name">'+escHtml(p.name)+'</div>' +
+        (mine ? '<button onclick="deletePartnerPost(\''+safeId(p.posted)+'\')" style="font-size:.68rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;">Remove</button>' : '') +
       '</div>' +
-      '<div class="pp-detail">📅 '+p.date+' &nbsp;·&nbsp; 🕐 '+p.time+' &nbsp;·&nbsp; ⛳ '+p.holes+'</div>' +
-      (p.note ? '<div class="pp-note">"'+p.note+'"</div>' : '') +
-      (!mine ? '<a href="mailto:'+p.email+'" class="pp-contact">📧 Send Email</a>' : '') +
+      '<div class="pp-detail">📅 '+escHtml(p.date)+' &nbsp;·&nbsp; 🕐 '+escHtml(p.time)+' &nbsp;·&nbsp; ⛳ '+escHtml(p.holes)+'</div>' +
+      (p.note ? '<div class="pp-note">"'+escHtml(p.note)+'"</div>' : '') +
+      (!mine ? '<a href="mailto:'+escHtml(p.email)+'" class="pp-contact">📧 Send Email</a>' : '') +
     '</div>';
   }).join('');
 }
@@ -3611,7 +3611,7 @@ var WHCC_SYNC = {
           }
           var regs = rows.map(function(row) {
             return {
-              id:        row['ID']              || '',
+              id:        safeId(row['ID']),
               event:     row['Event']           || '',
               eventMeta: row['Event Date/Time'] || '',
               firstName: row['First Name']      || '',
@@ -4039,7 +4039,7 @@ function mTeeSheetBuildEventDropdown() {
                   (isMe
                     ? 'background:rgba(184,151,106,.2);border:1px solid rgba(184,151,106,.4);color:#d4b483;font-weight:700;'
                     : 'background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(245,240,232,.6);') +
-                  '">' + n + '</span>';
+                  '">' + escHtml(n) + '</span>';
               }).join('') +
             '</div>' +
           '</div>';
@@ -4049,15 +4049,15 @@ function mTeeSheetBuildEventDropdown() {
       card.style.cssText = 'background:rgba(255,255,255,.04);border:1px solid rgba(184,151,106,.2);border-radius:10px;padding:14px;margin-bottom:10px;';
 
       card.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:' + (dateStr ? '4' : '2') + 'px;cursor:pointer;" onclick="mTeeSheetShowForEvent(' + JSON.stringify(evName) + ')">' +
-          '<div style="font-size:.92rem;font-weight:700;color:#f5f0e8;">' + evName + '</div>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:' + (dateStr ? '4' : '2') + 'px;cursor:pointer;" onclick="mTeeSheetShowForEvent(' + jsAttr(evName) + ')">' +
+          '<div style="font-size:.92rem;font-weight:700;color:#f5f0e8;">' + escHtml(evName) + '</div>' +
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(184,151,106,.6)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>' +
         '</div>' +
-        (dateStr ? '<div style="font-size:.72rem;color:rgba(245,240,232,.5);margin-bottom:8px;">' + dateStr + '</div>' : '') +
+        (dateStr ? '<div style="font-size:.72rem;color:rgba(245,240,232,.5);margin-bottom:8px;">' + escHtml(dateStr) + '</div>' : '') +
         (myTime
           ? '<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(184,151,106,.15);border:1px solid rgba(184,151,106,.3);border-radius:20px;padding:4px 12px;margin-bottom:4px;">' +
               '<span style="font-size:.7rem;color:rgba(184,151,106,.8);">⛳ Your tee time</span>' +
-              '<span style="font-size:.82rem;font-weight:700;color:#d4b483;">' + myTime + '</span>' +
+              '<span style="font-size:.82rem;font-weight:700;color:#d4b483;">' + escHtml(myTime) + '</span>' +
             '</div>'
           : (!sheet ? '<div style="font-size:.7rem;color:rgba(245,240,232,.25);margin-bottom:4px;">Tee sheet not yet posted</div>'
                     : '<div style="font-size:.7rem;color:rgba(245,240,232,.3);margin-bottom:4px;">Tee sheet posted — tap to view</div>')) +
@@ -4070,7 +4070,7 @@ function mTeeSheetBuildEventDropdown() {
 
 function mTeeSheetShowForEvent(eventName) {
   var sel = document.getElementById('m-ts-event');
-  if (sel) { sel.innerHTML = '<option value="' + eventName + '">' + eventName + '</option>'; sel.value = eventName; }
+  if (sel) { sel.innerHTML = '<option value="' + escHtml(eventName) + '">' + escHtml(eventName) + '</option>'; sel.value = eventName; }
   var wrap = document.getElementById('m-ts-sheet-wrap');
   var title = document.getElementById('m-ts-sheet-title');
   if (wrap) wrap.style.display = 'block';
@@ -4136,8 +4136,8 @@ function mTeeSheetRender() {
       var hcp = p.hcap !== undefined ? p.hcap : (tp.hcap !== undefined ? tp.hcap : '');
       var border = pi > 0 ? 'border-top:1px solid rgba(255,255,255,.07);' : '';
       s += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;' + border + '">';
-      s += '<div style="font-size:.88rem;font-weight:600;color:#1a2b1f;">' + (p.name ? p.name : '—') + '</div>';
-      if (hcp !== '') s += '<span style="font-size:.68rem;font-weight:700;color:#2d5a2d;background:#e8f4e8;padding:2px 7px;border-radius:10px;">HCP&nbsp;' + hcp + '</span>';
+      s += '<div style="font-size:.88rem;font-weight:600;color:#1a2b1f;">' + (p.name ? escHtml(p.name) : '—') + '</div>';
+      if (hcp !== '') s += '<span style="font-size:.68rem;font-weight:700;color:#2d5a2d;background:#e8f4e8;padding:2px 7px;border-radius:10px;">HCP&nbsp;' + escHtml(hcp) + '</span>';
       s += '</div>';
     });
     return s;
@@ -4201,8 +4201,8 @@ function mTeeSheetRender() {
           var hcp = p.hcap !== undefined ? p.hcap : (tp.hcap !== undefined ? tp.hcap : '');
           var border = 'border-top:1px solid rgba(255,255,255,.05);';
           html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 14px;' + border + '">';
-          html += '<div style="font-size:.86rem;font-weight:600;color:#f5f0e8;">' + (p.name ? p.name : '—') + '</div>';
-          if (hcp !== '') html += '<span style="font-size:.65rem;font-weight:700;color:#8fbf8f;background:rgba(45,90,45,.4);padding:2px 7px;border-radius:10px;">HCP&nbsp;' + hcp + '</span>';
+          html += '<div style="font-size:.86rem;font-weight:600;color:#f5f0e8;">' + (p.name ? escHtml(p.name) : '—') + '</div>';
+          if (hcp !== '') html += '<span style="font-size:.65rem;font-weight:700;color:#8fbf8f;background:rgba(45,90,45,.4);padding:2px 7px;border-radius:10px;">HCP&nbsp;' + escHtml(hcp) + '</span>';
           html += '</div>';
         });
         html += '</div>';
@@ -4657,8 +4657,8 @@ function renderFindAGame() {
   el.innerHTML = golfers.slice(0, 20).map(function(m) {
     var hcp = m.handicap !== undefined ? m.handicap : (m.hcp !== undefined ? m.hcp : null);
     return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">' +
-      '<div style="font-size:.86rem;font-weight:600;color:var(--dark);">' + (m.name || m.firstName + ' ' + m.lastName).trim() + '</div>' +
-      (hcp !== null ? '<span style="font-size:.72rem;font-weight:600;color:#7a5c10;background:rgba(184,150,62,.12);padding:2px 8px;border-radius:10px;">HCP ' + hcp + '</span>' : '') +
+      '<div style="font-size:.86rem;font-weight:600;color:var(--dark);">' + escHtml((m.name || m.firstName + ' ' + m.lastName).trim()) + '</div>' +
+      (hcp !== null ? '<span style="font-size:.72rem;font-weight:600;color:#7a5c10;background:rgba(184,150,62,.12);padding:2px 8px;border-radius:10px;">HCP ' + escHtml(hcp) + '</span>' : '') +
     '</div>';
   }).join('') + (golfers.length > 20 ? '<div style="font-size:.72rem;color:var(--muted);text-align:center;padding:8px 0;">+ ' + (golfers.length - 20) + ' more members</div>' : '');
 }
@@ -4848,8 +4848,8 @@ function renderEventTeeSheet(idx) {
     var disp = h + (t[1] && t[1] !== '00' ? ':' + t[1] : '') + ' ' + ampm;
     return '<div class="ts-row">' +
       '<div class="ts-time">' + disp + '</div>' +
-      '<div class="ts-info"><div class="ts-name">' + s.name + '</div></div>' +
-      '<button class="ts-btn" onclick="removeEventTeeSlot(\'' + s.id + '\')">✕</button>' +
+      '<div class="ts-info"><div class="ts-name">' + escHtml(s.name) + '</div></div>' +
+      '<button class="ts-btn" onclick="removeEventTeeSlot(\'' + safeId(s.id) + '\')">✕</button>' +
     '</div>';
   }).join('');
 }
@@ -5059,8 +5059,8 @@ function confirmDining() {
         '<span style="font-size:1.2rem;">✅</span>' +
         '<span style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4CAF50;">Reservation Confirmed</span>' +
       '</div>' +
-      '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.1rem;font-weight:700;margin-bottom:4px;">' + dateStr + '</div>' +
-      '<div style="font-size:.8rem;color:rgba(245,240,232,.75);">' + timeDisplay + ' · Party of ' + party + (notes ? ' · ' + notes : '') + '</div>' +
+      '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.1rem;font-weight:700;margin-bottom:4px;">' + escHtml(dateStr) + '</div>' +
+      '<div style="font-size:.8rem;color:rgba(245,240,232,.75);">' + escHtml(timeDisplay) + ' · Party of ' + escHtml(party) + (notes ? ' · ' + escHtml(notes) : '') + '</div>' +
       '<div style="font-size:.7rem;color:rgba(245,240,232,.5);margin-top:8px;">We look forward to seeing you! Call (573) 785-5253 for changes.</div>' +
       (queued ? '<div style="font-size:.7rem;color:rgba(255,220,100,.8);margin-top:6px;">📶 Offline — reservation saved and will sync when you reconnect.</div>' : '');
 
@@ -6127,21 +6127,21 @@ function memberSearch(q) {
              (m.email  || '').toLowerCase().indexOf(term) !== -1;
     });
     if (!results.length) {
-      el.innerHTML = '<div class="mem-empty">No members found for "' + q + '"</div>';
+      el.innerHTML = '<div class="mem-empty">No members found for "' + escHtml(q) + '"</div>';
       return;
     }
     el.innerHTML = results.slice(0, 15).map(function(m) {
       var hcpPill = m.handicap && m.handicap !== 'N/A'
-        ? '<span class="mem-pill hcp">HCP ' + m.handicap + '</span>'
+        ? '<span class="mem-pill hcp">HCP ' + escHtml(m.handicap) + '</span>'
         : '';
-      var phonePart = m.phone ? '<a href="tel:' + m.phone.replace(/\D/g,'') + '" class="mem-contact-btn">📞 ' + m.phone + '</a>' : '';
-      var emailPart = m.email ? '<a href="mailto:' + m.email + '" class="mem-contact-btn">✉️ Email</a>' : '';
+      var phonePart = m.phone ? '<a href="tel:' + m.phone.replace(/\D/g,'') + '" class="mem-contact-btn">📞 ' + escHtml(m.phone) + '</a>' : '';
+      var emailPart = m.email ? '<a href="mailto:' + escHtml(m.email) + '" class="mem-contact-btn">✉️ Email</a>' : '';
       return '<div class="mem-result">' +
-        '<div><span class="mem-name">' + m.name + '</span>' + (m.number ? '<span class="mem-number">#' + m.number + '</span>' : '') + '</div>' +
+        '<div><span class="mem-name">' + escHtml(m.name) + '</span>' + (m.number ? '<span class="mem-number">#' + escHtml(m.number) + '</span>' : '') + '</div>' +
         '<div class="mem-pills">' +
-          (m.membership ? '<span class="mem-pill type">' + m.membership + '</span>' : '') +
+          (m.membership ? '<span class="mem-pill type">' + escHtml(m.membership) + '</span>' : '') +
           hcpPill +
-          (m.since ? '<span class="mem-pill since">Member since ' + m.since + '</span>' : '') +
+          (m.since ? '<span class="mem-pill since">Member since ' + escHtml(m.since) + '</span>' : '') +
         '</div>' +
         '<div class="mem-contact-row">' + phonePart + emailPart + '</div>' +
       '</div>';
@@ -6534,7 +6534,7 @@ function refreshDiningFromServer() {
         // normalize time24 — might come back as "6 p.m." if stored as Date
         var tdisplay = r['Time Display'] || r['timeDisplay'] || time24;
         return {
-          id:          r['ID'] || r['id'] || String(Date.now()),
+          id:          safeId(r['ID'] || r['id']) || String(Date.now()),
           isoDate:     isoDate,
           date:        d.toDateString(),
           time24:      time24,
@@ -6569,14 +6569,14 @@ function renderDiningLog() {
   var totalGuests = list.reduce(function(s,r){ return s + parseInt(r.party||1); }, 0);
   el.innerHTML = list.map(function(r){
     var isToday = r.isoDate ? r.isoDate === todayIso : r.date === new Date().toDateString();
-    var dateLabel = isToday ? '' : '<span style="font-size:.7rem;color:var(--gold);margin-left:4px;">' + (r.isoDate ? new Date(r.isoDate + 'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) : r.date) + '</span>';
+    var dateLabel = isToday ? '' : '<span style="font-size:.7rem;color:var(--gold);margin-left:4px;">' + escHtml(r.isoDate ? new Date(r.isoDate + 'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) : r.date) + '</span>';
     return '<div class="dr-row">' +
-      '<div class="dr-time">' + r.timeDisplay + dateLabel + '</div>' +
+      '<div class="dr-time">' + escHtml(r.timeDisplay) + dateLabel + '</div>' +
       '<div class="dr-info">' +
-        '<div class="dr-name">' + r.name + '</div>' +
-        '<div class="dr-detail">' + (r.venue === 'hoovers' ? "Hoover's" : 'Westwood Grill') + ' &nbsp;·&nbsp; Party of ' + r.party + (r.note ? ' &nbsp;·&nbsp; ' + r.note : '') + '</div>' +
+        '<div class="dr-name">' + escHtml(r.name) + '</div>' +
+        '<div class="dr-detail">' + (r.venue === 'hoovers' ? "Hoover's" : 'Westwood Grill') + ' &nbsp;·&nbsp; Party of ' + escHtml(r.party) + (r.note ? ' &nbsp;·&nbsp; ' + escHtml(r.note) : '') + '</div>' +
       '</div>' +
-      '<button class="ts-btn" onclick="removeReservation(\'' + r.id + '\')">✕</button>' +
+      '<button class="ts-btn" onclick="removeReservation(\'' + safeId(r.id) + '\')">✕</button>' +
     '</div>';
   }).join('');
   if (cnt) cnt.textContent = list.length + ' reservations  ·  ' + totalGuests + ' total guests';
@@ -6653,10 +6653,10 @@ function renderTeeSheet() {
     return '<div class="ts-row">' +
       '<div class="ts-time" style="font-size:.72rem;color:var(--muted);min-width:52px;">' + duration + '</div>' +
       '<div class="ts-info">' +
-        '<div class="ts-name">' + t.name + '</div>' +
-        '<div class="ts-detail">' + t.players + ' player' + (t.players>1?'s':'') + '</div>' +
+        '<div class="ts-name">' + escHtml(t.name) + '</div>' +
+        '<div class="ts-detail">' + escHtml(t.players) + ' player' + (t.players>1?'s':'') + '</div>' +
       '</div>' +
-      '<button class="ts-btn" onclick="removeTeeTime(\'' + t.id + '\')">✕</button>' +
+      '<button class="ts-btn" onclick="removeTeeTime(\'' + safeId(t.id) + '\')">✕</button>' +
     '</div>';
   }).join('');
   var totalPlayers = list.reduce(function(s,t){ return s + t.players; }, 0);
@@ -7269,7 +7269,7 @@ function msRenderGroups() {
       '</div>' +
       '<textarea id="mts-grp-' + g.id + '" placeholder="Tom Bradley, 12.4&#10;Mike Johnson, 8.1&#10;Sarah Wilkins&#10;Jeff Hart, 22.0" ' +
         'style="width:100%;box-sizing:border-box;background:transparent;border:none;border-top:1px solid var(--border);padding:10px 12px;color:var(--forest);font-size:.82rem;resize:vertical;min-height:90px;outline:none;font-family:inherit;" ' +
-        'onblur="mtsGroupBlur(' + g.id + ')">' + (g.text || '') + '</textarea>' +
+        'onblur="mtsGroupBlur(' + g.id + ')">' + escHtml(g.text || '') + '</textarea>' +
       '<div style="padding:4px 12px 7px;font-size:.6rem;color:var(--muted);">One player per line &nbsp;·&nbsp; Add a comma + handicap index (optional): <em>Name, HCP</em></div>' +
     '</div>';
   }).join('');
@@ -7375,9 +7375,9 @@ function msTsRenderOutput() {
       var combHcp = hasAnyHcp ? Math.round(entry.players.reduce(function(s,p){ return s + (p.hcap || 0); }, 0) * 10) / 10 : '';
       var players = entry.players.map(function(p) {
         var hcpBadge = p.hcap !== undefined
-          ? ' <span style="font-size:.62rem;background:rgba(26,43,31,.1);padding:1px 5px;border-radius:8px;color:var(--forest);margin-left:4px;">' + p.hcap + '</span>'
+          ? ' <span style="font-size:.62rem;background:rgba(26,43,31,.1);padding:1px 5px;border-radius:8px;color:var(--forest);margin-left:4px;">' + escHtml(p.hcap) + '</span>'
           : '';
-        return '<div style="font-size:.82rem;padding:1px 0;color:var(--forest);">' + p.name + hcpBadge + '</div>';
+        return '<div style="font-size:.82rem;padding:1px 0;color:var(--forest);">' + escHtml(p.name) + hcpBadge + '</div>';
       }).join('');
       return '<tr>' +
         '<td style="padding:7px 6px;border-bottom:1px solid var(--border);color:var(--gold);font-weight:600;font-size:.8rem;white-space:nowrap;">' + entry.teeTime + '</td>' +
@@ -7502,7 +7502,7 @@ function renderLeaderboard() {
       var medal = rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : (rank+1) + '.';
       return '<tr style="border-bottom:1px solid var(--border);">' +
         '<td style="padding:5px 6px;color:var(--gold);font-weight:700;">' + medal + '</td>' +
-        '<td style="padding:5px 6px;"><div style="font-weight:600;">' + s.name + '</div>' + (s.partner ? '<div style="font-size:.68rem;color:var(--muted);">' + s.partner + '</div>' : '') + '</td>' +
+        '<td style="padding:5px 6px;"><div style="font-weight:600;">' + escHtml(s.name) + '</div>' + (s.partner ? '<div style="font-size:.68rem;color:var(--muted);">' + escHtml(s.partner) + '</div>' : '') + '</td>' +
         '<td style="padding:5px 6px;text-align:center;">' + (s.gross || '—') + '</td>' +
         '<td style="padding:5px 6px;text-align:center;font-weight:600;color:var(--forest);">' + (s.net || '—') + '</td>' +
         '<td style="padding:5px 6px;text-align:center;"><button onclick="removeScore(\'' + s.id + '\')" style="background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--muted);">✕</button></td>' +
@@ -7582,8 +7582,8 @@ function renderRegsEventList() {
     var wlText = wlCount ? ' · <span style="color:#92400e;">⏳ ' + wlCount + ' waitlisted</span>' : '';
     return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--white);border-radius:var(--radius-sm);margin-bottom:8px;box-shadow:var(--shadow);">' +
       '<div>' +
-        '<div style="font-size:.85rem;font-weight:700;color:var(--dark);">' + ev.title + '</div>' +
-        '<div style="font-size:.72rem;color:var(--muted);margin-top:2px;">' + ev.month + ' ' + ev.day + ' · ' + capText + wlText + '</div>' +
+        '<div style="font-size:.85rem;font-weight:700;color:var(--dark);">' + escHtml(ev.title) + '</div>' +
+        '<div style="font-size:.72rem;color:var(--muted);margin-top:2px;">' + escHtml(ev.month) + ' ' + escHtml(ev.day) + ' · ' + capText + wlText + '</div>' +
       '</div>' +
       '<button onclick="openEventRegs(' + i + ')" style="font-size:.72rem;background:var(--forest);color:var(--cream);border:none;padding:5px 12px;border-radius:20px;cursor:pointer;">View</button>' +
     '</div>';
@@ -7636,7 +7636,7 @@ function renderEventRegs(eventTitle) {
     html += '<div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">From Tee Sheet</div>';
     html += extraTsNames.map(function(name) {
       return '<div style="background:var(--cream);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">' +
-        '<div style="font-size:.85rem;font-weight:600;color:var(--dark);">⛳ ' + name + '</div>' +
+        '<div style="font-size:.85rem;font-weight:600;color:var(--dark);">⛳ ' + escHtml(name) + '</div>' +
         '<span style="font-size:.68rem;color:var(--muted);background:rgba(26,74,38,.08);padding:2px 8px;border-radius:20px;">Tee Sheet</span>' +
       '</div>';
     }).join('');
@@ -7651,16 +7651,16 @@ function renderEventRegs(eventTitle) {
       return '<div style="background:var(--cream);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;">' +
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
           '<div>' +
-            '<div style="font-size:.85rem;font-weight:700;color:var(--dark);">' + name + (r.memberNum ? ' <span style="font-size:.7rem;color:var(--muted);">#' + r.memberNum + '</span>' : '') + '</div>' +
-            (r.partner ? '<div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Partner: ' + r.partner + '</div>' : '') +
+            '<div style="font-size:.85rem;font-weight:700;color:var(--dark);">' + escHtml(name) + (r.memberNum ? ' <span style="font-size:.7rem;color:var(--muted);">#' + escHtml(r.memberNum) + '</span>' : '') + '</div>' +
+            (r.partner ? '<div style="font-size:.74rem;color:var(--muted);margin-top:2px;">Partner: ' + escHtml(r.partner) + '</div>' : '') +
             '<div style="font-size:.72rem;color:var(--muted);margin-top:3px;">' +
-              (r.players > 1 ? r.players + ' players · ' : '') +
-              (r.email || '') + (r.phone ? ' · ' + r.phone : '') +
+              (r.players > 1 ? escHtml(r.players) + ' players · ' : '') +
+              escHtml(r.email || '') + (r.phone ? ' · ' + escHtml(r.phone) : '') +
             '</div>' +
-            (r.notes ? '<div style="font-size:.74rem;color:var(--dark);margin-top:4px;font-style:italic;">' + r.notes + '</div>' : '') +
+            (r.notes ? '<div style="font-size:.74rem;color:var(--dark);margin-top:4px;font-style:italic;">' + escHtml(r.notes) + '</div>' : '') +
             (ts ? '<div style="font-size:.66rem;color:var(--muted);margin-top:4px;">Registered ' + ts + '</div>' : '') +
           '</div>' +
-          '<button onclick="deleteRegAndRefresh(\'' + r.id + '\',\'' + eventTitle.replace(/'/g,"\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--muted);padding:2px 4px;">✕</button>' +
+          '<button onclick="deleteRegAndRefresh(' + jsAttr(r.id) + ',' + jsAttr(eventTitle) + ')" style="background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--muted);padding:2px 4px;">✕</button>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -7672,7 +7672,7 @@ function renderEventRegs(eventTitle) {
     html += '<div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#92400e;margin-bottom:6px;">⏳ Waitlist (' + waitlistEmails.length + ')</div>';
     html += waitlistEmails.map(function(email) {
       return '<div style="background:#fff8f0;border:1px solid #f0c080;border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">' +
-        '<div style="font-size:.82rem;color:var(--dark);">' + email + '</div>' +
+        '<div style="font-size:.82rem;color:var(--dark);">' + escHtml(email) + '</div>' +
         '<span style="font-size:.68rem;color:#92400e;background:#fef3c7;padding:2px 8px;border-radius:20px;">Waitlisted</span>' +
       '</div>';
     }).join('');
@@ -8153,6 +8153,11 @@ function getNotifPrefs() {
 function escHtml(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+// For text placed inside an inline handler attribute, e.g. onclick="f(' + jsAttr(x) + ')"
+function jsAttr(s) { return escHtml(JSON.stringify(String(s == null ? '' : s))); }
+// Ids from the server end up in onclick handlers: keep only the characters an id is made of
+function safeId(s) { return String(s == null ? '' : s).replace(/[^A-Za-z0-9_.:-]/g, ''); }
+
 function openSearch() {
   var overlay = document.getElementById('search-overlay');
   if (!overlay) return;

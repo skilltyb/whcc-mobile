@@ -1054,7 +1054,7 @@
           <div style="display:flex;flex-direction:column;gap:8px;">
             <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
               <span style="font-size:.84rem;font-weight:600;color:var(--forest);">Tuesday – Sunday</span>
-              <span style="font-size:.84rem;color:var(--muted);">10 a.m. – 5 p.m.</span>
+              <span class="js-poolhours" style="font-size:.84rem;color:var(--muted);">10 a.m. – 5 p.m.</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
               <span style="font-size:.84rem;font-weight:600;color:var(--forest);">Monday</span>
@@ -6742,6 +6742,9 @@ function renderConditionsUI(data) {
   if (ps) document.querySelectorAll('.js-proshop-hours').forEach(function(n) {
     n.textContent = /closed/i.test(ps) ? ps : 'Tue–Sun · ' + ps + ' · Closed Mon';
   });
+  // Pool hours on the Aquatics page follow the Pool Hours set under Course Conditions
+  var ph = (data.poolHours || '').trim();
+  if (ph) document.querySelectorAll('.js-poolhours').forEach(function(n) { n.textContent = ph; });
   var el = document.getElementById('wx-conditions');
   if (!el) return;
   var html =
